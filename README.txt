@@ -136,11 +136,9 @@ Install pytest first if it is not included in the project's dependencies.
 - Automated attendance analysis
 - Enhanced security and access management
 
-## 📊 Project Architecture
 
-The following diagram illustrates the overall architecture of the AI School Management System, including its administrative modules, AI/ML components, and reporting workflow.
 
-![AI School Management System Architecture](docs/architecture.png)
+
 
 ## 👨‍💻 Author
 
