@@ -1,5 +1,6 @@
 # 🏫 AI School Management System
 
+
 An AI-powered School Management System built with Python to simplify school administration, student management, academic operations, and data-driven insights.
 
 ## 📌 About the Project
