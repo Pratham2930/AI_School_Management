@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>School Reports</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+    <style>
+        .page { max-width: 1100px; margin: 0 auto; }
+        .panel { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 22px; margin: 20px 0; }
+        .filters { display: grid; grid-template-columns: repeat(3, minmax(150px, 1fr)) auto; gap: 12px; align-items: end; }
+        label { display: block; font-weight: 600; margin-bottom: 6px; }
+        input, select { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 7px; font: inherit; }
+        .cards { display: grid; grid-template-columns: repeat(4, minmax(150px, 1fr)); gap: 14px; }
+        .card { padding: 18px; border: 1px solid #e5e7eb; border-radius: 10px; background: #f8fafc; }
+        .card span { display: block; color: #64748b; font-size: 13px; }
+        .card strong { display: block; font-size: 24px; margin-top: 8px; }
+        .muted { color: #64748b; }
+        @media (max-width: 750px) { .page { margin: 0; } .filters, .cards { grid-template-columns: 1fr 1fr; } }
+        @media (max-width: 480px) { .filters, .cards { grid-template-columns: 1fr; } }
+    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}">
+</head>
+<body>
+<main class="full-page page">
+    <header class="topbar">
+        <div><h1>School Reports</h1><p>Review attendance, academic performance, admissions, and online exam activity.</p></div>
+        <a class="primary-link" href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+    </header>
+    {% for message in get_flashed_messages() %}<div class="alert">{{ message }}</div>{% endfor %}
+    <section class="panel">
+        <form method="get" class="filters">
+            <div><label for="start_date">From</label><input id="start_date" name="start_date" type="date" value="{{ start_date.isoformat() }}" required></div>
+            <div><label for="end_date">To</label><input id="end_date" name="end_date" type="date" value="{{ end_date.isoformat() }}" required></div>
+            <div><label for="class_id">Class</label>
+                <select id="class_id" name="class_id"><option value="">All classes</option>
+                    {% for school_class in classes %}
+                    <option value="{{ school_class.id }}" {% if selected_class_id == school_class.id %}selected{% endif %}>Standard {{ school_class.standard }}{% if school_class.stream %} {{ school_class.stream }}{% endif %} - {{ school_class.division }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button class="primary-btn" type="submit">Run report</button>
+        </form>
+    </section>
+    <section class="panel">
+        <h2>Attendance</h2>
+        <div class="cards">
+            <div class="card"><span>Attendance records</span><strong>{{ attendance_total }}</strong></div>
+            <div class="card"><span>Present</span><strong>{{ present_count }}</strong></div>
+            <div class="card"><span>Absent</span><strong>{{ absent_count }}</strong></div>
+            <div class="card"><span>Presence rate</span><strong>{{ attendance_rate }}%</strong></div>
+        </div>
+    </section>
+    <section class="panel">
+        <h2>Academic results</h2>
+        <div class="cards">
+            <div class="card"><span>Graded marks</span><strong>{{ marks_count }}</strong></div>
+            <div class="card"><span>Average score</span><strong>{{ academic_average }}%</strong></div>
+            <div class="card"><span>Online exams scheduled</span><strong>{{ online_exam_count }}</strong></div>
+            <div class="card"><span>Submitted exam attempts</span><strong>{{ submitted_attempts }}</strong></div>
+        </div>
+    </section>
+    <section class="panel">
+        <h2>Admissions</h2>
+        <div class="cards">
+            <div class="card"><span>Admissions in period</span><strong>{{ admissions_count }}</strong></div>
+            <div class="card"><span>Pending</span><strong>{{ pending_admissions }}</strong></div>
+            <div class="card"><span>Confirmed</span><strong>{{ confirmed_admissions }}</strong></div>
+        </div>
+        <p class="muted">Reports use the selected admission-date range. Attendance and exam figures use their recorded dates.</p>
+    </section>
+</main>
+</body>
+</html>

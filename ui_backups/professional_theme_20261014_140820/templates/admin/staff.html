@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Staff Management</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+    <style>
+        .page { max-width: 1200px; margin: 0 auto; }
+        .panel { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 22px; margin-top: 20px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: left; vertical-align: top; }
+        .actions { display: flex; flex-wrap: wrap; gap: 8px; }
+        .actions form { margin: 0; }
+        .badge { display: inline-block; padding: 5px 9px; border-radius: 20px; background: #dcfce7; color: #166534; }
+        .badge.inactive { background: #f1f5f9; color: #64748b; }
+    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}">
+
+    <!-- EduSphere shared navigation -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edusphere_navigation.css') }}">
+</head>
+<body>
+<main class="full-page page">
+    <header class="topbar">
+        <div><h1>Staff Management</h1><p>Add and maintain non-teaching employee records.</p></div>
+        <div class="actions">
+            <a class="primary-link" href="{{ url_for('admin_staff_form') }}">Add staff</a>
+            <a class="primary-link" href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+        </div>
+    </header>
+    {% for message in get_flashed_messages() %}<div class="alert">{{ message }}</div>{% endfor %}
+    <section class="panel">
+        {% if staff_members %}
+        <div style="overflow-x:auto"><table>
+            <thead><tr><th>Employee ID</th><th>Name</th><th>Position</th><th>Phone</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody>{% for member in staff_members %}
+                <tr>
+                    <td>{{ member.employee_id }}</td>
+                    <td>{{ member.name }}</td>
+                    <td>{{ member.position }}</td>
+                    <td>{{ member.phone or '-' }}</td>
+                    <td><span class="badge {% if not member.active %}inactive{% endif %}">{{ 'Active' if member.active else 'Inactive' }}</span></td>
+                    <td><div class="actions">
+                        <a href="{{ url_for('admin_staff_form', staff_id=member.id) }}">Edit</a>
+                        <form method="post" action="{{ url_for('admin_staff_toggle', staff_id=member.id) }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button type="submit">{{ 'Deactivate' if member.active else 'Activate' }}</button></form>
+                        <form method="post" action="{{ url_for('admin_staff_delete', staff_id=member.id) }}" onsubmit="return confirm('Permanently delete this staff record?')">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button type="submit">Delete</button></form>
+                    </div></td>
+                </tr>
+            {% endfor %}</tbody>
+        </table></div>
+        {% else %}<p>No staff records yet. Add the first non-teaching employee.</p>{% endif %}
+    </section>
+</main>
+
+    <!-- EduSphere role navigation -->
+    {% include "components/edu_admin_sidebar.html" %}
+    <script src="{{ url_for('static', filename='js/edusphere_navigation.js') }}"></script>
+</body>
+</html>

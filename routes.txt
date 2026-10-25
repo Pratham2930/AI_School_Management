@@ -1,0 +1,83 @@
+
+# EDUNOVA_CLASS_TEACHER_ROUTES_V1
+def _edunova_class_teacher_name(school_class):
+    return f"Class {school_class.standard} {school_class.stream or ''} / {school_class.division} ({school_class.academic_year})"
+
+@app.route("/admin/class-teachers", methods=["GET", "POST"])
+@login_required
+@admin_required
+def admin_class_teachers():
+    if request.method == "POST":
+        try:
+            class_id = int(request.form.get("class_id", ""))
+            teacher_id = int(request.form.get("teacher_id", ""))
+        except ValueError:
+            abort(400)
+        school_class = db.session.get(SchoolClass, class_id)
+        teacher = db.session.get(Teacher, teacher_id)
+        if school_class is None or teacher is None:
+            abort(400)
+        existing = ClassTeacherAssignment.query.filter_by(class_id=class_id).first()
+        if existing:
+            existing.teacher_id = teacher_id
+            existing.assigned_at = datetime.utcnow()
+        else:
+            db.session.add(ClassTeacherAssignment(class_id=class_id, teacher_id=teacher_id))
+        db.session.commit()
+        flash("Class teacher assigned successfully.")
+        return redirect(url_for("admin_class_teachers"))
+    assignments = {a.class_id: a.teacher_id for a in ClassTeacherAssignment.query.all()}
+    classes = SchoolClass.query.order_by(SchoolClass.standard, SchoolClass.division).all()
+    teachers = Teacher.query.all()
+    return render_template("admin/class_teachers.html", classes=classes,
+        teachers=teachers, assignments=assignments)
+
+@app.route("/teacher/student-leaves")
+@login_required
+def teacher_student_leaves():
+    if current_user.role != "teacher":
+        abort(403)
+    teacher = Teacher.query.filter_by(user_id=current_user.id).first()
+    if not teacher:
+        abort(403)
+    class_ids = [a.class_id for a in ClassTeacherAssignment.query.filter_by(teacher_id=teacher.id).all()]
+    rows = (db.session.query(LeaveRequest, Student)
+        .join(Student, LeaveRequest.student_id == Student.id)
+        .filter(LeaveRequest.requester_type == "student", Student.class_id.in_(class_ids))
+        .order_by(LeaveRequest.created_at.desc()).all()) if class_ids else []
+    return render_template("teacher/student_leaves.html", rows=rows)
+
+@app.route("/teacher/student-leaves/<int:request_id>/<decision>", methods=["POST"])
+@login_required
+def teacher_review_student_leave(request_id, decision):
+    if current_user.role != "teacher":
+        abort(403)
+    teacher = Teacher.query.filter_by(user_id=current_user.id).first()
+    if teacher is None:
+        abort(403)
+    leave = db.session.get(LeaveRequest, request_id)
+    if leave is None:
+        abort(404)
+    if leave.requester_type != "student":
+        abort(403)
+    student = db.session.get(Student, leave.student_id)
+    if student is None:
+        abort(404)
+    assignment = ClassTeacherAssignment.query.filter_by(class_id=student.class_id, teacher_id=teacher.id).first()
+    if assignment is None:
+        abort(403)
+    if decision not in {"approve", "reject"}:
+        abort(400)
+    if leave.status != "Pending":
+        flash("Only pending leave can be reviewed.")
+        return redirect(url_for("teacher_student_leaves"))
+    note = (request.form.get("review_note") or "").strip()
+    if len(note) > 1000:
+        abort(400)
+    leave.status = "Approved" if decision == "approve" else "Rejected"
+    leave.review_note = note or None
+    leave.reviewed_by = current_user.id
+    leave.reviewed_at = datetime.utcnow()
+    db.session.commit()
+    flash("Student leave " + leave.status.lower() + ".")
+    return redirect(url_for("teacher_student_leaves"))

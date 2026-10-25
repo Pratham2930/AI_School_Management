@@ -1,0 +1,18 @@
+<button id="edu-menu-trigger" type="button" aria-controls="edu-sidebar" aria-expanded="false">&#9776; School Menu</button>
+<div id="edu-menu-overlay"></div>
+<nav id="edu-sidebar" aria-label="School navigation" aria-hidden="true">
+<div class="edu-top"><div class="edu-brand">EduSphere AI<small>School Management</small></div><button id="edu-menu-close" class="edu-close" type="button" aria-label="Close menu">&times;</button></div>
+<div class="edu-heading">Teacher Portal</div>
+<a class="edu-link" href="{{ url_for('teacher_dashboard') }}">Dashboard</a>
+<a class="edu-link" href="{{ url_for('teacher_students') }}">My Students</a>
+<a class="edu-link" href="{{ url_for('teacher_attendance') }}">Attendance</a>
+<a class="edu-link" href="{{ url_for('teacher_marks') }}">Marks</a>
+<a class="edu-link" href="{{ url_for('teacher_assignments') }}">Homework</a>
+<a class="edu-link" href="{{ url_for('teacher_online_exams') }}">Online Exams</a>
+<a class="edu-link" href="{{ url_for('teacher_documents') }}">Documents</a>
+<a class="edu-link" href="{{ url_for('leave_requests') }}">Leave Requests</a>
+<a class="edu-link" href="{{ url_for('school_ai_assistant') }}">AI Assistant</a>
+<div class="edu-heading">Account</div>
+<a class="edu-link" href="{{ url_for('teacher_change_password') }}">Change Password</a>
+<a class="edu-link" href="{{ url_for('teacher_logout') }}">Log out</a>
+</nav>

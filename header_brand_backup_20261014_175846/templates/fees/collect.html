@@ -1,0 +1,175 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Fees Room</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/fees.css') }}">
+
+    <!-- EduSphere shared navigation -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edusphere_navigation.css') }}">
+    <!-- EduSphere professional theme -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_theme.css') }}">
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_unified.css') }}">
+</head>
+<body class="edn-unified">
+<!-- EduNova unified header -->
+<header class="edn-global-header" role="banner"><div class="edn-global-brand"><span class="edn-global-icon">✦</span><span>EduNova <b>AI</b></span><span class="edn-global-divider">/</span><span class="edn-global-context">Fee Management</span></div><span class="edn-global-page">Collect</span></header>
+
+
+<main class="wrap">
+
+    <header>
+        <h1>Fees Room</h1>
+        <a href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+    </header>
+
+    {% for message in get_flashed_messages() %}
+        <p class="notice">{{ message }}</p>
+    {% endfor %}
+
+    <section class="card">
+        <h2>Record Admission Fee</h2>
+
+        <form method="POST">
+
+            <input type="hidden"
+                   name="csrf_token"
+                   value="{{ csrf_token() }}">
+
+            <label for="admission_number">Select Student</label>
+            <select name="admission_number"
+                    id="admission_number"
+                    required>
+                <option value="">Choose Student</option>
+
+                {% for student in students %}
+                <option value="{{ student.admission_number }}">
+                    {{ student.admission_number }}
+                    - {{ student.name }}
+                    - Class {{ student.current_standard }}
+                    - Fee {{ student.admission_fee }}
+                </option>
+                {% endfor %}
+            </select>
+
+            <label for="amount">Amount Received</label>
+            <input type="number"
+                   name="amount"
+                   id="amount"
+                   min="0.01"
+                   step="0.01"
+                   placeholder="Enter full admission fee"
+                   required>
+
+            <label for="payment_method">Payment Method</label>
+            <select name="payment_method"
+                    id="payment_method"
+                    required>
+                <option value="">Choose Method</option>
+                <option value="Cash">Cash</option>
+                <option value="UPI">UPI</option>
+                <option value="Card">Card</option>
+                <option value="Bank Transfer">Bank Transfer</option>
+            </select>
+
+            <label for="transaction_reference">
+                Transaction Reference
+            </label>
+            <input type="text"
+                   name="transaction_reference"
+                   id="transaction_reference"
+                   maxlength="100"
+                   readonly
+                   value="Generated automatically when payment is saved"
+                   aria-describedby="ref_help">
+            <small id="ref_help">EduNova generates a unique internal reference for every payment method. For UPI, card, or bank transfer, separately verify the actual bank transaction before marking the payment verified.</small>
+
+            <button type="submit">
+                Record Payment & Generate Receipt
+            </button>
+
+        </form>
+    </section>
+
+    <section class="card">
+        <h2>Recent Fee Receipts</h2>
+
+        <div class="scroll">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Receipt Number</th>
+                        <th>Amount</th>
+                        <th>Method</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for payment in payments %}
+                    <tr>
+                        <td>{{ payment.receipt_number }}</td>
+                        <td>{{ payment.amount }}</td>
+                        <td>{{ payment.payment_method }}</td>
+                        <td>{{ payment.payment_status }}</td>
+                        <td>
+                            <a href="{{ url_for('fees_receipt',
+                                               payment_id=payment.id) }}">
+                                Print Receipt
+                            </a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5">No payments recorded.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+<section class="card" id="upi-qr-preview"><h2>UPI QR payment request</h2><p>Select a student and UPI as the payment method above, then click Generate QR. The QR requests the student's actual admission fee automatically. Scanning is not payment confirmation.</p><button type="button" id="show-upi-qr">Generate UPI QR</button><p id="upi-qr-error" role="alert"></p></section>
+<script>
+(function(){
+ const student=document.querySelector('select[name="admission_number"]');
+ const method=document.querySelector('select[name="payment_method"]');
+ const btn=document.getElementById('show-upi-qr');
+ const err=document.getElementById('upi-qr-error');
+ const records={ {% for s in students %}{{ s.admission_number|tojson }}: {{ s.id|tojson }}{% if not loop.last %},{% endif %}{% endfor %} };
+ btn.addEventListener('click',function(){
+   err.textContent='';
+   if(!student || !student.value || !method || method.value!=='UPI'){
+     err.textContent='Choose a student and select UPI first.';return;
+   }
+   const id=records[student.value];
+   if(!id){err.textContent='Student not found.';return;}
+   window.location.href='/fees/upi-qr/'+encodeURIComponent(id);
+ });
+})();
+</script></main>
+
+<script>
+    const method = document.getElementById("payment_method");
+    const reference = document.getElementById("transaction_reference");
+
+    function updateReference() {
+        reference.required =
+            method.value !== "" && method.value !== "Cash";
+    }
+
+    method.addEventListener("change", updateReference);
+    updateReference();
+</script>
+
+
+    <!-- EduSphere role navigation -->
+    {% include "components/edu_staff_sidebar.html" %}
+    <script src="{{ url_for('static', filename='js/edusphere_navigation.js') }}"></script>
+</body>
+</html>

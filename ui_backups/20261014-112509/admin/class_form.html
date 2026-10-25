@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Create Class / Division</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/admin.css') }}"
+    >
+
+    <style>
+
+        .stream-section {
+            display: none;
+        }
+
+        .stream-section.show {
+            display: block;
+        }
+
+        .stream-info {
+            margin-top: 8px;
+            font-size: 13px;
+            color: #64748b;
+            line-height: 1.5;
+        }
+
+        .class-preview {
+            margin-top: 24px;
+            padding: 18px 20px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+        }
+
+        .class-preview-title {
+            margin-bottom: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #64748b;
+        }
+
+        .class-preview-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .stream-badge {
+            display: inline-block;
+            margin-left: 8px;
+            padding: 4px 9px;
+            border-radius: 999px;
+            background: #e0e7ff;
+            color: #3730a3;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        select {
+            width: 100%;
+            min-height: 44px;
+            padding: 10px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            background: #ffffff;
+            font: inherit;
+        }
+
+    </style>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}">
+</head>
+
+<body>
+
+<div class="form-page">
+
+    <div class="form-container">
+
+        <h1>
+            Create Class & Division
+        </h1>
+
+        <p class="muted">
+            Configure the standard, stream, division,
+            capacity and admission percentage rule.
+        </p>
+
+
+        {% with messages = get_flashed_messages() %}
+
+            {% for message in messages %}
+
+                <div class="alert">
+                    {{ message }}
+                </div>
+
+            {% endfor %}
+
+        {% endwith %}
+
+
+        <form
+            method="POST"
+            id="classForm"
+        >
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+            <div class="form-grid">
+
+
+                <!-- ========================================= -->
+                <!-- STANDARD -->
+                <!-- ========================================= -->
+
+                <div>
+
+                    <label for="standard">
+                        Standard
+                    </label>
+
+                    <input
+                        type="number"
+                        id="standard"
+                        name="standard"
+                        min="1"
+                        max="12"
+                        placeholder="Example: 6"
+                        required
+                    >
+
+                    <div class="stream-info">
+                        Select a standard between 1 and 12.
+                    </div>
+
+                </div>
+
+
+                <!-- ========================================= -->
+                <!-- STREAM -->
+                <!-- Only visible for Standards 11 and 12 -->
+                <!-- ========================================= -->
+
+                <div
+                    id="streamSection"
+                    class="stream-section"
+                >
+
+                    <label for="stream">
+                        Stream
+                    </label>
+
+                    <select
+                        id="stream"
+                        name="stream"
+                    >
+
+                        <option value="">
+                            Select Stream
+                        </option>
+
+                        <option value="Science">
+                            Science
+                        </option>
+
+                        <option value="Commerce">
+                            Commerce
+                        </option>
+
+                        <option value="Arts">
+                            Arts
+                        </option>
+
+                    </select>
+
+                    <div class="stream-info">
+                        Stream is required for Standards 11 and 12.
+                    </div>
+
+                </div>
+
+
+                <!-- ========================================= -->
+                <!-- DIVISION -->
+                <!-- ========================================= -->
+
+                <div>
+
+                    <label for="division">
+                        Division
+                    </label>
+
+                    <input
+                        type="text"
+                        id="division"
+                        name="division"
+                        placeholder="Example: A"
+                        maxlength="10"
+                        required
+                    >
+
+                    <div class="stream-info">
+                        Example: A, B, C or D.
+                    </div>
+
+                </div>
+
+
+                <!-- ========================================= -->
+                <!-- ACADEMIC YEAR -->
+                <!-- ========================================= -->
+
+                <div>
+
+                    <label for="academic_year">
+                        Academic Year
+                    </label>
+
+                    <input
+                        type="text"
+                        id="academic_year"
+                        name="academic_year"
+                        placeholder="2026-27"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- ========================================= -->
+                <!-- CAPACITY -->
+                <!-- ========================================= -->
+
+                <div>
+
+                    <label for="capacity">
+                        Maximum Capacity
+                    </label>
+
+                    <input
+                        type="number"
+                        id="capacity"
+                        name="capacity"
+                        value="40"
+                        min="1"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- ========================================= -->
+                <!-- MINIMUM PERCENTAGE -->
+                <!-- ========================================= -->
+
+                <div>
+
+                    <label for="minimum_percentage">
+                        Minimum Previous Percentage
+                    </label>
+
+                    <input
+                        type="number"
+                        id="minimum_percentage"
+                        step="0.01"
+                        name="minimum_percentage"
+                        min="0"
+                        max="100"
+                        placeholder="Example: 80"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- ========================================= -->
+                <!-- MAXIMUM PERCENTAGE -->
+                <!-- ========================================= -->
+
+                <div>
+
+                    <label for="maximum_percentage">
+                        Maximum Previous Percentage
+                    </label>
+
+                    <input
+                        type="number"
+                        id="maximum_percentage"
+                        step="0.01"
+                        name="maximum_percentage"
+                        min="0"
+                        max="100"
+                        placeholder="Example: 100"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- ========================================= -->
+                <!-- ALLOCATION PRIORITY -->
+                <!-- ========================================= -->
+
+                <div>
+
+                    <label for="priority">
+                        Allocation Priority
+                    </label>
+
+                    <input
+                        type="number"
+                        id="priority"
+                        name="priority"
+                        value="1"
+                        min="1"
+                        required
+                    >
+
+                    <div class="stream-info">
+                        Lower priority numbers are considered first
+                        during automatic division allocation.
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ============================================= -->
+            <!-- CLASS PREVIEW -->
+            <!-- ============================================= -->
+
+            <div
+                class="class-preview"
+                id="classPreview"
+            >
+
+                <div class="class-preview-title">
+                    Class Preview
+                </div>
+
+                <div
+                    class="class-preview-value"
+                    id="classPreviewValue"
+                >
+                    Select a standard and division
+                </div>
+
+            </div>
+
+
+            <!-- ============================================= -->
+            <!-- ACTION BUTTONS -->
+            <!-- ============================================= -->
+
+            <div class="form-actions">
+
+                <a
+                    class="secondary-btn"
+                    href="{{ url_for('admin_classes') }}"
+                >
+                    Cancel
+                </a>
+
+                <button
+                    class="primary-btn normal-button"
+                    type="submit"
+                >
+                    Create Class
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    // =====================================================
+    // ELEMENTS
+    // =====================================================
+
+    const standardInput =
+        document.getElementById("standard");
+
+    const streamSection =
+        document.getElementById("streamSection");
+
+    const streamSelect =
+        document.getElementById("stream");
+
+    const divisionInput =
+        document.getElementById("division");
+
+    const classPreviewValue =
+        document.getElementById("classPreviewValue");
+
+    const classForm =
+        document.getElementById("classForm");
+
+
+    // =====================================================
+    // SHOW / HIDE STREAM
+    // =====================================================
+
+    function updateStreamVisibility() {
+
+        const standard =
+            parseInt(standardInput.value);
+
+        if (
+            standard === 11 ||
+            standard === 12
+        ) {
+
+            streamSection.classList.add("show");
+
+            streamSelect.required = true;
+
+        } else {
+
+            streamSection.classList.remove("show");
+
+            streamSelect.required = false;
+
+            streamSelect.value = "";
+
+        }
+
+        updateClassPreview();
+
+    }
+
+
+    // =====================================================
+    // CLASS PREVIEW
+    // =====================================================
+
+    function updateClassPreview() {
+
+        const standard =
+            standardInput.value.trim();
+
+        const division =
+            divisionInput.value
+                .trim()
+                .toUpperCase();
+
+        const stream =
+            streamSelect.value;
+
+        if (!standard) {
+
+            classPreviewValue.textContent =
+                "Select a standard and division";
+
+            return;
+
+        }
+
+
+        if (
+            standard === "11" ||
+            standard === "12"
+        ) {
+
+            if (
+                stream &&
+                division
+            ) {
+
+                classPreviewValue.innerHTML =
+                    "Standard "
+                    + standard
+                    + " - "
+                    + stream
+                    + " - Division "
+                    + division
+                    + '<span class="stream-badge">'
+                    + stream
+                    + "</span>";
+
+            } else if (stream) {
+
+                classPreviewValue.textContent =
+                    "Standard "
+                    + standard
+                    + " - "
+                    + stream;
+
+            } else {
+
+                classPreviewValue.textContent =
+                    "Standard "
+                    + standard
+                    + " - Select Stream";
+
+            }
+
+        } else {
+
+            if (division) {
+
+                classPreviewValue.textContent =
+                    "Standard "
+                    + standard
+                    + " - Division "
+                    + division;
+
+            } else {
+
+                classPreviewValue.textContent =
+                    "Standard "
+                    + standard
+                    + " - Enter Division";
+
+            }
+
+        }
+
+    }
+
+
+    // =====================================================
+    // STANDARD CHANGE
+    // =====================================================
+
+    standardInput.addEventListener(
+        "input",
+        updateStreamVisibility
+    );
+
+
+    // =====================================================
+    // STREAM CHANGE
+    // =====================================================
+
+    streamSelect.addEventListener(
+        "change",
+        updateClassPreview
+    );
+
+
+    // =====================================================
+    // DIVISION CHANGE
+    // =====================================================
+
+    divisionInput.addEventListener(
+        "input",
+        function () {
+
+            divisionInput.value =
+                divisionInput.value.toUpperCase();
+
+            updateClassPreview();
+
+        }
+    );
+
+
+    // =====================================================
+    // FINAL CLIENT-SIDE VALIDATION
+    // =====================================================
+
+    classForm.addEventListener(
+        "submit",
+        function (event) {
+
+            const standard =
+                parseInt(standardInput.value);
+
+            const minimumPercentage =
+                parseFloat(
+                    document.getElementById(
+                        "minimum_percentage"
+                    ).value
+                );
+
+            const maximumPercentage =
+                parseFloat(
+                    document.getElementById(
+                        "maximum_percentage"
+                    ).value
+                );
+
+
+            if (
+                standard === 11 ||
+                standard === 12
+            ) {
+
+                if (!streamSelect.value) {
+
+                    event.preventDefault();
+
+                    alert(
+                        "Please select Science, Commerce or Arts."
+                    );
+
+                    streamSelect.focus();
+
+                    return;
+
+                }
+
+            }
+
+
+            if (
+                !isNaN(minimumPercentage) &&
+                !isNaN(maximumPercentage) &&
+                minimumPercentage >
+                maximumPercentage
+            ) {
+
+                event.preventDefault();
+
+                alert(
+                    "Minimum percentage cannot be greater than maximum percentage."
+                );
+
+                document.getElementById(
+                    "minimum_percentage"
+                ).focus();
+
+            }
+
+        }
+    );
+
+
+    // =====================================================
+    // INITIAL STATE
+    // =====================================================
+
+    updateStreamVisibility();
+
+</script>
+
+</body>
+
+</html>

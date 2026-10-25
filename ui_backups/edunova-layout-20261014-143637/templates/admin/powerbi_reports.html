@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Power BI Reporting Datasets</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}">
+    <style>
+        .report-page { max-width: 1180px; }
+        .report-panel { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 22px; margin: 18px 0; }
+        .report-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
+        .report-card { border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px; }
+        .report-card h3 { margin: 0 0 8px; }
+        .report-card p { color: #64748b; min-height: 44px; }
+        .report-card code { overflow-wrap: anywhere; }
+        .report-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+        .report-privacy { border-left: 4px solid #2563eb; padding: 10px 14px; background: #eff6ff; }
+    </style>
+
+    <!-- EduSphere shared navigation -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edusphere_navigation.css') }}">
+    <!-- EduSphere professional theme -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edusphere_professional_theme.css') }}">
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_theme.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_portals.css') }}">
+</head>
+<body>
+<div id="nova-topbar"><div class="nova-brand"><span class="nova-mark">✦</span><span>EduSphere AI <span class="nova-tag">School Management</span></span></div><div class="nova-right"><span class="nova-pill">School Portal</span></div></div>
+
+<main class="full-page report-page">
+    <header class="page-header">
+        <div>
+            <p class="page-label">ADMINISTRATION</p>
+            <h1>Power BI Reporting Datasets</h1>
+            <p>Download privacy-minimized school datasets for Power BI Desktop.</p>
+        </div>
+        <a class="secondary-btn" href="{{ url_for('admin_dashboard') }}">Admin Dashboard</a>
+    </header>
+
+    <section class="report-panel">
+        <h2>Download reports</h2>
+        <p class="report-privacy">Confidential school data: exports require an administrator login and are marked no-store. Student, teacher, and staff identifiers are keyed pseudonyms; direct contact details, guardian details, student answers, event payloads, and raw integration errors are excluded. Protect downloaded files and any Power BI workspace or dataset containing them.</p>
+        <div class="report-actions">
+            <a class="primary-btn" href="{{ url_for('download_powerbi_workbook') }}">Download Excel workbook</a>
+            <a class="secondary-btn" href="{{ url_for('admin_reports') }}">Open existing school reports</a>
+        </div>
+    </section>
+
+    <section class="report-panel">
+        <h2>Available CSV datasets</h2>
+        <div class="report-grid">
+            {% for name, columns in dataset_columns.items() %}
+            <article class="report-card">
+                <h3>{{ name|replace('_', ' ')|title }}</h3>
+                <p>{{ dataset_descriptions[name] }}</p>
+                <p><strong>Columns:</strong> <code>{{ columns|join(', ') }}</code></p>
+                <a class="secondary-btn" href="{{ url_for('download_powerbi_csv', dataset_name=name) }}">Download CSV</a>
+            </article>
+            {% endfor %}
+        </div>
+    </section>
+</main>
+
+    <!-- EduSphere role navigation -->
+    {% include "components/edu_admin_sidebar.html" %}
+    <script src="{{ url_for('static', filename='js/edusphere_navigation.js') }}"></script>
+</body>
+</html>

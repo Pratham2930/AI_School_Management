@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>My Homework | AI School Management</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: Arial, Helvetica, sans-serif; background: #f4f7fb; color: #172033; }
+        .layout { display: flex; min-height: 100vh; }
+        .sidebar { width: 250px; background: #102a56; color: white; padding: 28px 20px; }
+        .brand { font-size: 21px; font-weight: 700; margin-bottom: 28px; }
+        .nav { display: block; color: white; text-decoration: none; padding: 12px 14px; border-radius: 9px; margin: 6px 0; }
+        .nav:hover, .nav.active { background: rgba(255,255,255,.13); }
+        .main { flex: 1; padding: 30px; min-width: 0; }
+        .header { display: flex; justify-content: space-between; align-items: center; gap: 20px; margin-bottom: 22px; }
+        .header h1 { margin: 0 0 7px; }
+        .muted { color: #667085; }
+        .panel { background: white; border: 1px solid #e6ebf2; border-radius: 14px; padding: 22px; }
+        .table-wrap { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; min-width: 900px; }
+        th, td { padding: 13px; text-align: left; vertical-align: top; border-bottom: 1px solid #e7ebf1; }
+        th { background: #f8fafc; }
+        textarea { width: 100%; min-width: 230px; min-height: 85px; padding: 9px; border: 1px solid #cbd5e1; border-radius: 7px; font: inherit; }
+        input[type=file] { max-width: 250px; }
+        .btn { border: 0; border-radius: 7px; padding: 9px 12px; background: #2457a6; color: white; cursor: pointer; font-weight: 700; }
+        .flash { background: #fff4d6; padding: 12px; border-radius: 8px; margin-bottom: 14px; }
+        .grade { background: #effaf3; padding: 10px; border-radius: 7px; }
+        .empty { text-align: center; color: #667085; padding: 30px; }
+        @media (max-width: 700px) { .layout { display: block; } .sidebar { width: 100%; } .main { padding: 18px 12px; } .header { display: block; } }
+    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}">
+
+    <!-- EduSphere shared navigation -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edusphere_navigation.css') }}">
+    <!-- EduSphere professional theme -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edusphere_professional_theme.css') }}">
+</head>
+<body>
+<div class="layout">
+    <aside class="sidebar">
+        <div class="brand">AI School Management</div>
+        <a class="nav" href="{{ url_for('student_dashboard') }}">Dashboard</a>
+        <a class="nav" href="{{ url_for('student_profile') }}">My Profile</a>
+        <a class="nav active" href="{{ url_for('student_assignments') }}">Homework</a>
+        <a class="nav" href="{{ url_for('student_online_exams') }}">Online Exams</a>
+        <a class="nav" href="{{ url_for('leave_requests') }}">Leave Requests</a>
+        <a class="nav" href="{{ url_for('school_ai_assistant') }}">AI Assistant</a>
+        <a class="nav" href="{{ url_for('student_change_password') }}">Change Password</a>
+        <a class="nav" href="{{ url_for('student_logout') }}">Logout</a>
+    </aside>
+    <main class="main">
+        <header class="header">
+            <div>
+                <h1>My Homework</h1>
+                <div class="muted">Active assignments for {{ student.name }}'s class.</div>
+            </div>
+            <a href="{{ url_for('student_dashboard') }}">Back to dashboard</a>
+        </header>
+        {% for message in get_flashed_messages() %}<div class="flash">{{ message }}</div>{% endfor %}
+        <section class="panel">
+            {% if assignments %}
+            <div class="table-wrap"><table>
+                <thead><tr><th>Assignment</th><th>Subject / Teacher</th><th>Due</th><th>Instructions</th><th>Your submission</th></tr></thead>
+                <tbody>{% for assignment in assignments %}
+                    {% set submission = submissions.get(assignment.id) %}
+                    <tr>
+                        <td><strong>{{ assignment.title }}</strong></td>
+                        <td>{{ assignment.subject.name }}<br>{{ assignment.teacher.user.name if assignment.teacher and assignment.teacher.user else '-' }}</td>
+                        <td>{{ assignment.due_date.strftime('%d %b %Y') }}{% if assignment.due_date < today %}<br><strong>Past due; late work is accepted</strong>{% endif %}</td>
+                        <td>{{ assignment.description }}</td>
+                        <td>
+                            {% if submission and submission.status == 'Graded' %}
+                                <div class="grade">
+                                    <strong>Graded: {{ '%.2f'|format(submission.grade_percent) }}%</strong>
+                                    {% if submission.feedback %}<br>{{ submission.feedback }}{% endif %}
+                                </div>
+                                {% if submission.response_text %}<p>{{ submission.response_text }}</p>{% endif %}
+                                {% if submission.storage_filename %}<a href="{{ url_for('homework_submission_file', submission_id=submission.id) }}">Download your submitted file</a>{% endif %}
+                            {% else %}
+                                {% if submission %}
+                                    <p><strong>Submitted</strong> {{ submission.submitted_at.strftime('%d %b %Y at %H:%M') }}</p>
+                                    {% if submission.response_text %}<p>{{ submission.response_text }}</p>{% endif %}
+                                    {% if submission.storage_filename %}<p><a href="{{ url_for('homework_submission_file', submission_id=submission.id) }}">{{ submission.original_filename or 'Download your file' }}</a></p>{% endif %}
+                                    {% if submission.submitted_at.date() > assignment.due_date %}<strong>Submitted late</strong>{% endif %}
+                                {% endif %}
+                                <form method="post" enctype="multipart/form-data" action="{{ url_for('student_assignment_submit', assignment_id=assignment.id) }}">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <label for="response-{{ assignment.id }}">Written response (optional if attaching a file)</label>
+                                    <textarea id="response-{{ assignment.id }}" name="response_text" maxlength="10000">{{ submission.response_text if submission else '' }}</textarea>
+                                    <label for="file-{{ assignment.id }}">Attach file (optional if writing a response)</label>
+                                    <input id="file-{{ assignment.id }}" type="file" name="submission_file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+                                    <small>PDF, Word, JPG, or PNG; up to 10 MB.</small><br>
+                                    <button class="btn" type="submit">{% if submission %}Update submission{% else %}Submit homework{% endif %}</button>
+                                </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}</tbody>
+            </table></div>
+            {% else %}
+            <div class="empty">Your class has no active homework assignments.</div>
+            {% endif %}
+        </section>
+    </main>
+</div>
+
+    <!-- EduSphere role navigation -->
+    {% include "components/edu_student_sidebar.html" %}
+    <script src="{{ url_for('static', filename='js/edusphere_navigation.js') }}"></script>
+</body>
+</html>

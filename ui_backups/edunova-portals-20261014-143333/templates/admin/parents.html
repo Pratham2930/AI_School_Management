@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Parent Management | AI School
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/admin.css') }}"
+    >
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}">
+
+    <!-- EduSphere shared navigation -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edusphere_navigation.css') }}">
+    <!-- EduSphere professional theme -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edusphere_professional_theme.css') }}">
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_theme.css') }}">
+</head>
+
+
+<body>
+<div id="nova-topbar"><div class="nova-brand"><span class="nova-mark">✦</span><span>EduSphere AI <span class="nova-tag">School Management</span></span></div><div class="nova-right"><span class="nova-pill">School Portal</span></div></div>
+
+
+
+<div class="main-content full-page">
+
+
+    <!-- ==========================================
+         PAGE HEADER
+    =========================================== -->
+
+    <div class="page-header">
+
+
+        <div>
+
+            <p class="page-label">
+                PEOPLE MANAGEMENT
+            </p>
+
+            <h1>
+                Parent Management
+            </h1>
+
+            <p class="muted">
+                View parent accounts and their linked children.
+            </p>
+
+        </div>
+
+
+
+        <div class="page-header-actions">
+
+            <a
+                class="secondary-btn"
+                href="{{ url_for('admin_dashboard') }}"
+            >
+                Dashboard
+            </a>
+
+
+            <a
+                class="primary-link"
+                href="{{ url_for('new_admission') }}"
+            >
+                + New Admission
+            </a>
+
+        </div>
+
+
+    </div>
+
+
+
+    <!-- ==========================================
+         FLASH MESSAGES
+    =========================================== -->
+
+    {% with messages = get_flashed_messages() %}
+
+        {% if messages %}
+
+            {% for message in messages %}
+
+                <div class="alert">
+                    {{ message }}
+                </div>
+
+            {% endfor %}
+
+        {% endif %}
+
+    {% endwith %}
+
+
+
+    <!-- ==========================================
+         SUMMARY
+    =========================================== -->
+
+    <div class="panel">
+
+
+        <div class="parent-summary">
+
+
+            <div>
+
+                <span class="muted">
+                    Total Parent Accounts
+                </span>
+
+                <h2>
+                    {{ parent_data|length }}
+                </h2>
+
+            </div>
+
+
+            <div>
+
+                <span class="muted">
+                    Active Accounts
+                </span>
+
+                <h2>
+
+                    {{
+                        parent_data
+                        | selectattr("user")
+                        | selectattr("user.active")
+                        | list
+                        | length
+                    }}
+
+                </h2>
+
+            </div>
+
+
+            <div>
+
+                <span class="muted">
+                    Linked Students
+                </span>
+
+                <h2>
+
+                    {{
+                        parent_data
+                        | sum(attribute="children_count")
+                    }}
+
+                </h2>
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+
+    <!-- ==========================================
+         PARENT LIST
+    =========================================== -->
+
+    {% for item in parent_data %}
+
+
+        <div class="panel parent-card">
+
+
+            <!-- ==================================
+                 PARENT HEADER
+            =================================== -->
+
+            <div class="parent-header">
+
+
+                <div class="parent-title-area">
+
+
+                    <div class="parent-avatar">
+
+                        {% if item.user and item.user.name %}
+
+                            {{ item.user.name[0]|upper }}
+
+                        {% else %}
+
+                            P
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <div>
+
+
+                        <h2>
+
+                            {% if item.user %}
+
+                                {{ item.user.name }}
+
+                            {% else %}
+
+                                Parent Account
+
+                            {% endif %}
+
+                        </h2>
+
+
+                        <p class="muted">
+
+                            {{ item.children_count }}
+
+                            {% if item.children_count == 1 %}
+
+                                linked child
+
+                            {% else %}
+
+                                linked children
+
+                            {% endif %}
+
+                        </p>
+
+
+                    </div>
+
+
+                </div>
+
+
+
+                <div>
+
+
+                    {% if item.user and item.user.active %}
+
+                        <span class="status-open">
+                            ACTIVE
+                        </span>
+
+                    {% else %}
+
+                        <span class="status-full">
+                            DISABLED
+                        </span>
+
+                    {% endif %}
+
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- ==================================
+                 ACCOUNT INFORMATION
+            =================================== -->
+
+            <div class="parent-info-grid">
+
+
+                <!-- LOGIN ID -->
+
+                <div class="parent-info-box">
+
+                    <span class="info-label">
+                        Login ID
+                    </span>
+
+                    <strong>
+
+                        {% if item.user %}
+
+                            {{ item.user.username }}
+
+                        {% else %}
+
+                            N/A
+
+                        {% endif %}
+
+                    </strong>
+
+                </div>
+
+
+
+                <!-- PHONE -->
+
+                <div class="parent-info-box">
+
+                    <span class="info-label">
+                        Phone
+                    </span>
+
+                    <strong>
+                        {{ item.parent.phone or "Not provided" }}
+                    </strong>
+
+                </div>
+
+
+
+                <!-- EMAIL -->
+
+                <div class="parent-info-box">
+
+                    <span class="info-label">
+                        Email
+                    </span>
+
+                    <strong>
+                        {{ item.parent.email or "Not provided" }}
+                    </strong>
+
+                </div>
+
+
+
+                <!-- CHILDREN -->
+
+                <div class="parent-info-box">
+
+                    <span class="info-label">
+                        Linked Children
+                    </span>
+
+                    <strong>
+                        {{ item.children_count }}
+                    </strong>
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- ==================================
+                 ACCOUNT STATUS
+            =================================== -->
+
+            <div class="account-status-row">
+
+
+                <div>
+
+                    <strong>
+                        Account Type
+                    </strong>
+
+                    <p class="muted">
+                        Parent Portal Account
+                    </p>
+
+                </div>
+
+
+                <div>
+
+                    <strong>
+                        Login Status
+                    </strong>
+
+                    <p>
+
+                        {% if item.user and item.user.active %}
+
+                            <span class="status-open">
+                                Login Enabled
+                            </span>
+
+                        {% else %}
+
+                            <span class="status-full">
+                                Login Disabled
+                            </span>
+
+                        {% endif %}
+
+                    </p>
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- ==================================
+                 LINKED CHILDREN
+            =================================== -->
+
+            <div class="children-section">
+
+
+                <div class="section-header">
+
+
+                    <div>
+
+                        <h3>
+                            Linked Children
+                        </h3>
+
+                        <p class="muted">
+                            Students connected to this parent account.
+                        </p>
+
+                    </div>
+
+
+                    <span class="children-count-badge">
+
+                        {{ item.children_count }}
+
+                    </span>
+
+
+                </div>
+
+
+
+                {% if item.children %}
+
+
+                    <div class="table-wrapper">
+
+
+                        <table class="data-table">
+
+
+                            <thead>
+
+
+                                <tr>
+
+                                    <th>
+                                        Admission No.
+                                    </th>
+
+                                    <th>
+                                        Student ID
+                                    </th>
+
+                                    <th>
+                                        Student
+                                    </th>
+
+                                    <th>
+                                        Relationship
+                                    </th>
+
+                                    <th>
+                                        Class
+                                    </th>
+
+                                    <th>
+                                        Academic Year
+                                    </th>
+
+                                    <th>
+                                        Admission
+                                    </th>
+
+                                    <th>
+                                        Status
+                                    </th>
+
+                                </tr>
+
+
+                            </thead>
+
+
+
+                            <tbody>
+
+
+                                {% for child in item.children %}
+
+
+                                    <tr>
+
+
+                                        <!-- ADMISSION NUMBER -->
+
+                                        <td>
+
+                                            {{
+                                                child.student.admission_number
+                                                or "N/A"
+                                            }}
+
+                                        </td>
+
+
+
+                                        <!-- STUDENT ID -->
+
+                                        <td>
+
+                                            {% if child.student.student_id %}
+
+                                                <strong>
+
+                                                    {{ child.student.student_id }}
+
+                                                </strong>
+
+                                            {% else %}
+
+                                                <span class="muted">
+                                                    Not Generated
+                                                </span>
+
+                                            {% endif %}
+
+                                        </td>
+
+
+
+                                        <!-- STUDENT -->
+
+                                        <td>
+
+
+                                            <div class="student-cell">
+
+
+                                                <div class="table-avatar">
+
+                                                    {{ child.student.name[0]|upper }}
+
+                                                </div>
+
+
+                                                <div>
+
+                                                    <strong>
+
+                                                        {{ child.student.name }}
+
+                                                    </strong>
+
+                                                </div>
+
+
+                                            </div>
+
+
+                                        </td>
+
+
+
+                                        <!-- RELATIONSHIP -->
+
+                                        <td>
+
+                                            {{
+                                                child.relationship
+                                                or "Parent"
+                                            }}
+
+                                        </td>
+
+
+
+                                        <!-- CLASS -->
+
+                                        <td>
+
+
+                                            {% if child.school_class %}
+
+                                                <strong>
+
+                                                    {{
+                                                        child.school_class.standard
+                                                    }}
+                                                    -
+                                                    {{
+                                                        child.school_class.division
+                                                    }}
+
+                                                </strong>
+
+                                            {% else %}
+
+                                                <span class="muted">
+                                                    N/A
+                                                </span>
+
+                                            {% endif %}
+
+
+                                        </td>
+
+
+
+                                        <!-- ACADEMIC YEAR -->
+
+                                        <td>
+
+
+                                            {% if child.school_class %}
+
+                                                {{
+                                                    child.school_class.academic_year
+                                                    or "N/A"
+                                                }}
+
+                                            {% else %}
+
+                                                N/A
+
+                                            {% endif %}
+
+
+                                        </td>
+
+
+
+                                        <!-- ADMISSION STATUS -->
+
+                                        <td>
+
+
+                                            {% if child.student.admission_status == "Confirmed" %}
+
+                                                <span class="status-open">
+                                                    CONFIRMED
+                                                </span>
+
+                                            {% elif child.student.admission_status == "Rejected" %}
+
+                                                <span class="status-full">
+                                                    REJECTED
+                                                </span>
+
+                                            {% else %}
+
+                                                <span class="status-pending">
+                                                    {{
+                                                        child.student.admission_status
+                                                        or "PENDING"
+                                                    }}
+                                                </span>
+
+                                            {% endif %}
+
+
+                                        </td>
+
+
+
+                                        <!-- STUDENT STATUS -->
+
+                                        <td>
+
+
+                                            {% if child.student.active %}
+
+                                                <span class="status-open">
+                                                    ACTIVE
+                                                </span>
+
+                                            {% else %}
+
+                                                <span class="status-full">
+                                                    INACTIVE
+                                                </span>
+
+                                            {% endif %}
+
+
+                                        </td>
+
+
+                                    </tr>
+
+
+                                {% endfor %}
+
+
+                            </tbody>
+
+
+                        </table>
+
+
+                    </div>
+
+
+                {% else %}
+
+
+                    <div class="empty-state">
+
+
+                        <h3>
+                            No Linked Children
+                        </h3>
+
+                        <p class="muted">
+                            No students are currently linked
+                            to this parent account.
+                        </p>
+
+
+                    </div>
+
+
+                {% endif %}
+
+
+            </div>
+
+
+
+            <!-- ==================================
+                 PARENT ACCOUNT INFORMATION
+            =================================== -->
+
+            <div class="parent-account-footer">
+
+
+                <div>
+
+
+                    <span class="muted">
+                        Parent Login ID
+                    </span>
+
+
+                    <strong>
+
+                        {% if item.user %}
+
+                            {{ item.user.username }}
+
+                        {% else %}
+
+                            N/A
+
+                        {% endif %}
+
+                    </strong>
+
+
+                </div>
+
+
+
+                <div>
+
+
+                    <span class="muted">
+                        Account Status
+                    </span>
+
+
+                    <strong>
+
+                        {% if item.user and item.user.active %}
+
+                            Active
+
+                        {% else %}
+
+                            Disabled
+
+                        {% endif %}
+
+                    </strong>
+
+
+                </div>
+
+
+
+                <div>
+
+
+                    <span class="muted">
+                        Total Children
+                    </span>
+
+
+                    <strong>
+
+                        {{ item.children_count }}
+
+                    </strong>
+
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+
+
+    {% else %}
+
+
+        <!-- ==========================================
+             EMPTY PARENT LIST
+        =========================================== -->
+
+        <div class="panel">
+
+
+            <div class="empty-state">
+
+
+                <div class="empty-icon">
+                    P
+                </div>
+
+
+                <h3>
+                    No Parent Accounts
+                </h3>
+
+
+                <p class="muted">
+
+                    Parent accounts will automatically
+                    appear here when student admissions
+                    are confirmed.
+
+                </p>
+
+
+                <a
+                    class="primary-link"
+                    href="{{ url_for('new_admission') }}"
+                >
+                    + Create Student Admission
+                </a>
+
+
+            </div>
+
+
+        </div>
+
+
+    {% endfor %}
+
+
+
+    <!-- ==========================================
+         FOOTER
+    =========================================== -->
+
+    <div class="page-footer">
+
+
+        <a
+            href="{{ url_for('admin_dashboard') }}"
+            class="secondary-btn"
+        >
+            Back to Dashboard
+        </a>
+
+
+        <p class="muted">
+            AI School Management System
+        </p>
+
+
+    </div>
+
+
+</div>
+
+
+
+    <!-- EduSphere role navigation -->
+    {% include "components/edu_admin_sidebar.html" %}
+    <script src="{{ url_for('static', filename='js/edusphere_navigation.js') }}"></script>
+</body>
+
+</html>

@@ -1,0 +1,27 @@
+EDUNOVA PRE-LAUNCH STATIC AUDIT
+Generated: 2026-10-14T16:25:56
+Project: C:\Users\Admin1\Desktop\AI_School_Management
+
+Routes: 110 | Templates: 72 | Buttons: 96 | Forms: 77 | Links: 320
+
+WARNING: Static checks cannot verify database operations, permissions, JavaScript behavior, payments, or runtime behavior.
+
+UNRESOLVED_ENDPOINT | templates\ai_assistant.html:178 | ai_assistant_chat
+FORM_METHOD_IMPLICIT_GET | templates\ai_assistant.html:129 | <form id="chatForm">
+FORM_METHOD_IMPLICIT_GET | templates\assistant.html:83 | <form id="chat-form">
+UNRESOLVED_ENDPOINT | templates\admin\ai_subject_setup.html:1137 | auto_load_curriculum
+UNRESOLVED_ENDPOINT | templates\admin\dashboard.html:438 | admin_kafka_outbox
+UNRESOLVED_ENDPOINT | templates\admin\exams.html:59 | admin_exam_questions
+UNRESOLVED_ENDPOINT | templates\admin\google_sheets_sync.html:156 | approve_google_sheets_sync
+UNRESOLVED_ENDPOINT | templates\admin\kafka_outbox.html:100 | retry_kafka_outbox_event
+DISABLED_BUTTON | templates\admin\online_exam_form.html:87 | <button class="primary-btn" type="submit" {% if not options %}disabled{% endif %}>
+UNRESOLVED_ENDPOINT | templates\admin\powerbi_reports.html:49 | download_powerbi_workbook
+UNRESOLVED_ENDPOINT | templates\admin\powerbi_reports.html:62 | download_powerbi_csv
+UNRESOLVED_ENDPOINT | templates\components\edu_admin_sidebar.html:38 | admin_powerbi_reports
+UNRESOLVED_ENDPOINT | templates\components\edu_admin_sidebar.html:40 | admin_kafka_outbox
+UNRESOLVED_ENDPOINT | templates\components\school_sidebar.html:48 | admin_admission_records
+UNRESOLVED_ENDPOINT | templates\components\school_sidebar.html:60 | admin_fees_verify
+UNRESOLVED_ENDPOINT | templates\teacher\exam_questions.html:471 | admin_exam_question_delete
+
+NEXT: manually test each role with a separate test account; verify CRUD, validation, permissions, uploads, payments, exports, backup/restore, error pages and HTTPS.
+Do not go live until functional and security tests pass.

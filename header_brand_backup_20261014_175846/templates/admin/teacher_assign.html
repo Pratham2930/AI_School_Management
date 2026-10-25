@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Teacher Assignment</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/admin.css') }}"
+    >
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}">
+
+    <!-- EduSphere shared navigation -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edusphere_navigation.css') }}">
+    <!-- EduSphere professional theme -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_theme.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_portals.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_layout.css') }}">
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_unified.css') }}">
+</head>
+
+
+<body class="edn-unified">
+<!-- EduNova unified header -->
+<header class="edn-global-header" role="banner"><div class="edn-global-brand"><span class="edn-global-icon">✦</span><span>EduNova <b>AI</b></span><span class="edn-global-divider">/</span><span class="edn-global-context">Administration</span></div><span class="edn-global-page">Teacher Assign</span></header>
+
+
+<div class="main-content full-page">
+
+
+    <!-- HEADER -->
+
+    <div class="page-header">
+
+        <div>
+
+            <h1>
+                Teacher Assignment
+            </h1>
+
+            {% if teacher_user %}
+
+                <p class="muted">
+                    {{ teacher_user.name }}
+                    |
+                    {{ teacher.employee_id }}
+                </p>
+
+            {% endif %}
+
+        </div>
+
+
+        <div>
+
+            <a
+                class="secondary-btn"
+                href="{{ url_for('admin_teachers') }}"
+            >
+                Teachers
+            </a>
+
+            <a
+                class="secondary-btn"
+                href="{{ url_for('admin_dashboard') }}"
+            >
+                Dashboard
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- FLASH -->
+
+    {% with messages = get_flashed_messages() %}
+
+        {% if messages %}
+
+            {% for message in messages %}
+
+                <div class="alert">
+                    {{ message }}
+                </div>
+
+            {% endfor %}
+
+        {% endif %}
+
+    {% endwith %}
+
+
+    <!-- ASSIGNMENT FORM -->
+
+    <div class="panel">
+
+        <h2>
+            Assign Class & Subject
+        </h2>
+
+        <p class="muted">
+            A teacher can have multiple class
+            and subject assignments.
+        </p>
+
+
+        <form method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+            <div class="parent-info-grid">
+
+                <div>
+
+                    <label>
+                        Class
+                    </label>
+
+                    <select
+                        name="class_id"
+                        required
+                    >
+
+                        <option value="">
+                            Select Class
+                        </option>
+
+                        {% for school_class in classes %}
+
+                            <option
+                                value="{{ school_class.id }}"
+                            >
+
+                                {{ school_class.standard }}
+                                -
+                                {{ school_class.division }}
+
+                                |
+                                {{ school_class.academic_year }}
+
+                            </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <div>
+
+                    <label>
+                        Subject
+                    </label>
+
+                    <select
+                        name="subject_id"
+                        required
+                    >
+
+                        <option value="">
+                            Select Subject
+                        </option>
+
+                        {% for subject in subjects %}
+
+                            <option
+                                value="{{ subject.id }}"
+                            >
+                                {{ subject.name }}
+                            </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <div style="margin-top: 25px;">
+
+                <button
+                    type="submit"
+                    class="primary-btn normal-button"
+                >
+                    Save Assignment
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+
+    <!-- CURRENT ASSIGNMENTS -->
+
+    <div class="panel">
+
+        <h2>
+            Current Assignments
+        </h2>
+
+
+        {% if assignment_data %}
+
+            <div class="table-wrapper">
+
+                <table class="data-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Class
+                            </th>
+
+                            <th>
+                                Academic Year
+                            </th>
+
+                            <th>
+                                Subject
+                            </th>
+
+                            <th>
+                                Action
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for item in assignment_data %}
+
+                            <tr>
+
+                                <td>
+
+                                    {% if item.school_class %}
+
+                                        <strong>
+
+                                            {{ item.school_class.standard }}
+                                            -
+                                            {{ item.school_class.division }}
+
+                                        </strong>
+
+                                    {% else %}
+
+                                        N/A
+
+                                    {% endif %}
+
+                                </td>
+
+
+                                <td>
+
+                                    {% if item.school_class %}
+
+                                        {{ item.school_class.academic_year }}
+
+                                    {% else %}
+
+                                        N/A
+
+                                    {% endif %}
+
+                                </td>
+
+
+                                <td>
+
+                                    {% if item.subject %}
+
+                                        {{ item.subject.name }}
+
+                                    {% else %}
+
+                                        N/A
+
+                                    {% endif %}
+
+                                </td>
+
+
+                                <td>
+
+                                    <form
+                                        method="POST"
+                                        action="{{ url_for(
+                                            'delete_teacher_assignment',
+                                            assignment_id=item.assignment.id
+                                        ) }}"
+                                    >
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                                        <button
+                                            type="submit"
+                                            class="secondary-btn"
+                                            onclick="return confirm(
+                                                'Remove this assignment?'
+                                            );"
+                                        >
+                                            Remove
+                                        </button>
+
+                                    </form>
+
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        {% else %}
+
+            <div class="empty-state">
+
+                No class or subject has been
+                assigned to this teacher yet.
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+
+    <!-- EduSphere role navigation -->
+    {% include "components/edu_admin_sidebar.html" %}
+    <script src="{{ url_for('static', filename='js/edusphere_navigation.js') }}"></script>
+</body>
+
+</html>

@@ -1,0 +1,152 @@
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: #f4f7fc;
+    color: #1e2d46;
+    font-family: "Segoe UI", Arial, sans-serif;
+}
+
+.wrap {
+    max-width: 1050px;
+    margin: 32px auto;
+    padding: 0 20px;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+h1 {
+    font-size: 27px;
+    color: #17233b;
+}
+
+h2 {
+    font-size: 20px;
+    color: #253858;
+}
+
+.card {
+    background: #ffffff;
+    border: 1px solid #e1e7f1;
+    border-radius: 16px;
+    padding: 28px;
+    margin: 22px 0;
+    box-shadow: 0 8px 24px rgba(38, 58, 96, 0.06);
+}
+
+label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    margin: 18px 0 8px;
+}
+
+input,
+select {
+    display: block;
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid #cbd5e1;
+    border-radius: 9px;
+    margin-top: 8px;
+    background: #ffffff;
+    font: inherit;
+}
+
+input:focus,
+select:focus {
+    outline: none;
+    border-color: #315bd6;
+    box-shadow: 0 0 0 3px rgba(49, 91, 214, 0.12);
+}
+
+button {
+    background: #315bd6;
+    color: #ffffff;
+    border: 0;
+    border-radius: 10px;
+    padding: 13px 20px;
+    margin-top: 12px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #2547ac;
+}
+
+a {
+    color: #315bd6;
+    text-decoration: none;
+}
+
+.notice {
+    background: #eaf1ff;
+    border: 1px solid #c9dcff;
+    padding: 14px;
+    border-radius: 9px;
+    line-height: 1.5;
+}
+
+.scroll {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 600px;
+}
+
+th,
+td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #e5eaf3;
+}
+
+th {
+    background: #f6f8fd;
+    color: #475569;
+}
+
+.receipt {
+    max-width: 600px;
+    margin: 30px auto;
+}
+
+@media (max-width: 640px) {
+    .wrap {
+        margin: 16px auto;
+        padding: 0 12px;
+    }
+
+    .card {
+        padding: 20px;
+    }
+}
+
+@media print {
+    button,
+    a {
+        display: none !important;
+    }
+
+    body {
+        background: #ffffff;
+    }
+
+    .card {
+        box-shadow: none;
+        border: none;
+    }
+}

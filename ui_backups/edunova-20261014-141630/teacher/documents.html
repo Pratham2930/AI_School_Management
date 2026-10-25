@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+    <title>
+        My Documents | AI School Management
+    </title>
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/portal.css') }}"
+    >
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f7fb;
+            color: #1f2937;
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: #152b50;
+            color: white;
+            padding: 24px 18px;
+        }
+
+        .brand {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 28px;
+        }
+
+        .teacher-box {
+            background: rgba(255,255,255,0.08);
+            padding: 14px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+        }
+
+        .teacher-box strong,
+        .teacher-box span {
+            display: block;
+        }
+
+        .teacher-box span {
+            font-size: 13px;
+            margin-top: 5px;
+            opacity: 0.8;
+        }
+
+        .nav {
+            display: block;
+            text-decoration: none;
+            color: white;
+            padding: 12px 14px;
+            border-radius: 8px;
+            margin-bottom: 6px;
+        }
+
+        .nav:hover,
+        .nav.active {
+            background: #29466e;
+        }
+
+        .main {
+            flex: 1;
+            padding: 30px;
+            min-width: 0;
+        }
+
+        .page-header {
+            margin-bottom: 25px;
+        }
+
+        .page-header h1 {
+            margin-bottom: 8px;
+        }
+
+        .page-header p {
+            color: #64748b;
+            margin: 0;
+        }
+
+        .document-grid {
+            display: grid;
+            grid-template-columns:
+                minmax(280px, 420px)
+                minmax(500px, 1fr);
+            gap: 24px;
+            align-items: start;
+        }
+
+        .card {
+            background: white;
+            border-radius: 14px;
+            padding: 24px;
+            box-shadow:
+                0 4px 18px rgba(0,0,0,0.06);
+        }
+
+        .card h2 {
+            margin-top: 0;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 7px;
+        }
+
+        .form-group select,
+        .form-group input {
+            width: 100%;
+            padding: 11px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+        }
+
+        .help-text {
+            color: #64748b;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .btn {
+            display: inline-block;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 16px;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background: #1d4ed8;
+            color: white;
+        }
+
+        .btn-download {
+            background: #e8f0ff;
+            color: #1d4ed8;
+        }
+
+        .btn-delete {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 13px 10px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        th {
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-pending {
+            background: #fff7d6;
+            color: #8a6500;
+        }
+
+        .status-approved {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-rejected {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .alert {
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .alert-success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .alert-danger {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #64748b;
+        }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .actions form {
+            margin: 0;
+        }
+
+        @media (max-width: 950px) {
+
+            .document-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+
+            .layout {
+                display: block;
+            }
+
+            .sidebar {
+                width: 100%;
+            }
+
+            .main {
+                padding: 18px;
+            }
+        }
+
+    </style>
+
+
+    <!-- EduSphere shared navigation -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edusphere_navigation.css') }}">
+    <!-- EduSphere professional theme -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edusphere_professional_theme.css') }}">
+</head>
+
+
+<body>
+
+<div class="layout">
+
+    <!-- ===============================================
+         TEACHER SIDEBAR
+    ================================================ -->
+
+    <aside class="sidebar">
+
+        <div class="brand">
+            AI School Management
+        </div>
+
+        <div class="teacher-box">
+
+            <strong>
+                {{ current_user.name }}
+            </strong>
+
+            <span>
+                {{ teacher.employee_id }}
+            </span>
+
+        </div>
+
+        <a
+            class="nav"
+            href="{{ url_for('teacher_dashboard') }}"
+        >
+            Dashboard
+        </a>
+
+        <a
+            class="nav"
+            href="{{ url_for('teacher_students') }}"
+        >
+            My Students
+        </a>
+
+        <a
+            class="nav"
+            href="{{ url_for('teacher_attendance') }}"
+        >
+            Take Attendance
+        </a>
+
+        <a
+            class="nav"
+            href="{{ url_for('teacher_marks') }}"
+        >
+            Exams & Marks
+        </a>
+
+        <a
+            class="nav"
+            href="{{ url_for('teacher_assignments') }}"
+        >
+            Homework & Assignments
+        </a>
+
+        <a
+            class="nav"
+            href="{{ url_for('teacher_online_exams') }}"
+        >
+            Online Exams & Quizzes
+        </a>
+
+        <!-- NEW OPTION -->
+        <a
+            class="nav active"
+            href="{{ url_for('teacher_documents') }}"
+        >
+            My Documents
+        </a>
+
+        <a
+            class="nav"
+            href="{{ url_for('leave_requests') }}"
+        >
+            Leave Requests
+        </a>
+
+        <a
+            class="nav"
+            href="{{ url_for('school_ai_assistant') }}"
+        >
+            AI Assistant
+        </a>
+
+        <a
+            class="nav"
+            href="{{ url_for('teacher_change_password') }}"
+        >
+            Change Password
+        </a>
+
+        <a
+            class="nav"
+            href="{{ url_for('teacher_logout') }}"
+        >
+            Logout
+        </a>
+
+    </aside>
+
+
+    <!-- ===============================================
+         MAIN CONTENT
+    ================================================ -->
+
+    <main class="main">
+
+        <div class="page-header">
+
+            <h1>
+                My Documents
+            </h1>
+
+            <p>
+                Upload and securely manage your
+                personal and professional documents.
+            </p>
+
+        </div>
+
+
+        <!-- FLASH MESSAGES -->
+
+        {% with messages =
+            get_flashed_messages(with_categories=true)
+        %}
+
+            {% if messages %}
+
+                {% for category, message in messages %}
+
+                    <div
+                        class="alert
+                        {% if category == 'success' %}
+                            alert-success
+                        {% else %}
+                            alert-danger
+                        {% endif %}"
+                    >
+                        {{ message }}
+                    </div>
+
+                {% endfor %}
+
+            {% endif %}
+
+        {% endwith %}
+
+
+        <div class="document-grid">
+
+
+            <!-- =======================================
+                 UPLOAD DOCUMENT
+            ======================================== -->
+
+            <section class="card">
+
+                <h2>
+                    Upload Document
+                </h2>
+
+                <form
+                    method="POST"
+                    enctype="multipart/form-data"
+                >
+
+                    <!-- CSRF protection -->
+                    <input
+                        type="hidden"
+                        name="csrf_token"
+                        value="{{ csrf_token() }}"
+                    >
+
+
+                    <div class="form-group">
+
+                        <label for="document_type">
+                            Document Type
+                        </label>
+
+                        <select
+                            id="document_type"
+                            name="document_type"
+                            required
+                        >
+
+                            <option value="">
+                                Select Document
+                            </option>
+
+                            {% for value, label
+                               in document_types.items() %}
+
+                                <option value="{{ value }}">
+                                    {{ label }}
+                                </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="document">
+                            Choose File
+                        </label>
+
+                        <input
+                            id="document"
+                            type="file"
+                            name="document"
+                            accept=".pdf,.jpg,.jpeg,.png"
+                            required
+                        >
+
+                    </div>
+
+
+                    <p class="help-text">
+
+                        Allowed formats:
+                        PDF, JPG, JPEG and PNG.
+
+                        <br>
+
+                        Maximum file size:
+                        10 MB.
+
+                        <br><br>
+
+                        Aadhaar, PAN and other personal
+                        documents are stored outside the
+                        public static directory.
+
+                    </p>
+
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                    >
+                        Upload Document
+                    </button>
+
+                </form>
+
+            </section>
+
+
+            <!-- =======================================
+                 UPLOADED DOCUMENTS
+            ======================================== -->
+
+            <section class="card">
+
+                <h2>
+                    Uploaded Documents
+                </h2>
+
+
+                {% if documents %}
+
+                <div class="table-wrapper">
+
+                    <table>
+
+                        <thead>
+
+                        <tr>
+
+                            <th>
+                                Document
+                            </th>
+
+                            <th>
+                                File
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                            <th>
+                                Uploaded
+                            </th>
+
+                            <th>
+                                Actions
+                            </th>
+
+                        </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+                        {% for document in documents %}
+
+                        <tr>
+                            <td>
+                                {{
+                                    document_types.get(
+                                        document.document_type,
+                                        document.document_type
+                                    )
+                                }}
+                            </td>
+                            <td>
+                                {{
+                                    document.original_filename
+                                }}
+                            </td>
+                            <td>
+                                <span
+                                    class="
+                                    status
+                                    {% if document.status == 'Approved' %}
+                                        status-approved
+                                    {% elif document.status == 'Rejected' %}
+                                        status-rejected
+                                    {% else %}
+                                        status-pending
+                                    {% endif %}
+                                    "
+                                >
+                                    {{ document.status }}
+                                </span>
+                            </td>
+                            <td>
+                                {% if document.uploaded_at %}
+                                    {{
+                                        document.uploaded_at.strftime(
+                                            "%d %b %Y"
+                                        )
+                                    }}
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="actions">
+                                    <a
+                                        class="btn btn-download"
+                                        href="{{
+                                            url_for(
+                                                'teacher_document_download',
+                                                document_id=document.id
+                                            )
+                                        }}"
+                                    >
+                                        Download
+                                    </a>
+                                    <form
+                                        method="POST"
+                                        action="{{
+                                            url_for(
+                                                'teacher_document_delete',
+                                                document_id=document.id
+                                            )
+                                        }}"
+                                        onsubmit="
+                                            return confirm(
+                                                'Delete this document?'
+                                            );
+                                        "
+                                    >
+                                        <input
+                                            type="hidden"
+                                            name="csrf_token"
+                                            value="{{ csrf_token() }}"
+                                        >
+                                        <button
+                                            type="submit"
+                                            class="btn btn-delete"
+                                        >
+                                            Delete
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <h3>
+                        No documents uploaded
+                    </h3>
+                    <p>
+                    Upload your first document
+                    using the form.
+                    </p>
+                </div>
+                {% endif %}
+            </section>
+        </div>
+    </main>
+</div>
+
+    <!-- EduSphere role navigation -->
+    {% include "components/edu_teacher_sidebar.html" %}
+    <script src="{{ url_for('static', filename='js/edusphere_navigation.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Exam Result | AI School Management
+    </title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f7fb;
+            color: #172033;
+        }
+
+        .wrap {
+            max-width: 900px;
+            margin: 35px auto;
+            padding: 0 18px 40px;
+        }
+
+        .top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .top h1 {
+            margin: 0 0 7px;
+        }
+
+        .top p {
+            margin: 0;
+            color: #667085;
+        }
+
+        .btn {
+            display: inline-block;
+            background: #2457a6;
+            color: white;
+            padding: 11px 17px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        .btn:hover {
+            background: #1d4788;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid #e6ebf2;
+            border-radius: 14px;
+            padding: 24px;
+            margin-bottom: 18px;
+        }
+
+        .result-header {
+            text-align: center;
+            padding: 15px 0;
+        }
+
+        .result-header h2 {
+            margin-top: 0;
+        }
+
+        .score {
+            font-size: 42px;
+            font-weight: 700;
+            color: #2457a6;
+            margin: 15px 0 7px;
+        }
+
+        .percentage {
+            font-size: 21px;
+            color: #667085;
+            margin-bottom: 15px;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 8px 15px;
+            border-radius: 20px;
+            background: #eaf6ee;
+            color: #177a4b;
+            font-weight: 700;
+        }
+
+        .status.fail {
+            background: #fff0f0;
+            color: #b42318;
+        }
+
+        .pending {
+            background: #fff4d6;
+            border: 1px solid #f0d17a;
+            padding: 14px;
+            border-radius: 9px;
+            line-height: 1.6;
+            margin-top: 17px;
+        }
+
+        .hidden-result {
+            text-align: center;
+            padding: 25px 10px;
+            line-height: 1.7;
+        }
+
+        .answer {
+            padding: 18px 0;
+            border-bottom: 1px solid #e7ebf1;
+        }
+
+        .answer:last-child {
+            border-bottom: 0;
+        }
+
+        .question {
+            font-weight: 700;
+            line-height: 1.5;
+            margin-bottom: 10px;
+        }
+
+        .student-answer {
+            background: #f8fafc;
+            padding: 12px;
+            border-radius: 8px;
+            line-height: 1.6;
+            margin-bottom: 9px;
+            white-space: pre-wrap;
+        }
+
+        .marks {
+            color: #667085;
+            font-size: 14px;
+        }
+
+        .review {
+            color: #8a5a00;
+            font-weight: 700;
+        }
+
+        @media (max-width: 650px) {
+            .wrap {
+                margin: 20px auto;
+                padding: 0 10px 30px;
+            }
+
+            .top {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .card {
+                padding: 18px;
+            }
+
+            .score {
+                font-size: 34px;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}">
+
+    <!-- EduSphere shared navigation -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edusphere_navigation.css') }}">
+    <!-- EduSphere professional theme -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edusphere_professional_theme.css') }}">
+</head>
+
+<body>
+
+    <div class="wrap">
+
+        <!-- =====================================================
+             PAGE HEADER
+        ====================================================== -->
+
+        <div class="top">
+
+            <div>
+
+                <h1>
+                    Exam Result
+                </h1>
+
+                <p>
+                    {{ exam.title }}
+                </p>
+
+            </div>
+
+            <a
+                class="btn"
+                href="{{ url_for('student_online_exams') }}"
+            >
+                Back to Online Exams
+            </a>
+
+        </div>
+
+
+        <!-- =====================================================
+             RESULT SUMMARY
+        ====================================================== -->
+
+        <div class="card">
+
+            {% if result_hidden %}
+
+                <!-- =============================================
+                     RESULT HIDDEN BY TEACHER
+                ============================================== -->
+
+                <div class="hidden-result">
+
+                    <h2>
+                        Exam Submitted Successfully
+                    </h2>
+
+                    <p>
+                        Your exam has been submitted successfully.
+                    </p>
+
+                    <p>
+                        Your teacher has chosen not to display
+                        the result immediately.
+                    </p>
+
+                </div>
+
+
+            {% else %}
+
+                <!-- =============================================
+                     RESULT AVAILABLE
+                ============================================== -->
+
+                <div class="result-header">
+
+                    <h2>
+                        {{ exam.title }}
+                    </h2>
+
+                    <div class="score">
+
+                        {{ attempt.score | round(2) }}
+
+                        /
+
+                        {{ exam.total_marks | round(2) }}
+
+                    </div>
+
+
+                    <div class="percentage">
+
+                        {{ attempt.percentage | round(2) }}%
+
+                    </div>
+
+
+                    {% if manual_pending %}
+
+                        <div class="pending">
+
+                            Some short-answer questions are
+                            waiting for teacher review.
+
+                            Your final score may increase after
+                            your teacher completes the grading.
+
+                        </div>
+
+
+                    {% else %}
+
+                        {% if attempt.percentage >= exam.passing_percentage %}
+
+                            <span class="status">
+                                Passed
+                            </span>
+
+                        {% else %}
+
+                            <span class="status fail">
+                                Needs Improvement
+                            </span>
+
+                        {% endif %}
+
+
+                        <p>
+                            Passing Percentage:
+                            {{
+                                exam.passing_percentage
+                                | round(2)
+                            }}%
+                        </p>
+
+                    {% endif %}
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+
+        <!-- =====================================================
+             STUDENT ANSWERS
+        ====================================================== -->
+
+        {% if not result_hidden %}
+
+            <div class="card">
+
+                <h2>
+                    Your Answers
+                </h2>
+
+
+                {% if answers %}
+
+                    {% for answer in answers %}
+
+                        <div class="answer">
+
+                            <div class="question">
+
+                                {{ loop.index }}.
+
+                                {{
+                                    answer.question
+                                    .question_text
+                                }}
+
+                            </div>
+
+
+                            <div class="student-answer">
+
+                                <strong>
+                                    Your Answer:
+                                </strong>
+
+                                <br>
+
+                                {{
+                                    answer.answer_text
+                                    or 'No answer'
+                                }}
+
+                            </div>
+
+
+                            <div class="marks">
+
+                                Marks:
+
+                                {{
+                                    answer.awarded_marks
+                                    | round(2)
+                                }}
+
+                                /
+
+                                {{
+                                    answer.question.marks
+                                    | round(2)
+                                }}
+
+
+                                {% if answer.needs_manual_review %}
+
+                                    <span class="review">
+
+                                        · Waiting for
+                                        teacher review
+
+                                    </span>
+
+                                {% endif %}
+
+                            </div>
+
+                        </div>
+
+                    {% endfor %}
+
+
+                {% else %}
+
+                    <p>
+                        No answers were recorded for this exam.
+                    </p>
+
+                {% endif %}
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- EduSphere role navigation -->
+    {% include "components/edu_student_sidebar.html" %}
+    <script src="{{ url_for('static', filename='js/edusphere_navigation.js') }}"></script>
+</body>
+
+</html>

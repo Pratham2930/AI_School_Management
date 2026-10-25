@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>One-Click Academic Setup | AI School Management</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; padding: 28px; background: #f4f7fb; color: #172033; font-family: Arial, Helvetica, sans-serif; }
+        main { max-width: 1200px; margin: 0 auto; }
+        header, section { background: white; border: 1px solid #e2e8f0; border-radius: 14px; padding: 22px; margin-bottom: 20px; }
+        header { display: flex; justify-content: space-between; align-items: center; gap: 18px; flex-wrap: wrap; }
+        h1, h2, h3 { margin-top: 0; }
+        .muted { color: #64748b; line-height: 1.55; }
+        .actions { display: flex; gap: 9px; flex-wrap: wrap; }
+        .button, button { display: inline-block; border: 0; border-radius: 8px; padding: 11px 15px; background: #2457a6; color: white; text-decoration: none; font-weight: 700; cursor: pointer; }
+        .button.secondary { background: #e8eef8; color: #183b70; }
+        .button:hover, button:hover { filter: brightness(.96); }
+        .flash { padding: 12px 15px; border-radius: 8px; background: #fff4d6; border: 1px solid #f0d17a; margin-bottom: 12px; line-height: 1.5; }
+        .metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 18px 0; }
+        .metric { padding: 16px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; }
+        .metric strong { display: block; font-size: 24px; margin-top: 4px; }
+        .table-wrap { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { text-align: left; vertical-align: top; padding: 12px; border-bottom: 1px solid #e5eaf1; }
+        th { background: #f8fafc; font-size: 13px; }
+        select { padding: 9px; border: 1px solid #cbd5e1; border-radius: 7px; min-width: 140px; background: white; }
+        .notice { padding: 14px; border-left: 4px solid #2563eb; background: #eff6ff; line-height: 1.6; margin: 14px 0; }
+        .warning { border-left-color: #d97706; background: #fff7ed; }
+        .draft-link { font-weight: 700; }
+        .submit-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; margin-top: 18px; }
+        @media (max-width: 700px) { body { padding: 14px; } .metrics { grid-template-columns: 1fr; } }
+    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}">
+</head>
+<body>
+<main>
+    <header>
+        <div>
+            <h1>One-Click Academic Setup</h1>
+            <p class="muted">CBSE-aligned, editable starter subjects for Standards 1–12, teacher recommendations, and AI-optimized timetable drafts.</p>
+        </div>
+        <div class="actions">
+            <a class="button secondary" href="{{ url_for('admin_dashboard') }}">Admin Dashboard</a>
+            <a class="button secondary" href="{{ url_for('ai_subject_setup') }}">Review Class Assignments</a>
+            <a class="button secondary" href="{{ url_for('timetable_requirements') }}">Timetable Settings</a>
+        </div>
+    </header>
+
+    {% with messages = get_flashed_messages() %}
+        {% for message in messages %}
+            <div class="flash">{{ message }}</div>
+        {% endfor %}
+    {% endwith %}
+
+    <section>
+        <h2>What one-click setup does</h2>
+        <div class="notice">
+            Adds any missing starter subject/curriculum records, adds default weekly requirements only where none exist, and keeps existing subject requirements, teacher assignments, and published timetables. It selects teachers using known subject assignments/qualifications where possible, balances workload when expertise is not documented, then generates conflict-checked drafts. Review assignments and every timetable draft before publishing.
+        </div>
+        <div class="notice warning">
+            This is an editable starter curriculum, not a guarantee of compliance with every CBSE subject combination or your school's specific periods. Add class divisions in Classes & Divisions first. Standard 11–12 classes must have their stream selected below. The timetable optimizer prevents teacher/class period conflicts; it cannot account for unrecorded room, holiday, staffing, or school-specific constraints.
+        </div>
+
+        <div class="metrics">
+            <div class="metric"><span class="muted">Subjects in catalog</span><strong>{{ subject_count }}</strong></div>
+            <div class="metric"><span class="muted">Curriculum entries</span><strong>{{ curriculum_count }}</strong></div>
+            <div class="metric"><span class="muted">Active classes</span><strong>{{ classes|length }}</strong></div>
+        </div>
+
+        {% if not classes %}
+            <div class="notice warning">No active class divisions are configured yet. This action will create the complete starter subject catalog now; add class sections and teachers to configure assignments and generate timetable drafts.</div>
+        {% endif %}
+        <form method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            {% if upper_classes %}
+                <h3>Choose streams for unassigned upper-grade classes</h3>
+                <p class="muted">Each class needs a stream before its subjects and timetable can be generated. Existing stream selections are preserved.</p>
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>Class</th><th>Academic year</th><th>Stream</th></tr></thead>
+                        <tbody>
+                            {% for school_class in upper_classes %}
+                                <tr>
+                                    <td>{{ class_display_name(school_class) }}</td>
+                                    <td>{{ school_class.academic_year }}</td>
+                                    <td>
+                                        <select name="stream_{{ school_class.id }}" required>
+                                            <option value="">Select stream</option>
+                                            {% for stream in stream_options %}
+                                                <option value="{{ stream }}">{{ stream }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+            <div class="submit-row">
+                <span class="muted">Only active classes are configured. The live timetable is not replaced until you publish a reviewed draft.</span>
+                <button type="submit">Generate Subjects, Teacher Assignments & Timetable Drafts</button>
+            </div>
+        </form>
+    </section>
+
+    <section>
+        <h2>Starter subjects by standard and stream</h2>
+        <p class="muted">This is the editable subject catalog the one-click action installs. For Standards 11–12, all three stream-specific subject options are included.</p>
+        <div class="table-wrap">
+            <table>
+                <thead><tr><th>Standard</th><th>Stream</th><th>Subjects</th><th>Weekly periods</th></tr></thead>
+                <tbody>
+                    {% for curriculum_key, subject_rows in curricula.items() %}
+                        <tr>
+                            <td>{{ curriculum_key[0] }}</td>
+                            <td>{{ curriculum_key[1] or 'Common' }}</td>
+                            <td>
+                                {% for subject_row in subject_rows %}
+                                    {{ subject_row[0] }}{% if not loop.last %}, {% endif %}
+                                {% endfor %}
+                            </td>
+                            <td>
+                                {% set weekly_total = namespace(value=0) %}
+                                {% for subject_row in subject_rows %}
+                                    {% set weekly_total.value = weekly_total.value + subject_row[2] %}
+                                {% endfor %}
+                                {{ weekly_total.value }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section>
+        <h2>Active class coverage</h2>
+        {% if classes %}
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Standard</th><th>Stream</th><th>Division</th><th>Academic year</th></tr></thead>
+                    <tbody>
+                        {% for school_class in classes %}
+                            <tr>
+                                <td>{{ school_class.standard }}</td>
+                                <td>{{ school_class.stream or ('Choose on generate' if school_class.standard in [11, 12] else 'Common curriculum') }}</td>
+                                <td>{{ school_class.division }}</td>
+                                <td>{{ school_class.academic_year }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="muted">No active classes yet.</p>
+        {% endif %}
+    </section>
+
+    <section>
+        <h2>Timetable drafts awaiting review</h2>
+        {% if drafts %}
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Class</th><th>Periods generated</th><th>Quality score</th><th>Created</th><th>Review</th></tr></thead>
+                    <tbody>
+                        {% for row in drafts %}
+                            <tr>
+                                <td>{{ class_display_name(row.school_class) }}</td>
+                                <td>{{ row.draft.generated_periods }} / {{ row.draft.required_periods }}</td>
+                                <td>{{ row.draft.quality_score }}%</td>
+                                <td>{{ row.draft.created_at.strftime('%d %b %Y %H:%M') if row.draft.created_at else '-' }}</td>
+                                <td><a class="draft-link" href="{{ url_for('preview_timetable_draft', draft_id=row.draft.id) }}">Review draft</a></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="muted">No pending timetable drafts. Run setup after configuring active classes.</p>
+        {% endif %}
+    </section>
+</main>
+</body>
+</html>

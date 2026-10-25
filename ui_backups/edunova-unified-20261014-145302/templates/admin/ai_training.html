@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Student Model Training | AI School Management</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}">
+    <style>
+        .training-page { max-width: 1180px; }
+        .training-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+        .training-panel { min-width: 0; }
+        .metric-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+        .metric { padding: 14px; border: 1px solid #e2e9f2; border-radius: 10px; background: #f8faff; }
+        .metric strong { display: block; font-size: 20px; color: #183f7a; overflow-wrap: anywhere; }
+        .metric span { color: #66758b; font-size: 13px; }
+        .schema { overflow-x: auto; }
+        code { padding: 2px 5px; border-radius: 4px; background: #f1f5f9; }
+        .status { display: inline-block; padding: 4px 9px; border-radius: 999px; background: #edf4ff; color: #183f7a; font-weight: 700; }
+        .status.failed, .status.waiting-for-kafka { background: #fff0ed; color: #9a3412; }
+        .status.trained { background: #e9f8ef; color: #166534; }
+        .privacy-notice { padding: 14px; border-left: 4px solid #2457a6; border-radius: 8px; background: #edf4ff; }
+        .upload-form label { display: block; margin: 12px 0 6px; font-weight: 700; }
+        .upload-form input[type="file"], .upload-form input[type="text"] { width: 100%; }
+        .consent { display: flex; align-items: flex-start; gap: 9px; margin: 14px 0; }
+        .consent input { margin-top: 5px; }
+        .job-message { max-width: 380px; overflow-wrap: anywhere; }
+        @media (max-width: 760px) { .training-grid, .metric-grid { grid-template-columns: 1fr; } }
+    </style>
+
+    <!-- EduSphere shared navigation -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edusphere_navigation.css') }}">
+    <!-- EduSphere professional theme -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edusphere_professional_theme.css') }}">
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_theme.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_portals.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_layout.css') }}">
+</head>
+<body>
+<!-- edunova-layout-shell: shared visual header, no backend changes -->
+<header class="edunova-layout-shell" role="banner"><a class="edunova-layout-brand" href="{{ url_for('admin_dashboard') }}"><span class="edunova-layout-logo">✦</span><span>EduNova <small>AI School</small></span></a><div class="edunova-layout-context"><span class="edunova-layout-role">Administration</span><span class="edunova-layout-dot"></span> School Management</div><a class="edunova-layout-home" href="{{ url_for('admin_dashboard') }}">Dashboard</a></header>
+
+<div id="nova-topbar"><div class="nova-brand"><span class="nova-mark">✦</span><span>EduSphere AI <span class="nova-tag">School Management</span></span></div><div class="nova-right"><span class="nova-pill">School Portal</span></div></div>
+
+<main class="full-page training-page">
+    <header class="page-header">
+        <div>
+            <p class="page-label">AI / MACHINE LEARNING</p>
+            <h1>Student Progress Model Training</h1>
+            <p class="muted">Import authorized historical data from a CSV or Google Sheet. Kafka queues it to a separate worker that trains and evaluates both requested outcomes.</p>
+        </div>
+        <a class="secondary-btn" href="{{ url_for('admin_dashboard') }}">Admin Dashboard</a>
+    </header>
+
+    {% for message in get_flashed_messages() %}
+        <div class="alert">{{ message }}</div>
+    {% endfor %}
+
+    <section class="panel training-panel">
+        <h2>Training data format</h2>
+        <p>Download the <a href="{{ url_for('download_student_training_template') }}">CSV template</a>. Use one student-term row per observation and include the approved outcomes for that same student-term.</p>
+        <div class="schema">
+            <p><strong>Required columns:</strong>
+                <code>student_id</code>,
+                <code>attendance_percentage</code>,
+                <code>average_marks</code>,
+                <code>final_percentage</code>,
+                <code>pass_fail</code>
+            </p>
+            <p><strong>Optional numeric features:</strong>
+                <code>previous_average_marks</code>,
+                <code>assignment_completion_percentage</code>,
+                <code>standard</code>,
+                <code>term_number</code>
+            </p>
+        </div>
+        <p class="muted">Percent fields must be from 0–100. Pass/fail accepts pass or fail. Include at least 50 records from at least 30 distinct students, with at least 5 distinct students in each outcome. Student IDs are used only to keep each student's records together during evaluation; IDs and names are never model features.</p>
+        <div class="privacy-notice">
+            <strong>Protect student data:</strong> upload only data you are authorized to use. Do not include names, addresses, contact details, or other unnecessary personal data. Features must have been known before the final outcome; do not use future or outcome-derived values as predictors. CSV contents stay on this server and are not placed in Kafka messages. The raw CSV is removed after successful training.
+        </div>
+    </section>
+
+    <div class="training-grid">
+        <section class="panel training-panel">
+            <h2>Queue a training run</h2>
+            <p class="muted">Use an authorized CSV or import a read-only Google Sheet. A running Kafka broker and the separate model-training worker are required. If Kafka is unavailable, validated data is retained privately for retry.</p>
+            <form class="upload-form" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="source" value="csv">
+                <label for="training_file">Historical student CSV (maximum 10 MB)</label>
+                <input id="training_file" name="training_file" type="file" accept=".csv,text/csv" required>
+                <label class="consent">
+                    <input type="checkbox" name="authorized_dataset" value="yes" required>
+                    <span>I confirm I am authorized to upload and use this student data for model training.</span>
+                </label>
+                <button class="primary-btn normal-button" type="submit">Validate and queue with Kafka</button>
+            </form>
+            <hr>
+            <h3>Import from Google Sheets</h3>
+            <p class="muted">The server reads the selected range using a configured service account. Share the sheet with that account as a Viewer.</p>
+            <form class="upload-form" method="post">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="source" value="google_sheets">
+                <label for="spreadsheet_id">Spreadsheet ID</label>
+                <input id="spreadsheet_id" name="spreadsheet_id" type="text" maxlength="200" autocomplete="off" placeholder="ID from the Google Sheets URL" required>
+                <label for="sheet_range">Sheet and range</label>
+                <input id="sheet_range" name="sheet_range" type="text" maxlength="200" value="TrainingData!A1:I5000" required>
+                <label class="consent">
+                    <input type="checkbox" name="authorized_dataset" value="yes" required>
+                    <span>I confirm I am authorized to use this sheet's student data for model training.</span>
+                </label>
+                <button class="primary-btn normal-button" type="submit">Read, validate, and queue</button>
+            </form>
+        </section>
+
+        <section class="panel training-panel">
+            <h2>Latest trained model</h2>
+            {% if model_metadata %}
+                <p><strong>Version:</strong> {{ model_metadata.model_version }}</p>
+                <p><strong>Trained at:</strong> {{ model_metadata.trained_at }}</p>
+                <p><strong>Evaluation data:</strong> {{ model_metadata.training_records }} rows from {{ model_metadata.unique_students }} students; {{ model_metadata.holdout_students }} held out for evaluation.</p>
+                <h3>Pass/fail holdout metrics</h3>
+                <div class="metric-grid">
+                    <div class="metric"><span>Balanced accuracy</span><strong>{{ model_metadata.metrics.pass_fail.balanced_accuracy }}</strong></div>
+                    <div class="metric"><span>Macro F1</span><strong>{{ model_metadata.metrics.pass_fail.macro_f1 }}</strong></div>
+                    <div class="metric"><span>Pass recall</span><strong>{{ model_metadata.metrics.pass_fail.pass_recall }}</strong></div>
+                </div>
+                <h3>Final percentage holdout metrics</h3>
+                <div class="metric-grid">
+                    <div class="metric"><span>Mean absolute error</span><strong>{{ model_metadata.metrics.final_percentage.mae_percentage_points }} points</strong></div>
+                    <div class="metric"><span>RMSE</span><strong>{{ model_metadata.metrics.final_percentage.rmse_percentage_points }} points</strong></div>
+                    <div class="metric"><span>R²</span><strong>{{ model_metadata.metrics.final_percentage.r2 }}</strong></div>
+                </div>
+                <p class="muted">{{ model_metadata.evaluation_note }}</p>
+            {% else %}
+                <p class="muted">No trained model is published yet. The first model will be created when a valid training event is processed.</p>
+            {% endif %}
+        </section>
+    </div>
+
+    <section class="panel training-panel">
+        <h2>Recent training jobs</h2>
+        <div class="table-wrapper">
+            <table class="data-table">
+                <thead>
+                    <tr><th>Received</th><th>Dataset</th><th>Records</th><th>Status</th><th>Details / Metrics</th><th>Action</th></tr>
+                </thead>
+                <tbody>
+                    {% for row in jobs %}
+                        {% set job = row.job %}
+                        <tr>
+                            <td>{{ job.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                            <td>{{ job.original_filename }}</td>
+                            <td>{{ job.row_count or '—' }}</td>
+                            <td><span class="status {{ job.status|lower|replace(' ', '-') }}">{{ job.status }}</span></td>
+                            <td class="job-message">
+                                {% if job.message %}<p>{{ job.message }}</p>{% endif %}
+                                {% if row.metrics %}
+                                    <p>Pass/fail balanced accuracy: {{ row.metrics.metrics.pass_fail.balanced_accuracy }}; final-score MAE: {{ row.metrics.metrics.final_percentage.mae_percentage_points }} points.</p>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if job.status in ['Waiting for Kafka', 'Failed'] %}
+                                    <form method="post" action="{{ url_for('retry_student_ai_training', job_id=job.job_id) }}">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <button class="secondary-btn" type="submit">Retry</button>
+                                    </form>
+                                {% else %}
+                                    <span class="muted">—</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr><td colspan="6" class="muted">No training jobs have been submitted.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <p class="muted">Refresh this page to see worker progress. Successful models are evaluated on a held-out group of students. Metrics are diagnostic, not a guarantee, and should not be the sole basis for decisions about students.</p>
+    </section>
+</main>
+
+    <!-- EduSphere role navigation -->
+    {% include "components/edu_admin_sidebar.html" %}
+    <script src="{{ url_for('static', filename='js/edusphere_navigation.js') }}"></script>
+</body>
+</html>

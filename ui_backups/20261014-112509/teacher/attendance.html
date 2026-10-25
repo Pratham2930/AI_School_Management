@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Attendance | AI School Management</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#f4f7fb;color:#172033}.layout{min-height:100vh;display:flex}
+.sidebar{width:250px;background:#102a56;color:#fff;padding:28px 20px}.brand{font-size:21px;font-weight:700;margin-bottom:30px}.nav{display:block;color:#fff;text-decoration:none;padding:12px 14px;border-radius:9px;margin:7px 0;font-size:14px}.nav:hover,.nav.active{background:rgba(255,255,255,.13)}
+.main{flex:1;padding:30px}.top{display:flex;justify-content:space-between;gap:15px;align-items:center;margin-bottom:24px}h1{margin:0 0 6px;font-size:28px}.muted{color:#6b7280;font-size:14px}
+.panel,.stat{background:#fff;border:1px solid #e6ebf2;border-radius:15px}.panel{padding:22px;margin-bottom:20px}.filter{display:flex;gap:12px;align-items:end;flex-wrap:wrap}.field label{display:block;font-size:13px;font-weight:700;margin-bottom:7px}
+select,input[type=date]{height:42px;border:1px solid #ccd5e1;border-radius:9px;padding:0 12px;background:#fff;font-size:14px;min-width:220px}.btn{height:42px;border:0;border-radius:9px;background:#174ea6;color:#fff;padding:0 18px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;font-size:14px}
+.btn.secondary{background:#eaf1fb;color:#174ea6}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}.stat{padding:17px}.stat span{display:block;color:#6b7280;font-size:13px;margin-bottom:6px}.stat strong{font-size:23px}
+table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:13px;border-bottom:1px solid #edf0f5;font-size:14px}th{background:#f7f9fc;color:#5c6677}.choice{display:flex;gap:18px;align-items:center}.choice label{cursor:pointer}.flash{background:#fff8df;border:1px solid #f1df99;padding:12px 15px;border-radius:10px;margin-bottom:18px}.actions{display:flex;justify-content:flex-end;margin-top:18px}.empty{text-align:center;padding:35px;color:#778195}
+@media(max-width:850px){.stats{grid-template-columns:1fr 1fr}}@media(max-width:720px){.layout{display:block}.sidebar{width:100%}.main{padding:18px 12px}.top{align-items:flex-start;flex-direction:column}.panel{overflow-x:auto}}
+</style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}">
+</head>
+<body>
+<div class="layout"><aside class="sidebar"><div class="brand">AI School Management</div>
+<a class="nav" href="{{ url_for('teacher_dashboard') }}">Dashboard</a><a class="nav" href="{{ url_for('teacher_students') }}">My Students</a><a class="nav active" href="{{ url_for('teacher_attendance') }}">Take Attendance</a><a class="nav" href="{{ url_for('teacher_change_password') }}">Change Password</a><a class="nav" href="{{ url_for('teacher_logout') }}">Logout</a></aside>
+<main class="main"><div class="top"><div><h1>Student Attendance</h1><div class="muted">Select your assigned class and attendance date.</div></div><a class="btn secondary" href="{{ url_for('teacher_dashboard') }}">Back to Dashboard</a></div>
+{% with messages=get_flashed_messages() %}{% if messages %}{% for message in messages %}<div class="flash">{{ message }}</div>{% endfor %}{% endif %}{% endwith %}
+<div class="panel"><form method="get" class="filter">
+<div class="field"><label>Assigned Class</label><select name="class_id" required><option value="">Choose a class</option>{% for school_class in assigned_classes %}<option value="{{ school_class.id }}" {% if selected_class and selected_class.id==school_class.id %}selected{% endif %}>{{ class_display_name(school_class) }}</option>{% endfor %}</select></div>
+<div class="field"><label>Attendance Date</label><input type="date" name="attendance_date" value="{{ selected_date.isoformat() }}" required></div><button class="btn" type="submit">Load Students</button></form></div>
+{% if selected_class %}
+<div class="stats"><div class="stat"><span>Class</span><strong>{{ class_display_name(selected_class) }}</strong></div><div class="stat"><span>Students</span><strong>{{ students|length }}</strong></div><div class="stat"><span>Present</span><strong>{{ present_count }}</strong></div><div class="stat"><span>Absent</span><strong>{{ absent_count }}</strong></div></div>
+<div class="panel">{% if students %}<form method="post">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="class_id" value="{{ selected_class.id }}"><input type="hidden" name="attendance_date" value="{{ selected_date.isoformat() }}">
+<table><thead><tr><th>#</th><th>Student ID</th><th>Name</th><th>Status</th></tr></thead><tbody>
+{% for student in students %}{% set current_status=attendance_map.get(student.id) %}<tr><td>{{ loop.index }}</td><td>{{ student.student_id or student.admission_number or '-' }}</td><td><strong>{{ student.name }}</strong></td><td><div class="choice"><label><input type="radio" name="status_{{ student.id }}" value="Present" {% if current_status=='Present' or not current_status %}checked{% endif %}> Present</label><label><input type="radio" name="status_{{ student.id }}" value="Absent" {% if current_status=='Absent' %}checked{% endif %}> Absent</label></div></td></tr>{% endfor %}
+</tbody></table><div class="actions"><button class="btn" type="submit">Save Attendance</button></div></form>{% else %}<div class="empty">No active students are available in this class.</div>{% endif %}</div>
+{% else %}<div class="panel empty">Choose an assigned class to start taking attendance.</div>{% endif %}
+</main></div></body></html>

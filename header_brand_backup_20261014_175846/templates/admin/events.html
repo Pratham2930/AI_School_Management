@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>School Events</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+    <style>
+        .page { max-width: 1100px; margin: 0 auto; }
+        .panel { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 22px; margin: 20px 0; }
+        .panel h2 { margin-top: 0; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        label { display: block; font-weight: 600; margin-bottom: 6px; }
+        input, textarea { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 7px; font: inherit; }
+        textarea { min-height: 90px; }
+        .wide { grid-column: 1 / -1; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: left; vertical-align: top; }
+        .actions { display: flex; gap: 12px; align-items: center; }
+        .actions form { margin: 0; }
+        @media (max-width: 700px) { .page { margin: 0; } .form-grid { grid-template-columns: 1fr; } .wide { grid-column: auto; } }
+    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}">
+
+    <!-- EduSphere shared navigation -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edusphere_navigation.css') }}">
+    <!-- EduSphere professional theme -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_theme.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_portals.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_layout.css') }}">
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_unified.css') }}">
+</head>
+<body class="edn-unified">
+<!-- EduNova unified header -->
+<header class="edn-global-header" role="banner"><div class="edn-global-brand"><span class="edn-global-icon">✦</span><span>EduNova <b>AI</b></span><span class="edn-global-divider">/</span><span class="edn-global-context">Administration</span></div><span class="edn-global-page">Events</span></header>
+
+
+<main class="full-page page">
+    <header class="topbar">
+        <div><h1>School Events</h1><p>Manage dates shown to the school community.</p></div>
+        <a class="primary-link" href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+    </header>
+    {% for message in get_flashed_messages() %}<div class="alert">{{ message }}</div>{% endfor %}
+    <section class="panel">
+        <h2>Add an event</h2>
+        <form method="post" action="{{ url_for('admin_event_add') }}" class="form-grid">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div><label for="title">Title</label><input id="title" name="title" maxlength="150" required></div>
+            <div><label for="event_date">Date</label><input id="event_date" name="event_date" type="date" required></div>
+            <div class="wide"><label for="description">Description</label><textarea id="description" name="description"></textarea></div>
+            <div class="wide"><button class="primary-btn" type="submit">Add event</button></div>
+        </form>
+    </section>
+    <section class="panel">
+        <h2>Event calendar</h2>
+        {% if events %}
+        <div style="overflow-x:auto"><table>
+            <thead><tr><th>Event</th><th>Date</th><th>Actions</th></tr></thead>
+            <tbody>{% for event in events %}
+                <tr><td><strong>{{ event.title }}</strong>{% if event.description %}<br>{{ event.description }}{% endif %}</td>
+                    <td>{{ event.event_date.strftime('%d %b %Y') }}</td>
+                    <td><form method="post" action="{{ url_for('admin_event_delete', event_id=event.id) }}" onsubmit="return confirm('Delete this event?')">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button type="submit">Delete</button></form></td></tr>
+            {% endfor %}</tbody>
+        </table></div>
+        {% else %}<p>No events have been added.</p>{% endif %}
+    </section>
+</main>
+
+    <!-- EduSphere role navigation -->
+    {% include "components/edu_admin_sidebar.html" %}
+    <script src="{{ url_for('static', filename='js/edusphere_navigation.js') }}"></script>
+</body>
+</html>

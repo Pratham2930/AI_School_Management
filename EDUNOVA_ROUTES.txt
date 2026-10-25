@@ -1,0 +1,127 @@
+load C:\Users\Admin1\Desktop\AI_School_Management\venv\Lib\site-packages\ortools\.libs\zlib1.dll...
+load C:\Users\Admin1\Desktop\AI_School_Management\venv\Lib\site-packages\ortools\.libs\abseil_dll.dll...
+load C:\Users\Admin1\Desktop\AI_School_Management\venv\Lib\site-packages\ortools\.libs\utf8_validity.dll...
+load C:\Users\Admin1\Desktop\AI_School_Management\venv\Lib\site-packages\ortools\.libs\re2.dll...
+load C:\Users\Admin1\Desktop\AI_School_Management\venv\Lib\site-packages\ortools\.libs\libprotobuf.dll...
+load C:\Users\Admin1\Desktop\AI_School_Management\venv\Lib\site-packages\ortools\.libs\highs.dll...
+load C:\Users\Admin1\Desktop\AI_School_Management\venv\Lib\site-packages\ortools\.libs\ortools.dll...
+Endpoint                             Methods    Rule                                                                  
+-----------------------------------  ---------  ----------------------------------------------------------------------
+add_class                            GET, POST  /admin/classes/add                                                    
+add_subject                          GET, POST  /admin/subjects/add                                                   
+add_teacher                          GET, POST  /admin/teachers/add                                                   
+add_timetable_period                 GET, POST  /admin/timetable/add                                                  
+admin_ai_training                    GET, POST  /admin/ai-training                                                    
+admin_classes                        GET        /admin/classes                                                        
+admin_dashboard                      GET        /admin/dashboard                                                      
+admin_event_add                      POST       /admin/events/add                                                     
+admin_event_delete                   POST       /admin/events/<int:event_id>/delete                                   
+admin_events                         GET        /admin/events                                                         
+admin_exam_action                    POST       /admin/exams/<int:exam_id>/<action>                                   
+admin_exam_new                       GET, POST  /admin/exams/new                                                      
+admin_exam_question_delete           POST       /admin/exams/<int:exam_id>/questions/<int:question_id>/delete         
+admin_exam_questions                 GET, POST  /admin/exams/<int:exam_id>/questions                                  
+admin_exam_results                   GET, POST  /admin/exams/<int:exam_id>/results                                    
+admin_exams                          GET        /admin/exams                                                          
+admin_fee_verify                     GET        /admin/fees/verify                                                    
+admin_google_sheets_sync             GET, POST  /admin/google-sheets-sync                                             
+admin_kafka_outbox                   GET        /admin/kafka-outbox                                                   
+admin_leave_requests                 GET        /admin/leave-requests                                                 
+admin_login                          GET        /admin/login                                                          
+admin_logout                         GET        /admin/logout                                                         
+admin_notice_delete                  POST       /admin/notices/<int:notice_id>/delete                                 
+admin_notice_toggle                  POST       /admin/notices/<int:notice_id>/toggle                                 
+admin_notices                        GET, POST  /admin/notices                                                        
+admin_parents                        GET        /admin/parents                                                        
+admin_powerbi_reports                GET        /admin/power-bi                                                       
+admin_register                       GET        /admin/register                                                       
+admin_reports                        GET        /admin/reports                                                        
+admin_setup                          GET, POST  /admin/setup                                                          
+admin_staff                          GET        /admin/staff                                                          
+admin_staff_create_account           POST       /admin/staff/<int:staff_id>/create-account                            
+admin_staff_delete                   POST       /admin/staff/<int:staff_id>/delete                                    
+admin_staff_form                     GET, POST  /admin/staff/<int:staff_id>/edit                                      
+admin_staff_form                     GET, POST  /admin/staff/add                                                      
+admin_staff_toggle                   POST       /admin/staff/<int:staff_id>/toggle                                    
+admin_students                       GET        /admin/students                                                       
+admin_subjects                       GET        /admin/subjects                                                       
+admin_teacher_document_download      GET        /admin/teacher-documents/<int:document_id>/download                   
+admin_teacher_document_review        POST       /admin/teacher-documents/<int:document_id>/review                     
+admin_teacher_documents              GET        /admin/teacher-documents                                              
+admin_teachers                       GET        /admin/teachers                                                       
+admin_timetable                      GET        /admin/timetable                                                      
+admission_records                    GET        /admin/admissions                                                     
+ai_subject_setup                     GET, POST  /admin/ai-subject-setup                                               
+approve_google_sheets_sync           POST       /admin/google-sheets-sync/<batch_id>/approve                          
+assign_teacher                       GET, POST  /admin/teachers/<int:teacher_id>/assign                               
+auto_create_class_divisions          POST       /admin/classes/auto-create                                            
+common_login                         GET, POST  /login                                                                
+common_login                         GET, POST  /                                                                     
+confirm_admission_payment            POST       /admin/admissions/<int:student_id>/confirm-payment                    
+curriculum_generator                 GET, POST  /admin/curriculum-generator                                           
+delete_subject                       POST       /admin/subjects/<int:subject_id>/delete                               
+delete_teacher_assignment            POST       /admin/teacher-assignments/<int:assignment_id>/delete                 
+delete_timetable_period              POST       /admin/timetable/<int:timetable_id>/delete                            
+discard_timetable_draft              POST       /admin/timetable/draft/<int:draft_id>/discard                         
+download_powerbi_csv                 GET        /admin/power-bi/export/<dataset_name>.csv                             
+download_powerbi_workbook            GET        /admin/power-bi/export.xlsx                                           
+download_student_training_template   GET        /admin/ai-training/template                                           
+edit_subject                         GET, POST  /admin/subjects/<int:subject_id>/edit                                 
+fees_collect                         GET, POST  /fees/collect                                                         
+fees_receipt                         GET        /fees/receipt/<int:payment_id>                                        
+generate_ai_timetable                POST       /admin/timetable/generate/<int:class_id>                              
+health_check                         GET        /healthz                                                              
+homework_submission_file             GET        /homework-submissions/<int:submission_id>/file                        
+leave_requests                       GET, POST  /leave-requests                                                       
+new_admission                        GET, POST  /admin/admission/new                                                  
+parent_dashboard                     GET        /parent/dashboard                                                     
+parent_login                         GET        /parent/login                                                         
+parent_logout                        GET        /parent/logout                                                        
+preview_timetable_draft              GET        /admin/timetable/draft/<int:draft_id>                                 
+publish_timetable_draft              POST       /admin/timetable/draft/<int:draft_id>/publish                         
+reset_teacher_password               POST       /admin/teachers/<int:teacher_id>/reset-password                       
+retry_kafka_outbox_event             POST       /admin/kafka-outbox/<int:event_id>/retry                              
+retry_student_ai_training            POST       /admin/ai-training/<string:job_id>/retry                              
+review_leave_request                 POST       /admin/leave-requests/<int:request_id>/<decision>                     
+school_ai_assistant                  GET        /assistant                                                            
+school_ai_chat                       POST       /assistant/chat                                                       
+staff_dashboard                      GET        /staff/dashboard                                                      
+static                               GET        /static/<path:filename>                                               
+student_assignment_submit            POST       /student/assignments/<int:assignment_id>/submit                       
+student_assignments                  GET        /student/assignments                                                  
+student_change_password              GET, POST  /student/change-password                                              
+student_dashboard                    GET        /student/dashboard                                                    
+student_login                        GET        /student/login                                                        
+student_logout                       GET        /student/logout                                                       
+student_online_exam_result           GET        /student/online-exams/<int:exam_id>/result                            
+student_online_exam_save_answer      POST       /student/online-exams/<int:exam_id>/save-answer                       
+student_online_exam_start            POST       /student/online-exams/<int:exam_id>/start                             
+student_online_exam_take             GET, POST  /student/online-exams/<int:exam_id>/take                              
+student_online_exams                 GET        /student/online-exams                                                 
+student_profile                      GET, POST  /student/profile                                                      
+teacher_assignment_add               GET, POST  /teacher/assignments/add                                              
+teacher_assignment_delete            POST       /teacher/assignments/<int:assignment_id>/delete                       
+teacher_assignment_edit              GET, POST  /teacher/assignments/<int:assignment_id>/edit                         
+teacher_assignment_submissions       GET        /teacher/assignments/<int:assignment_id>/submissions                  
+teacher_assignments                  GET        /teacher/assignments                                                  
+teacher_attendance                   GET, POST  /teacher/attendance                                                   
+teacher_change_password              GET, POST  /teacher/change-password                                              
+teacher_dashboard                    GET        /teacher/dashboard                                                    
+teacher_document_delete              POST       /teacher/documents/<int:document_id>/delete                           
+teacher_document_download            GET        /teacher/documents/<int:document_id>/download                         
+teacher_document_replace             POST       /teacher/documents/<int:document_id>/replace                          
+teacher_documents                    GET, POST  /teacher/documents                                                    
+teacher_homework_submission_grade    POST       /teacher/homework-submissions/<int:submission_id>/grade               
+teacher_login                        GET        /teacher/login                                                        
+teacher_logout                       GET        /teacher/logout                                                       
+teacher_marks                        GET, POST  /teacher/marks                                                        
+teacher_online_exam_close            POST       /teacher/online-exams/<int:exam_id>/close                             
+teacher_online_exam_new              GET, POST  /teacher/online-exams/new                                             
+teacher_online_exam_publish          POST       /teacher/online-exams/<int:exam_id>/publish                           
+teacher_online_exam_question_delete  POST       /teacher/online-exams/<int:exam_id>/questions/<int:question_id>/delete
+teacher_online_exam_questions        GET, POST  /teacher/online-exams/<int:exam_id>/questions                         
+teacher_online_exam_results          GET, POST  /teacher/online-exams/<int:exam_id>/results                           
+teacher_online_exams                 GET        /teacher/online-exams                                                 
+teacher_students                     GET        /teacher/students                                                     
+timetable_requirements               GET, POST  /admin/timetable/requirements                                         
+toggle_teacher_status                POST       /admin/teachers/<int:teacher_id>/toggle-status                        

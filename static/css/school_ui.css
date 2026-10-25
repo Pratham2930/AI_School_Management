@@ -1,0 +1,118 @@
+
+:root {
+    --primary: #2563EB;
+    --sidebar: #0F172A;
+    --background: #F8FAFC;
+    --surface: #FFFFFF;
+    --text: #0F172A;
+    --muted: #64748B;
+    --border: #E2E8F0;
+}
+
+.school-menu-button {
+    position: fixed;
+    left: 20px;
+    bottom: 20px;
+    z-index: 10000;
+    padding: 13px 20px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-family: "Segoe UI", sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 8px 25px rgba(37, 99, 235, 0.25);
+}
+
+.school-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 280px;
+    box-sizing: border-box;
+    padding: 22px 14px;
+    background: var(--sidebar);
+    color: white;
+    z-index: 10002;
+    overflow-y: auto;
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+    visibility: hidden;
+}
+
+.school-sidebar.open {
+    transform: translateX(0);
+    visibility: visible;
+}
+
+.school-brand {
+    padding: 10px 14px 24px;
+    font-size: 21px;
+    font-weight: 700;
+}
+
+.school-nav-heading {
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #94A3B8;
+    margin: 24px 14px 10px;
+}
+
+.school-sidebar a {
+    display: block;
+    padding: 12px 14px;
+    margin: 3px 0;
+    color: #CBD5E1;
+    text-decoration: none;
+    border-radius: 9px;
+    font-size: 14px;
+}
+
+.school-sidebar a:hover,
+.school-sidebar a.active {
+    color: white;
+    background: #1E293B;
+}
+
+.school-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.55);
+    z-index: 10001;
+    display: none;
+}
+
+.school-overlay.open {
+    display: block;
+}
+
+.school-close {
+    float: right;
+    background: transparent;
+    color: white;
+    border: none;
+    font-size: 26px;
+    cursor: pointer;
+}
+
+.school-menu-button:focus-visible,
+.school-sidebar a:focus-visible,
+.school-close:focus-visible {
+    outline: 3px solid #93C5FD;
+    outline-offset: 2px;
+}
+
+@media (max-width: 768px) {
+    .school-sidebar {
+        width: min(85vw, 300px);
+    }
+
+    .school-menu-button {
+        left: 12px;
+        bottom: 12px;
+    }
+}

@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Student Dashboard | AI School Management
+    </title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f7fb;
+            color: #172033;
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* =====================================================
+           SIDEBAR
+        ====================================================== */
+
+        .sidebar {
+            width: 260px;
+            background: #102a56;
+            color: white;
+            padding: 28px 20px;
+        }
+
+        .brand {
+            font-size: 21px;
+            font-weight: 700;
+            margin-bottom: 30px;
+        }
+
+        .student-box {
+            background: rgba(255, 255, 255, 0.09);
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+        }
+
+        .student-box strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .student-box span {
+            display: block;
+            font-size: 13px;
+            opacity: 0.8;
+            margin-top: 4px;
+        }
+
+        .nav {
+            display: block;
+            color: white;
+            text-decoration: none;
+            padding: 12px 14px;
+            border-radius: 9px;
+            margin: 6px 0;
+            font-size: 14px;
+        }
+
+        .nav:hover,
+        .nav.active {
+            background: rgba(255, 255, 255, 0.13);
+        }
+
+        /* =====================================================
+           MAIN CONTENT
+        ====================================================== */
+
+        .main {
+            flex: 1;
+            padding: 30px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .header h1 {
+            margin: 0 0 7px;
+        }
+
+        .header p {
+            margin: 0;
+            color: #667085;
+        }
+
+        .profile-button {
+            display: inline-block;
+            background: #2457a6;
+            color: white;
+            text-decoration: none;
+            padding: 11px 17px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .profile-button:hover {
+            background: #1d4788;
+        }
+
+        /* =====================================================
+           FLASH MESSAGE
+        ====================================================== */
+
+        .flash {
+            background: #fff4d6;
+            border: 1px solid #f0d17a;
+            padding: 12px 15px;
+            border-radius: 9px;
+            margin-bottom: 18px;
+        }
+
+        /* =====================================================
+           SUMMARY CARDS
+        ====================================================== */
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid #e6ebf2;
+            border-radius: 14px;
+            padding: 20px;
+        }
+
+        .card span {
+            display: block;
+            color: #667085;
+            font-size: 13px;
+            margin-bottom: 9px;
+        }
+
+        .card strong {
+            display: block;
+            font-size: 24px;
+        }
+
+        /* =====================================================
+           PANEL
+        ====================================================== */
+
+        .panel {
+            background: white;
+            border: 1px solid #e6ebf2;
+            border-radius: 14px;
+            padding: 22px;
+            margin-bottom: 22px;
+        }
+
+        .panel h2 {
+            margin: 0 0 18px;
+        }
+
+        /* =====================================================
+           QUICK ACTIONS
+        ====================================================== */
+
+        .actions {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .action {
+            display: block;
+            text-decoration: none;
+            color: #172033;
+            background: #f8fafc;
+            border: 1px solid #e4e9f1;
+            border-radius: 12px;
+            padding: 20px;
+            min-height: 130px;
+            transition: 0.15s ease;
+        }
+
+        .action:hover {
+            border-color: #2457a6;
+            background: #f1f6ff;
+            transform: translateY(-1px);
+        }
+
+        .action h3 {
+            margin: 0 0 9px;
+            color: #2457a6;
+        }
+
+        .action p {
+            margin: 0;
+            color: #667085;
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        /* =====================================================
+           STUDENT PROFILE
+        ====================================================== */
+
+        .profile-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+        }
+
+        .profile-item {
+            background: #f8fafc;
+            border-radius: 9px;
+            padding: 14px;
+        }
+
+        .profile-item span {
+            display: block;
+            color: #667085;
+            font-size: 12px;
+            margin-bottom: 6px;
+        }
+
+        .profile-item strong {
+            font-size: 14px;
+        }
+
+        /* =====================================================
+           RESPONSIVE
+        ====================================================== */
+
+        @media (max-width: 900px) {
+            .cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 700px) {
+            .layout {
+                display: block;
+            }
+
+            .sidebar {
+                width: 100%;
+            }
+
+            .main {
+                padding: 18px 12px;
+            }
+
+            .header {
+                display: block;
+            }
+
+            .profile-button {
+                margin-top: 15px;
+            }
+
+            .cards,
+            .actions,
+            .profile-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}">
+
+    <!-- EduSphere shared navigation -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edusphere_navigation.css') }}">
+    <!-- EduSphere professional theme -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_theme.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_portals.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_layout.css') }}">
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_unified.css') }}">
+</head>
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='css/portal_sidebar_cleanup.css') }}">
+<body class="edn-unified">
+<!-- EduNova unified header -->
+<header class="edn-global-header" role="banner"><div class="edn-global-brand"><span class="edn-global-icon">✦</span><span>EduNova <b>AI</b></span><span class="edn-global-divider">/</span><span class="edn-global-context">Student Portal</span></div><span class="edn-global-page">Dashboard</span></header>
+
+
+<div class="layout">
+
+        <!-- =====================================================
+             SIDEBAR
+        ====================================================== -->
+
+        <aside class="sidebar">
+
+            <div class="brand">
+                AI School Management
+            </div>
+
+
+            <div class="student-box">
+
+                <strong>
+                    {{ student.name }}
+                </strong>
+
+                <span>
+                    {{ student.student_id }}
+                </span>
+
+
+                {% if school_class %}
+
+                    <span>
+                        Standard {{ school_class.standard }}
+
+                        {% if school_class.stream %}
+                            -
+                            {{ school_class.stream }}
+                        {% endif %}
+
+                        -
+                        {{ school_class.division }}
+                    </span>
+
+                {% endif %}
+
+            </div>
+
+
+            <a
+                class="nav active"
+                href="{{ url_for('student_dashboard') }}"
+            >
+                Dashboard
+            </a>
+
+
+            <a
+                class="nav"
+                href="{{ url_for('student_profile') }}"
+            >
+                My Profile
+            </a>
+
+            <a class="nav" href="{{ url_for('student_assignments') }}">
+                Homework
+            </a>
+
+
+            <a
+                class="nav"
+                href="{{ url_for('student_online_exams') }}"
+            >
+                Online Exams & Quizzes
+            </a>
+
+            <a class="nav" href="{{ url_for('leave_requests') }}">
+                Leave Requests
+            </a>
+
+            <a class="nav" href="{{ url_for('school_ai_assistant') }}">
+                AI Assistant
+            </a>
+
+
+            <a
+                class="nav"
+                href="{{ url_for('student_change_password') }}"
+            >
+                Change Password
+            </a>
+
+
+            <a
+                class="nav"
+                href="{{ url_for('student_logout') }}"
+            >
+                Logout
+            </a>
+
+        </aside>
+
+
+        <!-- =====================================================
+             MAIN CONTENT
+        ====================================================== -->
+
+        <main class="main">
+
+            <!-- =================================================
+                 PAGE HEADER
+            ================================================== -->
+
+            <div class="header">
+
+                <div>
+
+                    <h1>
+                        Welcome, {{ student.name }}
+                    </h1>
+
+                    <p>
+                        Manage your profile and access your
+                        student learning activities.
+                    </p>
+
+                </div>
+
+
+                <a
+                    class="profile-button"
+                    href="{{ url_for('student_profile') }}"
+                >
+                    View My Profile
+                </a>
+
+            </div>
+
+
+            <!-- =================================================
+                 FLASH MESSAGES
+            ================================================== -->
+
+            {% with messages = get_flashed_messages() %}
+
+                {% if messages %}
+
+                    {% for message in messages %}
+
+                        <div class="flash">
+                            {{ message }}
+                        </div>
+
+                    {% endfor %}
+
+                {% endif %}
+
+            {% endwith %}
+
+            {% if approved_leave_today %}
+                <div class="flash">
+                    Your {{ approved_leave_today.leave_type|lower }} leave is approved for
+                    {{ approved_leave_today.start_date.strftime('%d %b %Y') }} -
+                    {{ approved_leave_today.end_date.strftime('%d %b %Y') }}.
+                </div>
+            {% endif %}
+
+            {% if school_notices %}
+                <div class="panel">
+                    <h2>School notices</h2>
+                    {% for notice in school_notices %}
+                        <div style="padding: 12px 0; border-bottom: 1px solid #e7ebf1;">
+                            <strong>{{ notice.title }}</strong>
+                            <p style="margin: 6px 0;">{{ notice.message }}</p>
+                            <small style="color: #667085;">{{ notice.created_at.strftime('%d %b %Y') if notice.created_at else '' }}</small>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <!-- =================================================
+                 STUDENT SUMMARY
+            ================================================== -->
+
+            <div class="cards">
+
+                <!-- STUDENT ID -->
+
+                <div class="card">
+
+                    <span>
+                        Student ID
+                    </span>
+
+                    <strong>
+                        {{ student.student_id }}
+                    </strong>
+
+                </div>
+
+
+                <!-- STANDARD -->
+
+                <div class="card">
+
+                    <span>
+                        Standard
+                    </span>
+
+                    <strong>
+
+                        {% if school_class %}
+
+                            {{ school_class.standard }}
+
+                            {% if school_class.stream %}
+                                -
+                                {{ school_class.stream }}
+                            {% endif %}
+
+                        {% else %}
+
+                            {{ student.current_standard or '-' }}
+
+                        {% endif %}
+
+                    </strong>
+
+                </div>
+
+
+                <!-- DIVISION -->
+
+                <div class="card">
+
+                    <span>
+                        Division
+                    </span>
+
+                    <strong>
+
+                        {% if school_class %}
+                            {{ school_class.division }}
+                        {% else %}
+                            -
+                        {% endif %}
+
+                    </strong>
+
+                </div>
+
+                <div class="card">
+                    <span>Attendance (last 30 days)</span>
+                    <strong>{{ attendance_percentage }}%</strong>
+                    <small>{{ attendance_record_count }} recorded days</small>
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 QUICK ACTIONS
+            ================================================== -->
+
+            <div class="panel">
+
+                <h2>
+                    Student Services
+                </h2>
+
+
+                <div class="actions">
+
+                    <!-- ONLINE EXAMS -->
+
+                    <a
+                        class="action"
+                        href="{{ url_for('student_online_exams') }}"
+                    >
+
+                        <h3>
+                            Online Exams & Quizzes
+                        </h3>
+
+                        <p>
+                            View scheduled exams, start an available
+                            exam, continue an active attempt and
+                            check your results.
+                        </p>
+
+                    </a>
+
+                    <a class="action" href="{{ url_for('leave_requests') }}">
+                        <h3>Request Leave</h3>
+                        <p>Submit a leave request and follow its approval status.</p>
+                    </a>
+
+                    <a class="action" href="{{ url_for('student_assignments') }}">
+                        <h3>Homework</h3>
+                        <p>Review assignments, instructions, and due dates for your class.</p>
+                    </a>
+
+                    <a class="action" href="{{ url_for('school_ai_assistant') }}">
+                        <h3>AI Assistant</h3>
+                        <p>Get learning and school guidance from the local AI assistant.</p>
+                    </a>
+
+
+                    <!-- MY PROFILE -->
+
+                    <a
+                        class="action"
+                        href="{{ url_for('student_profile') }}"
+                    >
+
+                        <h3>
+                            My Profile
+                        </h3>
+
+                        <p>
+                            View your student information and
+                            update your name, email, phone,
+                            date of birth, gender and address.
+                        </p>
+
+                    </a>
+
+
+                    <!-- CHANGE PASSWORD -->
+
+                    <a
+                        class="action"
+                        href="{{ url_for('student_change_password') }}"
+                    >
+
+                        <h3>
+                            Change Password
+                        </h3>
+
+                        <p>
+                            Protect your student account by
+                            changing your login password securely.
+                        </p>
+
+                    </a>
+
+
+                    <!-- MY CLASS -->
+
+                    <div class="action">
+
+                        <h3>
+                            My Class
+                        </h3>
+
+                        <p>
+
+                            {% if school_class %}
+
+                                Standard
+                                {{ school_class.standard }}
+
+                                {% if school_class.stream %}
+                                    -
+                                    {{ school_class.stream }}
+                                {% endif %}
+
+                                -
+                                Division
+                                {{ school_class.division }}
+
+                                <br><br>
+
+                                Academic Year:
+                                {{ school_class.academic_year }}
+
+                            {% else %}
+
+                                Class information is currently
+                                unavailable.
+
+                            {% endif %}
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="panel">
+                <h2>My Leave Requests</h2>
+                {% if recent_leave_requests %}
+                    <div style="overflow-x: auto;">
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <thead>
+                                <tr>
+                                    <th style="text-align: left; padding: 10px;">Type</th>
+                                    <th style="text-align: left; padding: 10px;">Dates</th>
+                                    <th style="text-align: left; padding: 10px;">Status</th>
+                                    <th style="text-align: left; padding: 10px;">Administrator Note</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for leave in recent_leave_requests %}
+                                    <tr>
+                                        <td style="padding: 10px;">{{ leave.leave_type }}</td>
+                                        <td style="padding: 10px;">{{ leave.start_date.strftime('%d %b %Y') }} - {{ leave.end_date.strftime('%d %b %Y') }}</td>
+                                        <td style="padding: 10px;">{{ leave.status }}</td>
+                                        <td style="padding: 10px;">{{ leave.review_note or '-' }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="muted">No leave requests yet.</p>
+                {% endif %}
+            </div>
+
+            <div class="panel">
+                <h2>Upcoming online exams</h2>
+                {% if upcoming_online_exams %}
+                    <div style="overflow-x: auto;">
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <thead><tr>
+                                <th style="text-align: left; padding: 10px;">Exam</th>
+                                <th style="text-align: left; padding: 10px;">Subject</th>
+                                <th style="text-align: left; padding: 10px;">Starts</th>
+                                <th style="text-align: left; padding: 10px;">Ends</th>
+                            </tr></thead>
+                            <tbody>{% for exam in upcoming_online_exams %}
+                                <tr>
+                                    <td style="padding: 10px;">{{ exam.title }}</td>
+                                    <td style="padding: 10px;">{{ exam.subject.name }}</td>
+                                    <td style="padding: 10px;">{{ exam.start_at.strftime('%d %b %Y %H:%M') }}</td>
+                                    <td style="padding: 10px;">{{ exam.end_at.strftime('%d %b %Y %H:%M') }}</td>
+                                </tr>
+                            {% endfor %}</tbody>
+                        </table>
+                    </div>
+                    <a href="{{ url_for('student_online_exams') }}">Open exams and results</a>
+                {% else %}
+                    <p class="muted">There are no upcoming or active published exams for your class.</p>
+                {% endif %}
+            </div>
+
+            <div class="panel">
+                <h2>Upcoming homework</h2>
+                {% if student_assignments %}
+                    <div style="overflow-x: auto;">
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <thead><tr>
+                                <th style="text-align: left; padding: 10px;">Assignment</th>
+                                <th style="text-align: left; padding: 10px;">Subject</th>
+                                <th style="text-align: left; padding: 10px;">Due date</th>
+                            </tr></thead>
+                            <tbody>{% for assignment in student_assignments %}
+                                <tr>
+                                    <td style="padding: 10px;">{{ assignment.title }}</td>
+                                    <td style="padding: 10px;">{{ assignment.subject.name }}</td>
+                                    <td style="padding: 10px;">{{ assignment.due_date.strftime('%d %b %Y') }}</td>
+                                </tr>
+                            {% endfor %}</tbody>
+                        </table>
+                    </div>
+                    <a href="{{ url_for('student_assignments') }}">View all homework</a>
+                {% else %}
+                    <p class="muted">There is no upcoming homework for your class.</p>
+                {% endif %}
+            </div>
+
+            {% if upcoming_events %}
+                <div class="panel">
+                    <h2>Upcoming school events</h2>
+                    {% for event in upcoming_events %}
+                        <div style="padding: 12px 0; border-bottom: 1px solid #e7ebf1;">
+                            <strong>{{ event.title }}</strong>
+                            <span style="float: right;">{{ event.event_date.strftime('%d %b %Y') }}</span>
+                            {% if event.description %}<p style="margin: 6px 0;">{{ event.description }}</p>{% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <div class="panel">
+                <h2>Recent marks</h2>
+                {% if recent_marks %}
+                    <div style="overflow-x: auto;">
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <thead><tr>
+                                <th style="text-align: left; padding: 10px;">Exam</th>
+                                <th style="text-align: left; padding: 10px;">Subject</th>
+                                <th style="text-align: left; padding: 10px;">Result</th>
+                            </tr></thead>
+                            <tbody>{% for row in recent_marks %}
+                                <tr>
+                                    <td style="padding: 10px;">{{ row.exam.name if row.exam else '-' }}</td>
+                                    <td style="padding: 10px;">{{ row.subject.name if row.subject else '-' }}</td>
+                                    <td style="padding: 10px;">{% if row.mark.absent %}Absent{% else %}{{ row.mark.marks_obtained }} / {{ row.mark.maximum_marks }}{% endif %}</td>
+                                </tr>
+                            {% endfor %}</tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="muted">No marks have been recorded for you yet.</p>
+                {% endif %}
+            </div>
+
+            <div class="panel">
+                <h2>Class timetable</h2>
+                {% if student_timetable %}
+                    <div style="overflow-x: auto;">
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <thead><tr>
+                                <th style="text-align: left; padding: 10px;">Day</th>
+                                <th style="text-align: left; padding: 10px;">Period</th>
+                                <th style="text-align: left; padding: 10px;">Time</th>
+                                <th style="text-align: left; padding: 10px;">Subject</th>
+                                <th style="text-align: left; padding: 10px;">Room</th>
+                            </tr></thead>
+                            <tbody>{% for item in student_timetable %}
+                                <tr>
+                                    <td style="padding: 10px;">{{ item.period.day }}</td>
+                                    <td style="padding: 10px;">{{ item.period.period_number }}</td>
+                                    <td style="padding: 10px;">{{ item.period.start_time }} - {{ item.period.end_time }}</td>
+                                    <td style="padding: 10px;">{{ item.subject.name }}</td>
+                                    <td style="padding: 10px;">{{ item.period.room or '-' }}</td>
+                                </tr>
+                            {% endfor %}</tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="muted">No published class timetable is available yet.</p>
+                {% endif %}
+            </div>
+
+
+            <!-- =================================================
+                 PROFILE OVERVIEW
+            ================================================== -->
+
+            <div class="panel">
+
+                <h2>
+                    My Information
+                </h2>
+
+
+                <div class="profile-grid">
+
+                    <!-- NAME -->
+
+                    <div class="profile-item">
+
+                        <span>
+                            Student Name
+                        </span>
+
+                        <strong>
+                            {{ student.name }}
+                        </strong>
+
+                    </div>
+
+
+                    <!-- STUDENT ID -->
+
+                    <div class="profile-item">
+
+                        <span>
+                            Student ID
+                        </span>
+
+                        <strong>
+                            {{ student.student_id }}
+                        </strong>
+
+                    </div>
+
+
+                    <!-- ADMISSION NUMBER -->
+
+                    <div class="profile-item">
+
+                        <span>
+                            Admission Number
+                        </span>
+
+                        <strong>
+                            {{ student.admission_number or '-' }}
+                        </strong>
+
+                    </div>
+
+
+                    <!-- EMAIL -->
+
+                    <div class="profile-item">
+
+                        <span>
+                            Email Address
+                        </span>
+
+                        <strong>
+                            {{ student.email or 'Not provided' }}
+                        </strong>
+
+                    </div>
+
+
+                    <!-- PHONE -->
+
+                    <div class="profile-item">
+
+                        <span>
+                            Phone Number
+                        </span>
+
+                        <strong>
+                            {{ student.phone or 'Not provided' }}
+                        </strong>
+
+                    </div>
+
+
+                    <!-- DATE OF BIRTH -->
+
+                    <div class="profile-item">
+
+                        <span>
+                            Date of Birth
+                        </span>
+
+                        <strong>
+
+                            {% if student.date_of_birth %}
+
+                                {{
+                                    student.date_of_birth.strftime(
+                                        '%d %b %Y'
+                                    )
+                                }}
+
+                            {% else %}
+
+                                Not provided
+
+                            {% endif %}
+
+                        </strong>
+
+                    </div>
+
+
+                    <!-- GENDER -->
+
+                    <div class="profile-item">
+
+                        <span>
+                            Gender
+                        </span>
+
+                        <strong>
+                            {{ student.gender or 'Not provided' }}
+                        </strong>
+
+                    </div>
+
+
+                    <!-- ADMISSION STATUS -->
+
+                    <div class="profile-item">
+
+                        <span>
+                            Admission Status
+                        </span>
+
+                        <strong>
+                            {{ student.admission_status or '-' }}
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </main>
+
+    </div>
+
+
+    <!-- EduSphere role navigation -->
+    {% include "components/edu_student_sidebar.html" %}
+    <script src="{{ url_for('static', filename='js/edusphere_navigation.js') }}"></script>
+</body>
+
+</html>

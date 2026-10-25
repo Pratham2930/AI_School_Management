@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>Classes & Divisions</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/admin.css') }}"
+    >
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}">
+
+    <!-- EduSphere shared navigation -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edusphere_navigation.css') }}">
+    <!-- EduSphere professional theme -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_theme.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_portals.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_layout.css') }}">
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_unified.css') }}">
+</head>
+
+<body class="edn-unified">
+<!-- EduNova unified header -->
+<header class="edn-global-header" role="banner"><div class="edn-global-brand"><span class="edn-global-icon">✦</span><span>EduNova <b>AI</b></span><span class="edn-global-divider">/</span><span class="edn-global-context">Administration</span></div><span class="edn-global-page">Classess</span></header>
+
+
+<div class="main-content full-page">
+
+    <div class="page-header">
+
+        <div>
+
+            <h1>Classes & Divisions</h1>
+
+            <p class="muted">
+                Configure class capacity and automatic admission rules.
+            </p>
+
+        </div>
+
+        <div>
+
+            <a
+                class="secondary-btn"
+                href="{{ url_for('admin_dashboard') }}"
+            >
+                Dashboard
+            </a>
+
+            <a
+                class="primary-link"
+                href="{{ url_for('add_class') }}"
+            >
+                + Add Class / Division
+            </a>
+
+        </div>
+
+    </div>
+
+
+    {% with messages = get_flashed_messages() %}
+
+        {% for message in messages %}
+
+            <div class="alert">
+                {{ message }}
+            </div>
+
+        {% endfor %}
+
+    {% endwith %}
+
+
+    <div class="panel">
+
+        <table class="data-table">
+
+            <thead>
+
+                <tr>
+
+                    <th>Class</th>
+
+                    <th>Academic Year</th>
+
+                    <th>Percentage Rule</th>
+
+                    <th>Students</th>
+
+                    <th>Capacity</th>
+
+                    <th>Available</th>
+
+                    <th>Status</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for item in class_data %}
+
+                <tr>
+
+                    <td>
+                        {{ item.class.standard }}-{{ item.class.division }}
+                    </td>
+
+                    <td>
+                        {{ item.class.academic_year }}
+                    </td>
+
+                    <td>
+
+                        {% if item.rule %}
+
+                            {{ item.rule.minimum_percentage }}%
+                            -
+                            {{ item.rule.maximum_percentage }}%
+
+                        {% else %}
+
+                            No rule
+
+                        {% endif %}
+
+                    </td>
+
+                    <td>
+                        {{ item.student_count }}
+                    </td>
+
+                    <td>
+                        {{ item.class.capacity }}
+                    </td>
+
+                    <td>
+                        {{ item.available_seats }}
+                    </td>
+
+                    <td>
+
+                        {% if item.available_seats == 0 %}
+
+                            <span class="status-full">
+                                FULL
+                            </span>
+
+                        {% else %}
+
+                            <span class="status-open">
+                                OPEN
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+                </tr>
+
+                {% else %}
+
+                <tr>
+
+                    <td colspan="7">
+
+                        No classes have been created.
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+    <!-- EduSphere role navigation -->
+    {% include "components/edu_admin_sidebar.html" %}
+    <script src="{{ url_for('static', filename='js/edusphere_navigation.js') }}"></script>
+</body>
+
+</html>

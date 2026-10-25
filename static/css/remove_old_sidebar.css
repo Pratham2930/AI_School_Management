@@ -1,0 +1,22 @@
+
+/* Hide the original dashboard sidebar */
+body:has(#edu-menu-trigger) > .sidebar,
+body:has(#edu-menu-trigger) > aside.sidebar,
+body:has(#edu-menu-trigger) .app-sidebar,
+body:has(#edu-menu-trigger) .main-sidebar {
+    display: none !important;
+}
+
+/* Keep the EduSphere slide-out sidebar available */
+#edu-sidebar {
+    display: block;
+}
+
+/* Expand the dashboard to use the available width */
+body:has(#edu-menu-trigger) .main-content,
+body:has(#edu-menu-trigger) .content-wrapper,
+body:has(#edu-menu-trigger) .dashboard-content {
+    margin-left: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+}

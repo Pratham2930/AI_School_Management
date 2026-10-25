@@ -1,0 +1,91 @@
+
+<button
+    id="schoolMenuButton"
+    class="school-menu-button"
+    type="button"
+    aria-controls="schoolSidebar"
+    aria-expanded="false">
+    &#9776; School Menu
+</button>
+
+<div id="schoolOverlay" class="school-overlay"></div>
+
+<nav
+    id="schoolSidebar"
+    class="school-sidebar"
+    aria-label="School navigation"
+    aria-hidden="true">
+
+    <button
+        id="schoolMenuClose"
+        class="school-close"
+        type="button"
+        aria-label="Close menu">
+        &times;
+    </button>
+
+    <div class="school-brand">
+        EduSphere AI
+    </div>
+
+    <div class="school-nav-heading">Main</div>
+
+    {% if current_user.is_authenticated %}
+
+        {% if current_user.role in ['admin', 'super_admin'] %}
+
+            {% if 'admin_dashboard' in url_for.__globals__ %}
+            {% endif %}
+
+            <a href="{{ url_for('admin_dashboard') }}">
+                Dashboard
+            </a>
+
+            <div class="school-nav-heading">
+                Student Management
+            </div>
+
+            <a href="{{ url_for('admin_admission_records') }}">
+                Admissions
+            </a>
+
+            <div class="school-nav-heading">
+                Finance
+            </div>
+
+            <a href="{{ url_for('fees_collect') }}">
+                Collect Fees
+            </a>
+
+            <a href="{{ url_for('admin_fees_verify') }}">
+                Verify Payments
+            </a>
+
+        {% elif current_user.role == 'teacher' %}
+
+            <a href="{{ url_for('teacher_dashboard') }}">
+                Teacher Dashboard
+            </a>
+
+        {% elif current_user.role == 'student' %}
+
+            <a href="{{ url_for('student_dashboard') }}">
+                Student Dashboard
+            </a>
+
+        {% elif current_user.role == 'parent' %}
+
+            <a href="{{ url_for('parent_dashboard') }}">
+                Parent Dashboard
+            </a>
+
+        {% elif current_user.role == 'fees_staff' %}
+
+            <a href="{{ url_for('fees_collect') }}">
+                Collect Fees
+            </a>
+
+        {% endif %}
+
+    {% endif %}
+</nav>

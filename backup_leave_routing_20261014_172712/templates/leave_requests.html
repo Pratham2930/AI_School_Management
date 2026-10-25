@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Leave Requests | AI School Management</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; padding: 28px; background: #f4f7fb; color: #172033; font-family: Arial, Helvetica, sans-serif; }
+        main { max-width: 1100px; margin: 0 auto; }
+        header, section { background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 22px; margin-bottom: 20px; }
+        header { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+        h1, h2 { margin-top: 0; }
+        .muted { color: #64748b; line-height: 1.5; }
+        .links { display: flex; gap: 10px; flex-wrap: wrap; }
+        .button, button { display: inline-block; border: 0; border-radius: 8px; padding: 10px 14px; background: #2457a6; color: #fff; text-decoration: none; font-weight: 700; cursor: pointer; }
+        .button.secondary { background: #e8eef8; color: #183b70; }
+        .flash { padding: 12px 15px; margin-bottom: 12px; border-radius: 8px; background: #fff4d6; border: 1px solid #f0d17a; }
+        .fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+        label { display: block; margin-bottom: 7px; font-weight: 700; font-size: 14px; }
+        input, select, textarea { width: 100%; padding: 11px; border: 1px solid #cbd5e1; border-radius: 7px; font: inherit; }
+        textarea { min-height: 100px; resize: vertical; }
+        .full { grid-column: 1 / -1; }
+        .table-wrap { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; min-width: 650px; }
+        th, td { padding: 12px; border-bottom: 1px solid #e5eaf1; text-align: left; vertical-align: top; }
+        th { background: #f8fafc; font-size: 13px; }
+        .status { font-weight: 700; }
+        .status-Pending { color: #9a6700; }
+        .status-Approved { color: #16743a; }
+        .status-Rejected { color: #b42318; }
+        .leave-indicator { display: inline-block; padding: 5px 8px; border-radius: 6px; background: #fee4e2; color: #912018; font-weight: 700; }
+        .review-form { min-width: 180px; display: grid; gap: 8px; }
+        .review-form textarea { min-height: 58px; }
+        .review-actions { display: flex; gap: 7px; }
+        .reject { background: #b42318; }
+        @media (max-width: 650px) { body { padding: 14px; } .fields { grid-template-columns: 1fr; } .full { grid-column: auto; } }
+    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}">
+    <!-- EduSphere professional theme -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_theme.css') }}">
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_unified.css') }}">
+</head>
+<body class="edn-unified">
+<!-- EduNova unified header -->
+<header class="edn-global-header" role="banner"><div class="edn-global-brand"><span class="edn-global-icon">✦</span><span>EduNova <b>AI</b></span><span class="edn-global-divider">/</span><span class="edn-global-context">School Portal</span></div><span class="edn-global-page">Leave Requests</span></header>
+
+<main>
+    <header>
+        <div>
+            <h1>{% if requester_type == "admin" %}Leave Request Review{% else %}Leave Requests{% endif %}</h1>
+            <div class="muted">
+                {% if requester_type == "admin" %}
+                    Review student and teacher applications. Approved teacher leave is highlighted for the dates it covers.
+                {% else %}
+                    Signed in as {{ current_user.name }}. Requests are sent to the administrator for review.
+                {% endif %}
+            </div>
+        </div>
+        <div class="links">
+            {% if requester_type == "admin" %}
+                <a class="button secondary" href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+            {% elif requester_type == "teacher" %}
+                <a class="button secondary" href="{{ url_for('teacher_dashboard') }}">Dashboard</a>
+            {% else %}
+                <a class="button secondary" href="{{ url_for('student_dashboard') }}">Dashboard</a>
+            {% endif %}
+            <a class="button secondary" href="{{ url_for('school_ai_assistant') }}">AI Assistant</a>
+        </div>
+    </header>
+
+    {% with messages = get_flashed_messages() %}
+        {% for message in messages %}
+            <div class="flash">{{ message }}</div>
+        {% endfor %}
+    {% endwith %}
+
+    {% if requester_type != "admin" %}
+        <section>
+            <h2>Submit a Leave Request</h2>
+            <form method="post">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="fields">
+                    <div>
+                        <label for="leave_type">Leave type</label>
+                        <select id="leave_type" name="leave_type" required>
+                            <option value="">Choose a leave type</option>
+                            <option value="Medical">Medical</option>
+                            <option value="Personal">Personal</option>
+                            <option value="Family">Family</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="start_date">Start date</label>
+                        <input id="start_date" name="start_date" type="date" required>
+                    </div>
+                    <div>
+                        <label for="end_date">End date</label>
+                        <input id="end_date" name="end_date" type="date" required>
+                    </div>
+                    <div class="full">
+                        <label for="reason">Reason</label>
+                        <textarea id="reason" name="reason" maxlength="4000" required></textarea>
+                    </div>
+                    <div class="full"><button type="submit">Submit Request</button></div>
+                </div>
+            </form>
+        </section>
+
+        <section>
+            <h2>Request History</h2>
+            {% if leave_requests %}
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>Type</th><th>Dates</th><th>Reason</th><th>Status</th><th>Administrator Note</th></tr></thead>
+                        <tbody>
+                            {% for leave in leave_requests %}
+                                <tr>
+                                    <td>{{ leave.leave_type }}</td>
+                                    <td>{{ leave.start_date.strftime('%d %b %Y') }} - {{ leave.end_date.strftime('%d %b %Y') }}</td>
+                                    <td>{{ leave.reason }}</td>
+                                    <td class="status status-{{ leave.status }}">{{ leave.status }}</td>
+                                    <td>{{ leave.review_note or '-' }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="muted">You have not submitted any leave requests.</p>
+            {% endif %}
+        </section>
+    {% else %}
+        <section>
+            <h2>All Requests</h2>
+            {% if leave_rows %}
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>Requester</th><th>Dates and type</th><th>Reason</th><th>Status</th><th>Review</th></tr></thead>
+                        <tbody>
+                            {% for row in leave_rows %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ row.name }}</strong><br>
+                                        <span class="muted">{{ row.request.requester_type|title }} · {{ row.identifier }}</span>
+                                        {% if row.on_leave_today %}<br><span class="leave-indicator">On leave today</span>{% endif %}
+                                    </td>
+                                    <td>
+                                        {{ row.request.leave_type }}<br>
+                                        {{ row.request.start_date.strftime('%d %b %Y') }} - {{ row.request.end_date.strftime('%d %b %Y') }}
+                                    </td>
+                                    <td>{{ row.request.reason }}</td>
+                                    <td class="status status-{{ row.request.status }}">
+                                        {{ row.request.status }}
+                                        {% if row.request.review_note %}<br><span class="muted">{{ row.request.review_note }}</span>{% endif %}
+                                    </td>
+                                    <td>
+                                        {% if row.request.status == "Pending" %}
+                                            <form class="review-form" method="post" action="{{ url_for('review_leave_request', request_id=row.request.id, decision='approve') }}">
+                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                                <textarea name="review_note" maxlength="1000" placeholder="Optional review note"></textarea>
+                                                <div class="review-actions">
+                                                    <button type="submit">Approve</button>
+                                                    <button class="reject" formaction="{{ url_for('review_leave_request', request_id=row.request.id, decision='reject') }}">Reject</button>
+                                                </div>
+                                            </form>
+                                        {% else %}
+                                            {{ row.request.reviewed_at.strftime('%d %b %Y') if row.request.reviewed_at else '-' }}
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="muted">There are no leave requests yet.</p>
+            {% endif %}
+        </section>
+    {% endif %}
+</main>
+</body>
+</html>

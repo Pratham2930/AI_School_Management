@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Create Online Exam</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+    <style>
+        .page { max-width: 900px; margin: 0 auto; }
+        .panel { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 24px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .field label { display: block; font-weight: 600; margin-bottom: 6px; }
+        .field input, .field select, .field textarea { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 7px; font: inherit; }
+        .field textarea { min-height: 100px; }
+        .full { grid-column: 1 / -1; }
+        .check { display: flex; gap: 8px; align-items: center; }
+        .check input { width: auto; }
+        .muted { color: #64748b; }
+        @media(max-width:650px) { .page { margin: 0; } .grid { grid-template-columns: 1fr; } .full { grid-column: auto; } }
+    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}">
+
+    <!-- EduSphere shared navigation -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edusphere_navigation.css') }}">
+    <!-- EduSphere professional theme -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edusphere_professional_theme.css') }}">
+</head>
+<body>
+<main class="full-page page">
+    <header class="topbar">
+        <div><h1>Create an online exam</h1><p>Choose a teacher's assigned class and subject. Add questions to the draft before publishing.</p></div>
+        <a class="primary-link" href="{{ url_for('admin_exams') }}">Back to exams</a>
+    </header>
+    {% for message in get_flashed_messages() %}<div class="alert">{{ message }}</div>{% endfor %}
+    {% if not options %}<div class="alert">No teacher class/subject assignments are available. Assign a teacher before creating an exam.</div>{% endif %}
+    <section class="panel">
+        <form method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="grid">
+                <div class="field full">
+                    <label for="assignment_id">Teacher, class, and subject</label>
+                    <select id="assignment_id" name="assignment_id" required>
+                        <option value="">Choose an existing teacher assignment</option>
+                        {% for row in options %}
+                        <option value="{{ row.assignment.id }}" {% if request.form.get('assignment_id')|int == row.assignment.id %}selected{% endif %}>
+                            {{ row.teacher.user.name }} · Standard {{ row.school_class.standard }}{% if row.school_class.stream %} {{ row.school_class.stream }}{% endif %} {{ row.school_class.division }} · {{ row.subject.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="field full">
+                    <label for="title">Exam title</label>
+                    <input id="title" name="title" maxlength="200" value="{{ request.form.get('title', '') }}" required>
+                </div>
+                <div class="field full">
+                    <label for="instructions">Student instructions</label>
+                    <textarea id="instructions" name="instructions">{{ request.form.get('instructions', '') }}</textarea>
+                </div>
+                <div class="field">
+                    <label for="start_at">Starts</label>
+                    <input id="start_at" name="start_at" type="datetime-local" value="{{ request.form.get('start_at', '') }}" required>
+                </div>
+                <div class="field">
+                    <label for="end_at">Ends</label>
+                    <input id="end_at" name="end_at" type="datetime-local" value="{{ request.form.get('end_at', '') }}" required>
+                </div>
+                <div class="field">
+                    <label for="duration_minutes">Duration (minutes)</label>
+                    <input id="duration_minutes" name="duration_minutes" type="number" min="1" max="600" value="{{ request.form.get('duration_minutes', '30') }}" required>
+                </div>
+                <div class="field">
+                    <label for="passing_percentage">Passing percentage</label>
+                    <input id="passing_percentage" name="passing_percentage" type="number" min="0" max="100" step="0.1" value="{{ request.form.get('passing_percentage', '40') }}" required>
+                </div>
+                <label class="check"><input type="checkbox" name="show_result" {% if request.form.get('show_result') %}checked{% endif %}> Show results to students</label>
+                <label class="check"><input type="checkbox" name="randomize_questions" {% if request.form.get('randomize_questions') %}checked{% endif %}> Randomize question order</label>
+            </div>
+            <p class="muted">The exam is saved as a draft. Students cannot access it until it has questions and an administrator publishes it.</p>
+            <button class="primary-btn" type="submit" {% if not options %}disabled{% endif %}>Create draft and add questions</button>
+        </form>
+    </section>
+</main>
+
+    <!-- EduSphere role navigation -->
+    {% include "components/edu_admin_sidebar.html" %}
+    <script src="{{ url_for('static', filename='js/edusphere_navigation.js') }}"></script>
+</body>
+</html>

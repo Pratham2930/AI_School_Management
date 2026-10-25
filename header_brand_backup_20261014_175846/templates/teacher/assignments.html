@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Homework & Assignments | AI School Management
+    </title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f7fb;
+            color: #172033;
+        }
+
+        .layout {
+            min-height: 100vh;
+            display: flex;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: #102a56;
+            color: white;
+            padding: 28px 20px;
+        }
+
+        .brand {
+            font-size: 21px;
+            font-weight: 700;
+            margin-bottom: 30px;
+        }
+
+        .teacher {
+            background: rgba(255, 255, 255, 0.09);
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+        }
+
+        .teacher strong {
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .teacher span {
+            font-size: 13px;
+            opacity: 0.8;
+        }
+
+        .nav {
+            display: block;
+            color: white;
+            text-decoration: none;
+            padding: 12px 14px;
+            border-radius: 9px;
+            margin: 7px 0;
+            font-size: 14px;
+        }
+
+        .nav:hover,
+        .nav.active {
+            background: rgba(255, 255, 255, 0.13);
+        }
+
+        .main {
+            flex: 1;
+            padding: 30px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 24px;
+        }
+
+        .header h1 {
+            margin: 0 0 6px;
+            font-size: 28px;
+        }
+
+        .muted {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 42px;
+            padding: 0 17px;
+            border: 0;
+            border-radius: 9px;
+            background: #174ea6;
+            color: white;
+            text-decoration: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn.light {
+            background: #eaf1fb;
+            color: #174ea6;
+        }
+
+        .btn.danger {
+            background: #fff0f0;
+            color: #b42318;
+        }
+
+        .panel,
+        .stat {
+            background: white;
+            border: 1px solid #e6ebf2;
+            border-radius: 15px;
+        }
+
+        .panel {
+            padding: 21px;
+            margin-bottom: 20px;
+        }
+
+        .flash {
+            background: #fff8df;
+            border: 1px solid #f1df99;
+            padding: 12px 15px;
+            border-radius: 10px;
+            margin-bottom: 18px;
+        }
+
+        .filters {
+            display: flex;
+            gap: 12px;
+            align-items: end;
+            flex-wrap: wrap;
+        }
+
+        .field label {
+            display: block;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 7px;
+        }
+
+        .field select {
+            height: 42px;
+            min-width: 220px;
+            border: 1px solid #ccd5e1;
+            border-radius: 9px;
+            padding: 0 12px;
+            background: white;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 13px;
+            margin-bottom: 20px;
+        }
+
+        .stat {
+            padding: 17px;
+        }
+
+        .stat span {
+            display: block;
+            color: #6b7280;
+            font-size: 12px;
+            margin-bottom: 6px;
+        }
+
+        .stat strong {
+            font-size: 22px;
+        }
+
+        .assignment {
+            padding: 18px 0;
+            border-bottom: 1px solid #edf0f5;
+        }
+
+        .assignment:last-child {
+            border-bottom: 0;
+        }
+
+        .assignment-head {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            align-items: flex-start;
+        }
+
+        .assignment h3 {
+            margin: 0 0 7px;
+            font-size: 17px;
+        }
+
+        .meta {
+            color: #657084;
+            font-size: 13px;
+            margin-bottom: 10px;
+        }
+
+        .description {
+            line-height: 1.55;
+            font-size: 14px;
+            white-space: pre-wrap;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 6px 9px;
+            border-radius: 999px;
+            background: #eaf6ee;
+            color: #19703d;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .badge.overdue {
+            background: #fff0f0;
+            color: #b42318;
+        }
+
+        .badge.completed {
+            background: #edf2f7;
+            color: #52606d;
+        }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 13px;
+        }
+
+        .actions form {
+            margin: 0;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 35px;
+            color: #778195;
+        }
+
+        @media (max-width: 900px) {
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 700px) {
+            .layout {
+                display: block;
+            }
+
+            .sidebar {
+                width: 100%;
+            }
+
+            .main {
+                padding: 18px 12px;
+            }
+
+            .header {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .stats {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .assignment-head {
+                flex-direction: column;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}">
+
+    <!-- EduSphere shared navigation -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edusphere_navigation.css') }}">
+    <!-- EduSphere professional theme -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_theme.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_portals.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_layout.css') }}">
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_unified.css') }}">
+</head>
+
+<body class="edn-unified">
+<!-- EduNova unified header -->
+<header class="edn-global-header" role="banner"><div class="edn-global-brand"><span class="edn-global-icon">✦</span><span>EduNova <b>AI</b></span><span class="edn-global-divider">/</span><span class="edn-global-context">Teacher Portal</span></div><span class="edn-global-page">Assignments</span></header>
+
+
+<div class="layout">
+
+        <!-- =====================================================
+             SIDEBAR
+        ====================================================== -->
+
+        <aside class="sidebar">
+
+            <div class="brand">
+                AI School Management
+            </div>
+
+            <div class="teacher">
+
+                <strong>
+                    {{ current_user.name }}
+                </strong>
+
+                <span>
+                    {{ teacher.employee_id }}
+                </span>
+
+            </div>
+
+            <a
+                class="nav"
+                href="{{ url_for('teacher_dashboard') }}"
+            >
+                Dashboard
+            </a>
+
+            <a
+                class="nav"
+                href="{{ url_for('teacher_students') }}"
+            >
+                My Students
+            </a>
+
+            <a
+                class="nav"
+                href="{{ url_for('teacher_attendance') }}"
+            >
+                Take Attendance
+            </a>
+
+            <a
+                class="nav"
+                href="{{ url_for('teacher_marks') }}"
+            >
+                Exams & Marks
+            </a>
+
+            <a
+                class="nav active"
+                href="{{ url_for('teacher_assignments') }}"
+            >
+                Homework & Assignments
+            </a>
+
+            <a
+                class="nav"
+                href="{{ url_for('teacher_online_exams') }}"
+            >
+                Online Exams & Quizzes
+            </a>
+
+            <a
+                class="nav"
+                href="{{ url_for('teacher_change_password') }}"
+            >
+                Change Password
+            </a>
+
+            <a
+                class="nav"
+                href="{{ url_for('teacher_logout') }}"
+            >
+                Logout
+            </a>
+
+        </aside>
+
+
+        <!-- =====================================================
+             MAIN CONTENT
+        ====================================================== -->
+
+        <main class="main">
+
+            <!-- =================================================
+                 HEADER
+            ================================================== -->
+
+            <div class="header">
+
+                <div>
+
+                    <h1>
+                        Homework & Assignments
+                    </h1>
+
+                    <div class="muted">
+                        Create and manage homework only for your
+                        assigned classes and subjects.
+                    </div>
+
+                </div>
+
+                <a
+                    class="btn"
+                    href="{{ url_for('teacher_assignment_add') }}"
+                >
+                    Create Assignment
+                </a>
+
+            </div>
+
+
+            <!-- =================================================
+                 FLASH MESSAGES
+            ================================================== -->
+
+            {% with messages = get_flashed_messages() %}
+
+                {% if messages %}
+
+                    {% for message in messages %}
+
+                        <div class="flash">
+                            {{ message }}
+                        </div>
+
+                    {% endfor %}
+
+                {% endif %}
+
+            {% endwith %}
+
+
+            <!-- =================================================
+                 FILTERS
+            ================================================== -->
+
+            <div class="panel">
+
+                <form
+                    method="get"
+                    class="filters"
+                >
+
+                    <div class="field">
+
+                        <label for="class_id">
+                            Assigned Class
+                        </label>
+
+                        <select
+                            id="class_id"
+                            name="class_id"
+                            onchange="this.form.submit()"
+                        >
+
+                            <option value="">
+                                All assigned classes
+                            </option>
+
+                            {% for school_class in assigned_classes %}
+
+                                <option
+                                    value="{{ school_class.id }}"
+                                    {% if selected_class_id == school_class.id %}
+                                        selected
+                                    {% endif %}
+                                >
+                                    {{
+                                        class_display_name(
+                                            school_class
+                                        )
+                                    }}
+                                </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="subject_id">
+                            Assigned Subject
+                        </label>
+
+                        <select
+                            id="subject_id"
+                            name="subject_id"
+                            {% if not selected_class_id %}
+                                disabled
+                            {% endif %}
+                        >
+
+                            <option value="">
+                                All assigned subjects
+                            </option>
+
+                            {% for subject in available_subjects %}
+
+                                <option
+                                    value="{{ subject.id }}"
+                                    {% if selected_subject_id == subject.id %}
+                                        selected
+                                    {% endif %}
+                                >
+                                    {{ subject.name }}
+                                </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+
+                    <button
+                        class="btn light"
+                        type="submit"
+                    >
+                        Apply Filter
+                    </button>
+
+                    <a
+                        class="btn light"
+                        href="{{ url_for('teacher_assignments') }}"
+                    >
+                        Clear
+                    </a>
+
+                </form>
+
+            </div>
+
+
+            <!-- =================================================
+                 STATISTICS
+            ================================================== -->
+
+            <div class="stats">
+
+                <div class="stat">
+
+                    <span>
+                        Showing
+                    </span>
+
+                    <strong>
+                        {{ homework_rows | length }}
+                    </strong>
+
+                </div>
+
+                <div class="stat">
+
+                    <span>
+                        Active
+                    </span>
+
+                    <strong>
+                        {{ active_count }}
+                    </strong>
+
+                </div>
+
+                <div class="stat">
+
+                    <span>
+                        Overdue
+                    </span>
+
+                    <strong>
+                        {{ overdue_count }}
+                    </strong>
+
+                </div>
+
+                <div class="stat">
+
+                    <span>
+                        Completed
+                    </span>
+
+                    <strong>
+                        {{ completed_count }}
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 ASSIGNMENT LIST
+            ================================================== -->
+
+            <div class="panel">
+
+                {% if homework_rows %}
+
+                    {% for row in homework_rows %}
+
+                        <div class="assignment">
+
+                            <div class="assignment-head">
+
+                                <div>
+
+                                    <h3>
+                                        {{ row.title }}
+                                    </h3>
+
+                                    <div class="meta">
+
+                                        {{
+                                            class_display_name(
+                                                row.school_class
+                                            )
+                                        }}
+
+                                        ·
+
+                                        {{ row.subject.name }}
+
+                                        ·
+
+                                        Assigned
+
+                                        {{
+                                            row.assigned_date.strftime(
+                                                '%d %b %Y'
+                                            )
+                                        }}
+
+                                        ·
+
+                                        Due
+
+                                        {{
+                                            row.due_date.strftime(
+                                                '%d %b %Y'
+                                            )
+                                        }}
+
+                                    </div>
+
+                                </div>
+
+
+                                <div>
+
+                                    {% if row.status == 'Completed' %}
+
+                                        <span class="badge completed">
+                                            Completed
+                                        </span>
+
+                                    {% elif row.due_date < today %}
+
+                                        <span class="badge overdue">
+                                            Overdue
+                                        </span>
+
+                                    {% else %}
+
+                                        <span class="badge">
+                                            Active
+                                        </span>
+
+                                    {% endif %}
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="description">
+                                {{ row.description }}
+                            </div>
+
+                            <div class="meta">
+                                {{ submission_counts[row.id].submitted }} awaiting grading ·
+                                {{ submission_counts[row.id].graded }} graded
+                            </div>
+
+                            <div class="actions">
+
+                                <a
+                                    class="btn light"
+                                    href="{{ url_for('teacher_assignment_submissions', assignment_id=row.id) }}"
+                                >
+                                    Review Submissions
+                                </a>
+
+                                <a
+                                    class="btn light"
+                                    href="{{ url_for(
+                                        'teacher_assignment_edit',
+                                        assignment_id=row.id
+                                    ) }}"
+                                >
+                                    Edit
+                                </a>
+
+
+                                <form
+                                    method="post"
+                                    action="{{ url_for(
+                                        'teacher_assignment_delete',
+                                        assignment_id=row.id
+                                    ) }}"
+                                    onsubmit="return confirm(
+                                        'Delete this assignment?'
+                                    );"
+                                >
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                                    <button
+                                        class="btn danger"
+                                        type="submit"
+                                    >
+                                        Delete
+                                    </button>
+
+                                </form>
+
+                            </div>
+
+                        </div>
+
+                    {% endfor %}
+
+                {% else %}
+
+                    <div class="empty">
+                        No homework or assignments found.
+                        Use Create Assignment to add your first one.
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+        </main>
+
+    </div>
+
+
+    <!-- EduSphere role navigation -->
+    {% include "components/edu_teacher_sidebar.html" %}
+    <script src="{{ url_for('static', filename='js/edusphere_navigation.js') }}"></script>
+</body>
+
+</html>

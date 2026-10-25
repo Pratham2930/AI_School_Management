@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Teacher Management</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/admin.css') }}"
+    >
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}">
+
+    <!-- EduSphere shared navigation -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edusphere_navigation.css') }}">
+</head>
+
+
+<body>
+
+<div class="main-content full-page">
+
+
+    <!-- PAGE HEADER -->
+
+    <div class="page-header">
+
+        <div>
+
+            <h1>
+                Teacher Management
+            </h1>
+
+            <p class="muted">
+                Create teacher accounts, manage access
+                and assign classes and subjects.
+            </p>
+
+        </div>
+
+
+        <div>
+
+            <a
+                class="secondary-btn"
+                href="{{ url_for('admin_dashboard') }}"
+            >
+                Dashboard
+            </a>
+
+            <a
+                class="primary-link"
+                href="{{ url_for('add_teacher') }}"
+            >
+                + Add Teacher
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- FLASH MESSAGES -->
+
+    {% with messages = get_flashed_messages() %}
+
+        {% if messages %}
+
+            {% for message in messages %}
+
+                <div class="alert">
+                    {{ message }}
+                </div>
+
+            {% endfor %}
+
+        {% endif %}
+
+    {% endwith %}
+
+
+    <!-- SUMMARY -->
+
+    <div class="panel">
+
+        <span class="muted">
+            Total Teachers
+        </span>
+
+        <h2>
+            {{ teacher_data|length }}
+        </h2>
+
+    </div>
+
+
+    <!-- TEACHERS -->
+
+    {% if teacher_data %}
+
+        <div class="table-wrapper">
+
+            <table class="data-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Employee ID
+                        </th>
+
+                        <th>
+                            Teacher
+                        </th>
+
+                        <th>
+                            Contact
+                        </th>
+
+                        <th>
+                            Qualification
+                        </th>
+
+                        <th>
+                            Assignments
+                        </th>
+
+                        <th>
+                            Account
+                        </th>
+
+                        <th>
+                            Actions
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                {% for item in teacher_data %}
+
+                    <tr>
+
+                        <td>
+
+                            <strong>
+                                {{ item.teacher.employee_id }}
+                            </strong>
+
+                        </td>
+
+
+                        <td>
+
+                            {% if item.user %}
+
+                                <strong>
+                                    {{ item.user.name }}
+                                </strong>
+
+                                <br>
+
+                                <span class="muted">
+                                    {{ item.user.username }}
+                                </span>
+
+                            {% else %}
+
+                                Teacher
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <td>
+
+                            {{ item.teacher.phone or "No phone" }}
+
+                            <br>
+
+                            <span class="muted">
+                                {{ item.teacher.email or "No email" }}
+                            </span>
+
+                        </td>
+
+
+                        <td>
+                            {{ item.teacher.qualification or "Not provided" }}
+                        </td>
+
+
+                        <td>
+
+                            <strong>
+                                {{ item.assignment_count }}
+                            </strong>
+
+                            {% if item.assignments %}
+
+                                <br>
+
+                                {% for assignment in item.assignments %}
+
+                                    {% if assignment.school_class and assignment.subject %}
+
+                                        <span class="muted">
+
+                                            {{ assignment.school_class.standard }}
+                                            -
+                                            {{ assignment.school_class.division }}
+
+                                            :
+
+                                            {{ assignment.subject.name }}
+
+                                        </span>
+
+                                        <br>
+
+                                    {% endif %}
+
+                                {% endfor %}
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <td>
+
+                            {% if item.user and item.user.active %}
+
+                                <span class="status-open">
+                                    ACTIVE
+                                </span>
+
+                            {% else %}
+
+                                <span class="status-full">
+                                    DISABLED
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <td>
+
+                            <a
+                                class="secondary-btn"
+                                href="{{ url_for(
+                                    'assign_teacher',
+                                    teacher_id=item.teacher.id
+                                ) }}"
+                            >
+                                Assign
+                            </a>
+
+
+                            <form
+                                method="POST"
+                                action="{{ url_for(
+                                    'toggle_teacher_status',
+                                    teacher_id=item.teacher.id
+                                ) }}"
+                                style="display: inline;"
+                            >
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                                <button
+                                    type="submit"
+                                    class="secondary-btn"
+                                >
+
+                                    {% if item.user and item.user.active %}
+
+                                        Disable
+
+                                    {% else %}
+
+                                        Enable
+
+                                    {% endif %}
+
+                                </button>
+
+                            </form>
+
+
+                            <form
+                                method="POST"
+                                action="{{ url_for(
+                                    'reset_teacher_password',
+                                    teacher_id=item.teacher.id
+                                ) }}"
+                                style="display: inline;"
+                            >
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                                <button
+                                    type="submit"
+                                    class="secondary-btn"
+                                >
+                                    Reset Password
+                                </button>
+
+                            </form>
+
+                        </td>
+
+                    </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    {% else %}
+
+        <div class="panel">
+
+            <div class="empty-state">
+
+                <h3>
+                    No Teachers
+                </h3>
+
+                <p class="muted">
+                    Create your first teacher account.
+                </p>
+
+                <a
+                    class="primary-link"
+                    href="{{ url_for('add_teacher') }}"
+                >
+                    + Add Teacher
+                </a>
+
+            </div>
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+
+    <!-- EduSphere role navigation -->
+    {% include "components/edu_admin_sidebar.html" %}
+    <script src="{{ url_for('static', filename='js/edusphere_navigation.js') }}"></script>
+</body>
+
+</html>

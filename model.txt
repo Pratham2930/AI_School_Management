@@ -1,0 +1,8 @@
+
+# EDUNOVA_CLASS_TEACHER_MODEL_V1
+class ClassTeacherAssignment(db.Model):
+    __tablename__ = "class_teacher_assignment"
+    id = db.Column(db.Integer, primary_key=True)
+    class_id = db.Column(db.Integer, db.ForeignKey("school_class.id"), nullable=False, unique=True)
+    teacher_id = db.Column(db.Integer, db.ForeignKey("teacher.id"), nullable=False)
+    assigned_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)

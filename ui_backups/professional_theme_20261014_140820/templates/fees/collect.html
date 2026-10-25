@@ -1,0 +1,147 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Fees Room</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/fees.css') }}">
+
+    <!-- EduSphere shared navigation -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edusphere_navigation.css') }}">
+</head>
+<body>
+
+<main class="wrap">
+
+    <header>
+        <h1>Fees Room</h1>
+        <a href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+    </header>
+
+    {% for message in get_flashed_messages() %}
+        <p class="notice">{{ message }}</p>
+    {% endfor %}
+
+    <section class="card">
+        <h2>Record Admission Fee</h2>
+
+        <form method="POST">
+
+            <input type="hidden"
+                   name="csrf_token"
+                   value="{{ csrf_token() }}">
+
+            <label for="admission_number">Select Student</label>
+            <select name="admission_number"
+                    id="admission_number"
+                    required>
+                <option value="">Choose Student</option>
+
+                {% for student in students %}
+                <option value="{{ student.admission_number }}">
+                    {{ student.admission_number }}
+                    - {{ student.name }}
+                    - Class {{ student.current_standard }}
+                    - Fee {{ student.admission_fee }}
+                </option>
+                {% endfor %}
+            </select>
+
+            <label for="amount">Amount Received</label>
+            <input type="number"
+                   name="amount"
+                   id="amount"
+                   min="0.01"
+                   step="0.01"
+                   placeholder="Enter full admission fee"
+                   required>
+
+            <label for="payment_method">Payment Method</label>
+            <select name="payment_method"
+                    id="payment_method"
+                    required>
+                <option value="">Choose Method</option>
+                <option value="Cash">Cash</option>
+                <option value="UPI">UPI</option>
+                <option value="Card">Card</option>
+                <option value="Bank Transfer">Bank Transfer</option>
+            </select>
+
+            <label for="transaction_reference">
+                Transaction Reference
+            </label>
+            <input type="text"
+                   name="transaction_reference"
+                   id="transaction_reference"
+                   maxlength="100"
+                   placeholder="Required for non-cash payments">
+
+            <button type="submit">
+                Record Payment & Generate Receipt
+            </button>
+
+        </form>
+    </section>
+
+    <section class="card">
+        <h2>Recent Fee Receipts</h2>
+
+        <div class="scroll">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Receipt Number</th>
+                        <th>Amount</th>
+                        <th>Method</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for payment in payments %}
+                    <tr>
+                        <td>{{ payment.receipt_number }}</td>
+                        <td>{{ payment.amount }}</td>
+                        <td>{{ payment.payment_method }}</td>
+                        <td>{{ payment.payment_status }}</td>
+                        <td>
+                            <a href="{{ url_for('fees_receipt',
+                                               payment_id=payment.id) }}">
+                                Print Receipt
+                            </a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5">No payments recorded.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+</main>
+
+<script>
+    const method = document.getElementById("payment_method");
+    const reference = document.getElementById("transaction_reference");
+
+    function updateReference() {
+        reference.required =
+            method.value !== "" && method.value !== "Cash";
+    }
+
+    method.addEventListener("change", updateReference);
+    updateReference();
+</script>
+
+
+    <!-- EduSphere role navigation -->
+    {% include "components/edu_staff_sidebar.html" %}
+    <script src="{{ url_for('static', filename='js/edusphere_navigation.js') }}"></script>
+</body>
+</html>

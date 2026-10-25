@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Admission Records</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/admin.css') }}"
+    >
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}">
+</head>
+
+<body>
+
+<div class="main-content full-page">
+
+    <!-- ========================================= -->
+    <!-- PAGE HEADER -->
+    <!-- ========================================= -->
+
+    <div class="page-header">
+
+        <div>
+
+            <h1>
+                Admission Records
+            </h1>
+
+            <p class="muted">
+                Manage student admissions, fee payments,
+                division allocation and admission confirmation.
+            </p>
+
+        </div>
+
+
+        <div class="header-actions">
+
+            <a
+                class="primary-btn"
+                href="{{ url_for('new_admission') }}"
+            >
+                New Admission
+            </a>
+
+            <a
+                class="secondary-btn"
+                href="{{ url_for('admin_dashboard') }}"
+            >
+                Dashboard
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- ========================================= -->
+    <!-- FLASH MESSAGES -->
+    <!-- ========================================= -->
+
+    {% with messages = get_flashed_messages() %}
+
+        {% if messages %}
+
+            {% for message in messages %}
+
+                <div class="alert">
+                    {{ message }}
+                </div>
+
+            {% endfor %}
+
+        {% endif %}
+
+    {% endwith %}
+
+
+    <!-- ========================================= -->
+    <!-- ADMISSION RECORDS -->
+    <!-- ========================================= -->
+
+    {% for item in results %}
+
+        {% if item.student %}
+
+            <div class="panel admission-panel">
+
+
+                <!-- ================================= -->
+                <!-- STUDENT INFORMATION -->
+                <!-- ================================= -->
+
+                <div class="admission-record">
+
+                    <div>
+
+                        <strong>
+                            Student
+                        </strong>
+
+                        <h2>
+                            {{ item.student.name }}
+                        </h2>
+
+                        <p class="muted">
+
+                            Admission Number:
+
+                            <strong>
+                                {{ item.student.admission_number }}
+                            </strong>
+
+                        </p>
+
+
+                        <p class="muted">
+
+                            Student ID:
+
+                            {% if item.student.student_id %}
+
+                                <strong>
+                                    {{ item.student.student_id }}
+                                </strong>
+
+                            {% else %}
+
+                                Not generated yet
+
+                            {% endif %}
+
+                        </p>
+
+                    </div>
+
+
+                    <!-- PREVIOUS RESULT -->
+
+                    <div>
+
+                        <strong>
+                            Previous Result
+                        </strong>
+
+                        <p>
+                            {{ item.record.previous_percentage }}%
+                        </p>
+
+                    </div>
+
+
+                    <!-- RECOMMENDED CLASS -->
+
+                    <div>
+
+                        <strong>
+                            Recommended
+                        </strong>
+
+                        <p>
+
+                            {% if item.recommended_class %}
+
+                                Class
+                                {{ item.recommended_class.standard }}
+                                -
+                                {{ item.recommended_class.division }}
+
+                            {% else %}
+
+                                N/A
+
+                            {% endif %}
+
+                        </p>
+
+                    </div>
+
+
+                    <!-- FINAL CLASS -->
+
+                    <div>
+
+                        <strong>
+                            Final Allocation
+                        </strong>
+
+                        <p>
+
+                            {% if item.final_class %}
+
+                                Class
+                                {{ item.final_class.standard }}
+                                -
+                                {{ item.final_class.division }}
+
+                            {% else %}
+
+                                N/A
+
+                            {% endif %}
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ================================= -->
+                <!-- STATUS INFORMATION -->
+                <!-- ================================= -->
+
+                <div class="admission-status-grid">
+
+
+                    <!-- ADMISSION STATUS -->
+
+                    <div class="status-card">
+
+                        <strong>
+                            Admission Status
+                        </strong>
+
+                        {% if item.student.admission_status == "Confirmed" %}
+
+                            <p class="status-paid">
+                                Confirmed
+                            </p>
+
+                        {% else %}
+
+                            <p class="status-pending">
+                                Pending
+                            </p>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <!-- ADMISSION FEE -->
+
+                    <div class="status-card">
+
+                        <strong>
+                            Admission Fee
+                        </strong>
+
+                        <p>
+
+                            ₹{{ "%.2f"|format(
+                                item.student.admission_fee or 0
+                            ) }}
+
+                        </p>
+
+                    </div>
+
+
+                    <!-- FEE STATUS -->
+
+                    <div class="status-card">
+
+                        <strong>
+                            Fee Status
+                        </strong>
+
+                        {% if item.student.fee_status == "Paid" %}
+
+                            <p class="status-paid">
+                                Paid
+                            </p>
+
+                        {% else %}
+
+                            <p class="status-pending">
+                                Pending
+                            </p>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <!-- FEE DATE -->
+
+                    <div class="status-card">
+
+                        <strong>
+                            Fee Paid Date
+                        </strong>
+
+                        <p>
+
+                            {% if item.student.fee_paid_date %}
+
+                                {{ item.student.fee_paid_date }}
+
+                            {% else %}
+
+                                Not paid yet
+
+                            {% endif %}
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ================================= -->
+                <!-- PARENT INFORMATION -->
+                <!-- ================================= -->
+
+                <div class="reason-box">
+
+                    <strong>
+                        Parent / Guardian Information
+                    </strong>
+
+
+                    <p>
+
+                        Name:
+
+                        <strong>
+                            {{ item.record.guardian_name or "N/A" }}
+                        </strong>
+
+                    </p>
+
+
+                    <p>
+
+                        Relationship:
+
+                        {{ item.record.guardian_relationship or "N/A" }}
+
+                    </p>
+
+
+                    {% if item.record.guardian_phone %}
+
+                        <p>
+
+                            Phone:
+
+                            {{ item.record.guardian_phone }}
+
+                        </p>
+
+                    {% endif %}
+
+
+                    {% if item.record.guardian_email %}
+
+                        <p>
+
+                            Email:
+
+                            {{ item.record.guardian_email }}
+
+                        </p>
+
+                    {% endif %}
+
+                </div>
+
+
+                <!-- ================================= -->
+                <!-- ALLOCATION REASON -->
+                <!-- ================================= -->
+
+                <div class="reason-box">
+
+                    <strong>
+                        Automatic Allocation Reason
+                    </strong>
+
+                    <p>
+                        {{ item.record.reason }}
+                    </p>
+
+                </div>
+
+
+                <!-- ================================= -->
+                <!-- PENDING PAYMENT -->
+                <!-- ================================= -->
+
+                {% if item.student.fee_status != "Paid" %}
+
+                    <div class="payment-action-box">
+
+                        <div>
+
+                            <h3>
+                                Admission Fee Pending
+                            </h3>
+
+                            <p class="muted">
+
+                                Admission is currently pending.
+
+                            </p>
+
+                            <p class="muted">
+
+                                Confirm the payment only after
+                                the school has received the
+                                admission fee.
+
+                            </p>
+
+                            <p class="muted">
+
+                                After confirmation, the system
+                                will automatically:
+
+                            </p>
+
+                            <ul>
+
+                                <li>
+                                    Mark the admission fee as paid
+                                </li>
+
+                                <li>
+                                    Confirm the student's admission
+                                </li>
+
+                                <li>
+                                    Activate the student
+                                </li>
+
+                                <li>
+                                    Generate the permanent Student ID
+                                </li>
+
+                                <li>
+                                    Create or link the Parent account
+                                </li>
+
+                                <li>
+                                    Generate Parent login credentials
+                                    for a new parent
+                                </li>
+
+                            </ul>
+
+                        </div>
+
+
+                        <a href="{{ url_for('admin_fee_verify') }}"
+                           class="primary-btn normal-button">
+                            Verify Fee Receipt & Confirm Admission
+                        </a>
+
+                    </div>
+
+
+                <!-- ================================= -->
+                <!-- CONFIRMED ADMISSION -->
+                <!-- ================================= -->
+
+                {% else %}
+
+                    <div class="confirmation-box">
+
+                        <h3>
+                            Admission Confirmed
+                        </h3>
+
+
+                        <p>
+
+                            Student ID:
+
+                            <strong>
+                                {{ item.student.student_id }}
+                            </strong>
+
+                        </p>
+
+
+                        <p>
+
+                            Admission Number:
+
+                            <strong>
+                                {{ item.student.admission_number }}
+                            </strong>
+
+                        </p>
+
+
+                        <p>
+
+                            Fee Status:
+
+                            <strong>
+                                Paid
+                            </strong>
+
+                        </p>
+
+
+                        {% if item.student.fee_paid_date %}
+
+                            <p>
+
+                                Payment Date:
+
+                                <strong>
+                                    {{ item.student.fee_paid_date }}
+                                </strong>
+
+                            </p>
+
+                        {% endif %}
+
+
+                        <p class="muted">
+
+                            The student is active and has been
+                            connected to the appropriate parent
+                            account.
+
+                        </p>
+
+                    </div>
+
+                {% endif %}
+
+
+            </div>
+
+        {% endif %}
+
+
+    {% else %}
+
+        <!-- ========================================= -->
+        <!-- NO ADMISSIONS -->
+        <!-- ========================================= -->
+
+        <div class="panel">
+
+            <h2>
+                No Admission Records
+            </h2>
+
+            <p class="muted">
+
+                No student admission applications
+                have been submitted yet.
+
+            </p>
+
+
+            <a
+                class="primary-btn"
+                href="{{ url_for('new_admission') }}"
+            >
+                Create First Admission
+            </a>
+
+        </div>
+
+    {% endfor %}
+
+</div>
+
+
+<!-- ============================================= -->
+<!-- PAYMENT CONFIRMATION -->
+<!-- ============================================= -->
+
+<script>
+
+    function confirmPayment() {
+
+        return confirm(
+
+            "Have you received the admission fee?\n\n" +
+
+            "Click OK only after payment has been received.\n\n" +
+
+            "The system will confirm the admission, " +
+
+            "generate the Student ID and create or link " +
+
+            "the Parent login account."
+
+        );
+
+    }
+
+</script>
+
+
+</body>
+
+</html>

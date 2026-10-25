@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Add Timetable Period</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/admin.css') }}"
+    >
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}">
+
+    <!-- EduSphere shared navigation -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edusphere_navigation.css') }}">
+    <!-- EduSphere professional theme -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edusphere_professional_theme.css') }}">
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_theme.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_portals.css') }}">
+</head>
+
+
+<body>
+<div id="nova-topbar"><div class="nova-brand"><span class="nova-mark">✦</span><span>EduSphere AI <span class="nova-tag">School Management</span></span></div><div class="nova-right"><span class="nova-pill">School Portal</span></div></div>
+
+
+<div class="form-page">
+
+
+    <div class="form-container">
+
+
+        <!-- ==========================================
+             HEADER
+        =========================================== -->
+
+        <div class="page-header">
+
+            <div>
+
+                <p class="page-label">
+                    WEEKLY TIMETABLE
+                </p>
+
+                <h1>
+                    Add Period
+                </h1>
+
+                <p class="muted">
+
+                    Assign a teacher and subject
+                    to a class period.
+
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- ==========================================
+             FLASH
+        =========================================== -->
+
+        {% with messages = get_flashed_messages() %}
+
+            {% if messages %}
+
+                {% for message in messages %}
+
+                    <div class="alert">
+                        {{ message }}
+                    </div>
+
+                {% endfor %}
+
+            {% endif %}
+
+        {% endwith %}
+
+
+        <!-- ==========================================
+             FORM
+        =========================================== -->
+
+        <form method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+
+            <!-- CLASS -->
+
+            <div>
+
+                <label>
+                    Class
+                </label>
+
+                <select
+                    name="class_id"
+                    required
+                >
+
+                    <option value="">
+                        Select Class
+                    </option>
+
+                    {% for school_class in classes %}
+
+                        <option
+                            value="{{ school_class.id }}"
+                        >
+
+                            Standard
+                            {{ school_class.standard }}
+
+                            -
+
+                            {{ school_class.division }}
+
+                            |
+
+                            {{ school_class.academic_year }}
+
+                        </option>
+
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+
+            <!-- TEACHER -->
+
+            <div style="margin-top: 20px;">
+
+                <label>
+                    Teacher
+                </label>
+
+                <select
+                    name="teacher_id"
+                    required
+                >
+
+                    <option value="">
+                        Select Teacher
+                    </option>
+
+                    {% for teacher in teachers %}
+
+                        <option
+                            value="{{ teacher.id }}"
+                        >
+
+                            {{ teacher.employee_id }}
+
+                        </option>
+
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+
+            <!-- SUBJECT -->
+
+            <div style="margin-top: 20px;">
+
+                <label>
+                    Subject
+                </label>
+
+                <select
+                    name="subject_id"
+                    required
+                >
+
+                    <option value="">
+                        Select Subject
+                    </option>
+
+                    {% for subject in subjects %}
+
+                        <option
+                            value="{{ subject.id }}"
+                        >
+
+                            {{ subject.name }}
+
+                            |
+
+                            {{ subject.code }}
+
+                        </option>
+
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+
+            <!-- DAY -->
+
+            <div style="margin-top: 20px;">
+
+                <label>
+                    Day
+                </label>
+
+                <select
+                    name="day"
+                    required
+                >
+
+                    <option value="">
+                        Select Day
+                    </option>
+
+                    {% for day in days %}
+
+                        <option value="{{ day }}">
+
+                            {{ day }}
+
+                        </option>
+
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+
+            <!-- PERIOD -->
+
+            <div style="margin-top: 20px;">
+
+                <label>
+                    Period
+                </label>
+
+                <select
+                    name="period_number"
+                    required
+                >
+
+                    <option value="">
+                        Select Period
+                    </option>
+
+                    {% for period in range(1, 9) %}
+
+                        <option value="{{ period }}">
+
+                            Period {{ period }}
+
+                        </option>
+
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+
+            <!-- START TIME -->
+
+            <div style="margin-top: 20px;">
+
+                <label>
+                    Start Time
+                </label>
+
+                <input
+                    type="time"
+                    name="start_time"
+                    required
+                >
+
+            </div>
+
+
+            <!-- END TIME -->
+
+            <div style="margin-top: 20px;">
+
+                <label>
+                    End Time
+                </label>
+
+                <input
+                    type="time"
+                    name="end_time"
+                    required
+                >
+
+            </div>
+
+
+            <!-- ROOM -->
+
+            <div style="margin-top: 20px;">
+
+                <label>
+                    Room
+                </label>
+
+                <input
+                    type="text"
+                    name="room"
+                    placeholder="Example: Room 201"
+                >
+
+            </div>
+
+
+            <!-- INFORMATION -->
+
+            <div
+                class="reason-box"
+                style="margin-top: 25px;"
+            >
+
+                <strong>
+                    Smart Conflict Checking
+                </strong>
+
+                <p class="muted">
+
+                    The selected teacher must already
+                    be assigned to this class and
+                    subject.
+
+                </p>
+
+                <p class="muted">
+
+                    The system will prevent a teacher
+                    from being scheduled in two classes
+                    at the same time.
+
+                </p>
+
+            </div>
+
+
+            <!-- BUTTONS -->
+
+            <div style="margin-top: 25px;">
+
+                <button
+                    type="submit"
+                    class="primary-btn normal-button"
+                >
+                    Add Period
+                </button>
+
+
+                <a
+                    href="{{ url_for('admin_timetable') }}"
+                    class="secondary-btn"
+                >
+                    Cancel
+                </a>
+
+            </div>
+
+        </form>
+
+
+    </div>
+
+</div>
+
+
+    <!-- EduSphere role navigation -->
+    {% include "components/edu_admin_sidebar.html" %}
+    <script src="{{ url_for('static', filename='js/edusphere_navigation.js') }}"></script>
+</body>
+
+</html>

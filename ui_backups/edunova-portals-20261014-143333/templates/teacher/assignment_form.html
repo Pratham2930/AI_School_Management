@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>{{ page_title }} | AI School Management</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#f4f7fb;color:#172033}.layout{min-height:100vh;display:flex}.sidebar{width:250px;background:#102a56;color:#fff;padding:28px 20px}.brand{font-size:21px;font-weight:700;margin-bottom:30px}.teacher{background:rgba(255,255,255,.09);padding:15px;border-radius:12px;margin-bottom:24px}.teacher strong{display:block;margin-bottom:4px}.teacher span{font-size:13px;opacity:.8}.nav{display:block;color:#fff;text-decoration:none;padding:12px 14px;border-radius:9px;margin:7px 0;font-size:14px}.nav:hover,.nav.active{background:rgba(255,255,255,.13)}.main{flex:1;padding:30px}.header{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:24px}.header h1{margin:0 0 6px;font-size:28px}.muted{color:#6b7280;font-size:14px}.panel{max-width:900px;background:#fff;border:1px solid #e6ebf2;border-radius:15px;padding:24px}.flash{max-width:900px;background:#fff8df;border:1px solid #f1df99;padding:12px 15px;border-radius:10px;margin-bottom:18px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:17px}.field{margin-bottom:18px}.field.full{grid-column:1/-1}.field label{display:block;font-size:13px;font-weight:700;margin-bottom:7px}.field input,.field select,.field textarea{width:100%;border:1px solid #ccd5e1;border-radius:9px;padding:11px 12px;background:#fff;font:inherit}.field input,.field select{height:44px}.field textarea{min-height:170px;resize:vertical}.actions{display:flex;justify-content:flex-end;gap:10px;margin-top:5px}.btn{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:0 18px;border:0;border-radius:9px;background:#174ea6;color:#fff;text-decoration:none;cursor:pointer;font-size:14px}.btn.light{background:#eaf1fb;color:#174ea6}@media(max-width:700px){.layout{display:block}.sidebar{width:100%}.main{padding:18px 12px}.header{align-items:flex-start;flex-direction:column}.grid{grid-template-columns:1fr}.field.full{grid-column:auto}}
+</style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}">
+
+    <!-- EduSphere shared navigation -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edusphere_navigation.css') }}">
+    <!-- EduSphere professional theme -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edusphere_professional_theme.css') }}">
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_theme.css') }}">
+</head>
+<body>
+<div id="nova-topbar"><div class="nova-brand"><span class="nova-mark">✦</span><span>EduSphere AI <span class="nova-tag">School Management</span></span></div><div class="nova-right"><span class="nova-pill">School Portal</span></div></div>
+<div class="layout"><aside class="sidebar"><div class="brand">AI School Management</div><div class="teacher"><strong>{{ current_user.name }}</strong><span>{{ teacher.employee_id }}</span></div><a class="nav" href="{{ url_for('teacher_dashboard') }}">Dashboard</a><a class="nav" href="{{ url_for('teacher_students') }}">My Students</a><a class="nav" href="{{ url_for('teacher_attendance') }}">Take Attendance</a><a class="nav" href="{{ url_for('teacher_marks') }}">Exams & Marks</a><a class="nav active" href="{{ url_for('teacher_assignments') }}">Homework & Assignments</a><a class="nav" href="{{ url_for('teacher_change_password') }}">Change Password</a><a class="nav" href="{{ url_for('teacher_logout') }}">Logout</a></aside>
+<main class="main"><div class="header"><div><h1>{{ page_title }}</h1><div class="muted">Only class and subject combinations assigned to you can be used.</div></div><a class="btn light" href="{{ url_for('teacher_assignments') }}">Back to Assignments</a></div>
+{% with messages=get_flashed_messages() %}{% if messages %}{% for message in messages %}<div class="flash">{{ message }}</div>{% endfor %}{% endif %}{% endwith %}
+<div class="panel"><form method="post">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><div class="grid">
+<div class="field"><label>Assigned Class</label><select name="class_id" required onchange="window.location='{{ url_for('teacher_assignment_edit', assignment_id=assignment.id) if assignment else url_for('teacher_assignment_add') }}?class_id='+this.value;"><option value="">Choose class</option>{% for school_class in assigned_classes %}<option value="{{ school_class.id }}" {% if selected_class_id==school_class.id %}selected{% endif %}>{{ class_display_name(school_class) }}</option>{% endfor %}</select></div>
+<div class="field"><label>Assigned Subject</label><select name="subject_id" required {% if not selected_class_id %}disabled{% endif %}><option value="">Choose subject</option>{% for subject in available_subjects %}<option value="{{ subject.id }}" {% if selected_subject_id==subject.id %}selected{% endif %}>{{ subject.name }}</option>{% endfor %}</select></div>
+<div class="field full"><label>Assignment Title</label><input type="text" name="title" maxlength="200" required value="{{ request.form.get('title', assignment.title if assignment else '') }}" placeholder="Example: Chapter 5 Mathematics Practice"></div>
+<div class="field full"><label>Description / Instructions</label><textarea name="description" required placeholder="Enter homework questions, instructions, chapters, or task details...">{{ request.form.get('description', assignment.description if assignment else '') }}</textarea></div>
+<div class="field"><label>Assigned Date</label><input type="date" name="assigned_date" required value="{{ request.form.get('assigned_date', assignment.assigned_date.isoformat() if assignment else today.isoformat()) }}"></div>
+<div class="field"><label>Due Date</label><input type="date" name="due_date" required value="{{ request.form.get('due_date', assignment.due_date.isoformat() if assignment else '') }}"></div>
+{% if assignment %}<div class="field"><label>Status</label><select name="status"><option value="Active" {% if request.form.get('status', assignment.status)=='Active' %}selected{% endif %}>Active</option><option value="Completed" {% if request.form.get('status', assignment.status)=='Completed' %}selected{% endif %}>Completed</option></select></div>{% endif %}
+</div><div class="actions"><a class="btn light" href="{{ url_for('teacher_assignments') }}">Cancel</a><button class="btn" type="submit">{% if assignment %}Update Assignment{% else %}Create Assignment{% endif %}</button></div></form></div>
+</main></div>
+    <!-- EduSphere role navigation -->
+    {% include "components/edu_teacher_sidebar.html" %}
+    <script src="{{ url_for('static', filename='js/edusphere_navigation.js') }}"></script>
+</body></html>

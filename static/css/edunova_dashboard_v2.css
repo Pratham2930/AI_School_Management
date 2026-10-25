@@ -1,0 +1,73 @@
+/* EduNova dashboard v2 — intentionally scoped to admin dashboard only */
+body.nova-admin-dashboard { --nova-blue:#2563eb; --nova-navy:#0f172a; --nova-muted:#64748b; --nova-line:#e2e8f0; --nova-bg:#f5f7fb; margin:0!important; background:var(--nova-bg)!important; color:var(--nova-navy)!important; font-family:Inter,'Segoe UI',Arial,sans-serif!important; }
+body.nova-admin-dashboard * { box-sizing:border-box; }
+body.nova-admin-dashboard > .sidebar,body.nova-admin-dashboard .sidebar:not(#edu-sidebar){display:none!important}
+body.nova-admin-dashboard .nova-global-header { height:72px; background:#fff; border-bottom:1px solid var(--nova-line); display:flex;align-items:center;justify-content:space-between;gap:18px;padding:0 clamp(20px,4vw,64px);position:relative;z-index:1; }
+body.nova-admin-dashboard .nova-global-brand {display:flex;align-items:center;gap:10px;font-size:19px;font-weight:750;white-space:nowrap}
+body.nova-admin-dashboard .nova-global-brand strong{color:var(--nova-blue)}
+body.nova-admin-dashboard .nova-brand-icon{width:35px;height:35px;display:grid;place-items:center;background:var(--nova-blue);color:#fff;border-radius:10px;font-size:21px}
+body.nova-admin-dashboard .nova-brand-divider{width:1px;height:22px;background:var(--nova-line);margin:0 8px}
+body.nova-admin-dashboard .nova-brand-subtitle{font-size:13px;color:var(--nova-muted);font-weight:500}
+body.nova-admin-dashboard .nova-global-right{display:flex;align-items:center;gap:10px;color:var(--nova-muted);font-size:13px}
+body.nova-admin-dashboard .nova-global-right a{color:#334155;margin-left:18px;text-decoration:none;font-weight:650}
+body.nova-admin-dashboard .nova-status-dot{width:8px;height:8px;border-radius:50%;background:#22c55e}
+body.nova-admin-dashboard .main-content {margin:0 auto!important;padding:34px clamp(20px,4vw,64px) 110px!important;width:100%!important;max-width:1650px!important;min-height:calc(100vh - 72px);background:transparent!important;}
+body.nova-admin-dashboard .nova-header{display:flex;justify-content:space-between;align-items:center;gap:22px;margin:0 0 34px}
+body.nova-admin-dashboard .nova-breadcrumb{font-size:12px;color:#64748b;margin-bottom:11px;font-weight:600}
+body.nova-admin-dashboard .nova-breadcrumb span{padding:0 8px;color:#cbd5e1}
+body.nova-admin-dashboard .nova-header h1{font-size:clamp(26px,2.5vw,36px);letter-spacing:-.9px;line-height:1.2;margin:0 0 9px;font-weight:800;color:var(--nova-navy)}
+body.nova-admin-dashboard .nova-header p{margin:0;color:var(--nova-muted);font-size:14px}
+body.nova-admin-dashboard .nova-header-actions{display:flex;align-items:center;gap:10px;flex-shrink:0}
+body.nova-admin-dashboard .nova-header-actions a{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;padding:11px 17px;border-radius:9px;font-size:13px;font-weight:700;white-space:nowrap}
+body.nova-admin-dashboard .nova-header-link{color:#334155;background:#fff;border:1px solid var(--nova-line)}
+body.nova-admin-dashboard .nova-header-primary{background:var(--nova-blue);color:white!important;box-shadow:0 5px 12px #2563eb22}
+body.nova-admin-dashboard .nova-avatar{height:39px;width:39px;border-radius:50%;background:#dbeafe;color:#1d4ed8;display:grid;place-items:center;font-weight:800;margin-left:5px}
+body.nova-admin-dashboard .nova-section-title{display:flex;justify-content:space-between;align-items:center;margin:0 0 18px;gap:15px}
+body.nova-admin-dashboard .nova-section-title h2{font-size:19px;letter-spacing:-.35px;margin:0 0 5px;font-weight:750}
+body.nova-admin-dashboard .nova-section-title p{font-size:12px;color:var(--nova-muted);margin:0}
+body.nova-admin-dashboard .nova-live-pill{font-size:11px;background:#eaf7ef;color:#15803d;border:1px solid #bbf7d0;padding:6px 10px;border-radius:30px;font-weight:700;white-space:nowrap}
+body.nova-admin-dashboard .stats-grid{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:18px!important;margin:0 0 30px!important}
+body.nova-admin-dashboard .stat-card{position:relative;display:flex!important;flex-direction:column;align-items:flex-start!important;justify-content:center;gap:12px;min-height:138px;padding:24px!important;background:#fff!important;border:1px solid var(--nova-line)!important;border-radius:15px!important;box-shadow:0 2px 9px #0f172a08!important;overflow:hidden}
+body.nova-admin-dashboard .stat-card:before{content:'◈';position:absolute;right:22px;top:19px;width:38px;height:38px;display:grid;place-items:center;border-radius:10px;background:#eff6ff;color:#2563eb;font-size:21px}
+body.nova-admin-dashboard .stat-card.stat-students:before{content:'♙'}
+body.nova-admin-dashboard .stat-card.stat-teachers:before{content:'✎';background:#f0fdf4;color:#16a34a}
+body.nova-admin-dashboard .stat-card.stat-parents:before{content:'♡';background:#fdf2f8;color:#db2777}
+body.nova-admin-dashboard .stat-card.stat-staff:before{content:'♧';background:#fff7ed;color:#ea580c}
+body.nova-admin-dashboard .stat-card.stat-classes:before{content:'▦';background:#f5f3ff;color:#7c3aed}
+body.nova-admin-dashboard .stat-card.stat-subjects:before{content:'▤';background:#ecfeff;color:#0891b2}
+body.nova-admin-dashboard .stat-card span{font-size:13px!important;font-weight:650!important;color:var(--nova-muted)!important;letter-spacing:0!important}
+body.nova-admin-dashboard .stat-card h2{font-size:34px!important;line-height:1.15!important;color:var(--nova-navy)!important;margin:0!important;font-weight:800!important;letter-spacing:-1px}
+body.nova-admin-dashboard .panel{background:#fff!important;border:1px solid var(--nova-line)!important;border-radius:15px!important;padding:26px!important;box-shadow:0 2px 9px #0f172a08!important;margin-bottom:24px!important;color:var(--nova-navy)!important}
+body.nova-admin-dashboard .panel-title{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:20px!important}
+body.nova-admin-dashboard .panel h2,body.nova-admin-dashboard .panel-title h2{font-size:19px!important;color:var(--nova-navy)!important;letter-spacing:-.3px;margin:0 0 6px!important;font-weight:750!important}
+body.nova-admin-dashboard .muted{color:var(--nova-muted)!important;font-size:13px!important;line-height:1.6}
+body.nova-admin-dashboard .quick-grid{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:13px!important}
+body.nova-admin-dashboard .quick-grid a{display:block;background:#f8fafc!important;border:1px solid #e8edf4!important;border-radius:12px!important;padding:18px!important;text-decoration:none!important;color:var(--nova-navy)!important;min-width:0;transition:transform .15s,border-color .15s,box-shadow .15s}
+body.nova-admin-dashboard .quick-grid a:hover{transform:translateY(-2px);border-color:#93c5fd!important;box-shadow:0 8px 20px #2563eb10!important}
+body.nova-admin-dashboard .quick-grid a strong{display:block;font-size:13px!important;line-height:1.5;color:#1e293b!important;margin:0 0 7px;font-weight:750}
+body.nova-admin-dashboard .quick-grid a p{margin:0;color:var(--nova-muted)!important;font-size:12px!important;line-height:1.6}
+body.nova-admin-dashboard .dashboard-grid{display:grid!important;grid-template-columns:1fr 1fr!important;gap:22px!important;align-items:start;margin:0 0 4px!important}
+body.nova-admin-dashboard .dashboard-grid .panel{height:100%;min-width:0}
+body.nova-admin-dashboard .health-score{font-size:27px!important;font-weight:800!important;color:#2563eb!important}
+body.nova-admin-dashboard .health-score small{font-size:12px;color:#64748b}
+body.nova-admin-dashboard .health-status{display:inline-block;background:#eff6ff;color:#1d4ed8;border-radius:25px;padding:6px 12px;font-weight:700;margin-bottom:22px}
+body.nova-admin-dashboard .metric{display:flex;justify-content:space-between;gap:10px;font-size:13px;color:#475569;margin:14px 0 8px}
+body.nova-admin-dashboard .metric strong{color:#0f172a}
+body.nova-admin-dashboard .progress{height:9px!important;background:#e2e8f0!important;border-radius:99px!important;overflow:hidden;margin-bottom:15px}
+body.nova-admin-dashboard .progress-bar{height:100%;background:#2563eb!important;border-radius:99px}
+body.nova-admin-dashboard .insight{background:#f8fafc!important;border:1px solid #e2e8f0!important;border-left:3px solid #2563eb!important;border-radius:9px;padding:13px 15px;margin:11px 0;font-size:13px;line-height:1.6;color:#334155}
+body.nova-admin-dashboard .event-row{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;padding:15px 0;border-bottom:1px solid #f1f5f9}
+body.nova-admin-dashboard .event-row:last-child{border-bottom:0}
+body.nova-admin-dashboard .event-row strong{font-size:13px;color:#1e293b}
+body.nova-admin-dashboard .event-row > span{white-space:nowrap;color:#64748b;font-size:12px}
+body.nova-admin-dashboard .primary-link{background:#eff6ff;color:#1d4ed8!important;padding:9px 13px;border-radius:9px;font-size:12px;font-weight:750;text-decoration:none}
+body.nova-admin-dashboard .alert{background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:13px 16px;color:#1e40af;margin:0 0 18px}
+body.nova-admin-dashboard .school-ai-button{position:fixed;right:20px;bottom:20px;z-index:9999;display:flex;align-items:center;gap:9px;background:#0f172a;color:white!important;border-radius:30px;padding:12px 17px;font-size:13px;font-weight:700;text-decoration:none;box-shadow:0 8px 25px #0f172a30;transition:transform .2s}
+body.nova-admin-dashboard .school-ai-button:hover{transform:translateY(-3px)}
+body.nova-admin-dashboard .school-ai-icon{display:grid;place-items:center;width:28px;height:28px;background:#fff;color:#1d4ed8;border-radius:50%;font-size:11px;font-weight:800}
+/* Maintain the installed EduSphere drawer, without creating a second menu */
+body.nova-admin-dashboard #edu-sidebar{position:fixed!important;z-index:11002!important}
+body.nova-admin-dashboard #edu-menu-trigger{z-index:11000!important}
+@media(max-width:1100px){body.nova-admin-dashboard .quick-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}}
+@media(max-width:850px){body.nova-admin-dashboard .stats-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}body.nova-admin-dashboard .quick-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}body.nova-admin-dashboard .dashboard-grid{grid-template-columns:1fr!important}body.nova-admin-dashboard .nova-header{align-items:flex-start;flex-direction:column}}
+@media(max-width:600px){body.nova-admin-dashboard .nova-global-header{height:64px;padding:0 16px}body.nova-admin-dashboard .nova-brand-subtitle,body.nova-admin-dashboard .nova-brand-divider,body.nova-admin-dashboard .nova-global-right{display:none}body.nova-admin-dashboard .main-content{padding:24px 15px 100px!important}body.nova-admin-dashboard .stats-grid{gap:10px!important}body.nova-admin-dashboard .stat-card{padding:17px!important;min-height:118px}body.nova-admin-dashboard .stat-card h2{font-size:27px!important}body.nova-admin-dashboard .stat-card:before{right:12px;top:12px;width:30px;height:30px;font-size:16px}body.nova-admin-dashboard .quick-grid{grid-template-columns:1fr!important}body.nova-admin-dashboard .panel{padding:19px!important}body.nova-admin-dashboard .nova-header-actions{flex-wrap:wrap}body.nova-admin-dashboard .school-ai-button{right:12px;bottom:12px}}

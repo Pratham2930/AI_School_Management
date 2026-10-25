@@ -1,0 +1,2263 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        AI Subject Setup | AI School Management
+    </title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f7fb;
+            color: #1f2937;
+        }
+
+        .page-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+
+        /* =====================================================
+           HEADER
+        ===================================================== */
+
+        .top-header {
+            background: linear-gradient(
+                135deg,
+                #172554,
+                #1d4ed8
+            );
+
+            color: white;
+            border-radius: 18px;
+            padding: 28px 32px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+
+            margin-bottom: 24px;
+
+            box-shadow:
+                0 10px 30px
+                rgba(15, 23, 42, 0.12);
+        }
+
+        .top-header h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .top-header p {
+            color: #dbeafe;
+            font-size: 14px;
+            line-height: 1.6;
+            max-width: 800px;
+        }
+
+        .header-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .header-button {
+            display: inline-block;
+
+            text-decoration: none;
+
+            padding: 11px 16px;
+
+            border-radius: 9px;
+
+            background: white;
+            color: #1d4ed8;
+
+            font-size: 13px;
+            font-weight: 700;
+
+            border: none;
+            cursor: pointer;
+        }
+
+        .header-button:hover {
+            background: #eff6ff;
+        }
+
+        /* =====================================================
+           FLASH
+        ===================================================== */
+
+        .flash-container {
+            margin-bottom: 20px;
+        }
+
+        .flash-message {
+            padding: 14px 18px;
+
+            background: #eff6ff;
+
+            color: #1e3a8a;
+
+            border-left:
+                5px solid #2563eb;
+
+            border-radius: 8px;
+
+            margin-bottom: 10px;
+
+            font-size: 14px;
+
+            line-height: 1.5;
+        }
+
+        /* =====================================================
+           CARD
+        ===================================================== */
+
+        .card {
+            background: white;
+
+            border:
+                1px solid #e5e7eb;
+
+            border-radius: 16px;
+
+            margin-bottom: 24px;
+
+            box-shadow:
+                0 8px 25px
+                rgba(15, 23, 42, 0.05);
+
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 20px 24px;
+
+            border-bottom:
+                1px solid #e5e7eb;
+        }
+
+        .card-header h2 {
+            font-size: 19px;
+            margin-bottom: 6px;
+        }
+
+        .card-header p {
+            font-size: 13px;
+            color: #64748b;
+            line-height: 1.6;
+        }
+
+        .card-body {
+            padding: 24px;
+        }
+
+        /* =====================================================
+           CLASS SELECTOR
+        ===================================================== */
+
+        .class-selector-grid {
+            display: grid;
+
+            grid-template-columns:
+                minmax(250px, 1fr)
+                auto;
+
+            gap: 15px;
+
+            align-items: end;
+        }
+
+        .field-group label {
+            display: block;
+
+            font-size: 13px;
+
+            font-weight: 700;
+
+            margin-bottom: 8px;
+
+            color: #374151;
+        }
+
+        .field-group select {
+            width: 100%;
+
+            padding: 11px 12px;
+
+            border:
+                1px solid #cbd5e1;
+
+            border-radius: 8px;
+
+            background: white;
+
+            font-size: 14px;
+
+            outline: none;
+        }
+
+        .field-group select:focus {
+            border-color: #2563eb;
+
+            box-shadow:
+                0 0 0 3px
+                rgba(37, 99, 235, 0.10);
+        }
+
+        .load-button {
+            border: none;
+
+            border-radius: 8px;
+
+            padding: 11px 20px;
+
+            background: #2563eb;
+
+            color: white;
+
+            font-size: 14px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+        }
+
+        .load-button:hover {
+            background: #1d4ed8;
+        }
+
+        /* =====================================================
+           CLASS INFO
+        ===================================================== */
+
+        .class-banner {
+            background: #eff6ff;
+
+            border:
+                1px solid #bfdbfe;
+
+            border-radius: 12px;
+
+            padding: 18px 20px;
+
+            margin-bottom: 20px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 20px;
+
+            flex-wrap: wrap;
+        }
+
+        .class-banner-title {
+            font-size: 17px;
+            font-weight: 800;
+            color: #1e3a8a;
+        }
+
+        .class-banner-subtitle {
+            font-size: 12px;
+            color: #64748b;
+            margin-top: 5px;
+        }
+
+        /* =====================================================
+           AUTO GENERATOR
+        ===================================================== */
+
+        .generator-panel {
+            background:
+                linear-gradient(
+                    135deg,
+                    #eef2ff,
+                    #eff6ff
+                );
+
+            border:
+                1px solid #c7d2fe;
+
+            border-radius: 14px;
+
+            padding: 20px;
+
+            margin-bottom: 22px;
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            gap: 20px;
+
+            flex-wrap: wrap;
+        }
+
+        .generator-info {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .generator-info h3 {
+            color: #1e3a8a;
+            font-size: 17px;
+            margin-bottom: 7px;
+        }
+
+        .generator-info p {
+            color: #475569;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .auto-button {
+            border: none;
+
+            background: #4f46e5;
+
+            color: white;
+
+            padding: 12px 20px;
+
+            border-radius: 9px;
+
+            font-size: 13px;
+
+            font-weight: 800;
+
+            cursor: pointer;
+        }
+
+        .auto-button:hover {
+            background: #4338ca;
+        }
+
+        .curriculum-button {
+            display: inline-block;
+
+            text-decoration: none;
+
+            border:
+                1px solid #4f46e5;
+
+            color: #4338ca;
+
+            background: white;
+
+            padding: 11px 17px;
+
+            border-radius: 9px;
+
+            font-size: 13px;
+
+            font-weight: 700;
+        }
+
+        .generator-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        /* =====================================================
+           SUMMARY
+        ===================================================== */
+
+        .summary-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    4,
+                    minmax(150px, 1fr)
+                );
+
+            gap: 15px;
+
+            margin-bottom: 22px;
+        }
+
+        .summary-card {
+            background: white;
+
+            border:
+                1px solid #e2e8f0;
+
+            border-radius: 13px;
+
+            padding: 18px;
+        }
+
+        .summary-label {
+            font-size: 11px;
+
+            text-transform: uppercase;
+
+            font-weight: 800;
+
+            letter-spacing: 0.5px;
+
+            color: #64748b;
+
+            margin-bottom: 9px;
+        }
+
+        .summary-value {
+            font-size: 24px;
+            font-weight: 800;
+            color: #172554;
+        }
+
+        .summary-small {
+            font-size: 11px;
+            color: #64748b;
+            margin-top: 5px;
+        }
+
+        /* =====================================================
+           CAPACITY
+        ===================================================== */
+
+        .capacity-box {
+            padding: 18px;
+
+            background: #f8fafc;
+
+            border:
+                1px solid #e2e8f0;
+
+            border-radius: 12px;
+
+            margin-bottom: 22px;
+        }
+
+        .capacity-top {
+            display: flex;
+
+            justify-content: space-between;
+
+            gap: 20px;
+
+            font-size: 13px;
+
+            font-weight: 700;
+
+            margin-bottom: 10px;
+        }
+
+        .capacity-track {
+            height: 12px;
+
+            background: #e2e8f0;
+
+            border-radius: 999px;
+
+            overflow: hidden;
+        }
+
+        .capacity-fill {
+            height: 100%;
+            width: 0;
+
+            background: #2563eb;
+
+            transition:
+                width 0.25s ease;
+        }
+
+        .capacity-fill.warning {
+            background: #f59e0b;
+        }
+
+        .capacity-fill.danger {
+            background: #dc2626;
+        }
+
+        .capacity-message {
+            margin-top: 9px;
+
+            font-size: 12px;
+
+            color: #64748b;
+        }
+
+        .capacity-message.danger {
+            color: #b91c1c;
+            font-weight: 700;
+        }
+
+        /* =====================================================
+           TABLE
+        ===================================================== */
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+
+            min-width: 1450px;
+
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: #f8fafc;
+        }
+
+        th {
+            text-align: left;
+
+            padding: 13px;
+
+            border-bottom:
+                1px solid #e2e8f0;
+
+            color: #475569;
+
+            font-size: 11px;
+
+            text-transform: uppercase;
+
+            letter-spacing: 0.4px;
+        }
+
+        td {
+            padding: 13px;
+
+            border-bottom:
+                1px solid #eef2f7;
+
+            vertical-align: top;
+
+            font-size: 13px;
+        }
+
+        tbody tr:hover {
+            background: #fafcff;
+        }
+
+        .subject-name {
+            font-size: 14px;
+            font-weight: 800;
+            color: #1e293b;
+        }
+
+        .subject-code {
+            color: #64748b;
+            font-size: 11px;
+            margin-top: 4px;
+        }
+
+        /* =====================================================
+           AI SCORE
+        ===================================================== */
+
+        .score-badge {
+            display: inline-block;
+
+            min-width: 52px;
+
+            text-align: center;
+
+            padding: 6px 9px;
+
+            border-radius: 999px;
+
+            background: #dbeafe;
+
+            color: #1d4ed8;
+
+            font-size: 12px;
+
+            font-weight: 800;
+
+            margin-bottom: 6px;
+        }
+
+        .score-reason {
+            max-width: 190px;
+
+            color: #64748b;
+
+            font-size: 11px;
+
+            line-height: 1.5;
+        }
+
+        /* =====================================================
+           INPUTS
+        ===================================================== */
+
+        .table-input {
+            width: 85px;
+
+            padding: 9px;
+
+            border:
+                1px solid #cbd5e1;
+
+            border-radius: 7px;
+
+            font-size: 13px;
+        }
+
+        .table-select {
+            min-width: 130px;
+
+            padding: 9px;
+
+            border:
+                1px solid #cbd5e1;
+
+            border-radius: 7px;
+
+            background: white;
+
+            font-size: 12px;
+        }
+
+        /* =====================================================
+           TEACHER
+        ===================================================== */
+
+        .teacher-select {
+            width: 250px;
+
+            padding: 9px;
+
+            border:
+                1px solid #cbd5e1;
+
+            border-radius: 7px;
+
+            background: white;
+
+            font-size: 12px;
+        }
+
+        .teacher-recommendation {
+            margin-top: 8px;
+
+            padding: 8px 10px;
+
+            border-radius: 7px;
+
+            background: #ecfdf5;
+
+            border:
+                1px solid #bbf7d0;
+
+            max-width: 250px;
+        }
+
+        .teacher-recommendation strong {
+            color: #166534;
+            font-size: 11px;
+        }
+
+        .teacher-recommendation p {
+            color: #475569;
+
+            font-size: 10px;
+
+            line-height: 1.4;
+
+            margin-top: 4px;
+        }
+
+        .no-teacher {
+            color: #b45309;
+
+            background: #fffbeb;
+
+            border:
+                1px solid #fde68a;
+
+            padding: 7px 9px;
+
+            border-radius: 7px;
+
+            font-size: 11px;
+
+            margin-top: 7px;
+
+            max-width: 250px;
+        }
+
+        /* =====================================================
+           BADGES
+        ===================================================== */
+
+        .configured-badge {
+            display: inline-block;
+
+            background: #dcfce7;
+
+            color: #166534;
+
+            padding: 5px 8px;
+
+            border-radius: 999px;
+
+            font-size: 10px;
+
+            font-weight: 800;
+        }
+
+        .suggested-badge {
+            display: inline-block;
+
+            background: #fef3c7;
+
+            color: #92400e;
+
+            padding: 5px 8px;
+
+            border-radius: 999px;
+
+            font-size: 10px;
+
+            font-weight: 800;
+        }
+
+        /* =====================================================
+           ACTIONS
+        ===================================================== */
+
+        .form-actions {
+            padding-top: 22px;
+
+            display: flex;
+
+            justify-content: space-between;
+
+            gap: 15px;
+
+            flex-wrap: wrap;
+
+            align-items: center;
+        }
+
+        .secondary-button {
+            display: inline-block;
+
+            text-decoration: none;
+
+            background: #f1f5f9;
+
+            color: #334155;
+
+            border:
+                1px solid #cbd5e1;
+
+            border-radius: 8px;
+
+            padding: 11px 16px;
+
+            font-size: 13px;
+
+            font-weight: 700;
+        }
+
+        .approve-button {
+            border: none;
+
+            border-radius: 9px;
+
+            padding: 12px 22px;
+
+            background: #16a34a;
+
+            color: white;
+
+            font-size: 14px;
+
+            font-weight: 800;
+
+            cursor: pointer;
+        }
+
+        .approve-button:hover {
+            background: #15803d;
+        }
+
+        .approve-button:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+        }
+
+        /* =====================================================
+           EMPTY
+        ===================================================== */
+
+        .empty-state {
+            text-align: center;
+
+            padding: 55px 20px;
+
+            color: #64748b;
+        }
+
+        .empty-state h3 {
+            color: #334155;
+            margin-bottom: 10px;
+        }
+
+        /* =====================================================
+           RESPONSIVE
+        ===================================================== */
+
+        @media (max-width: 1000px) {
+
+            .page-container {
+                padding: 18px;
+            }
+
+            .top-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .summary-grid {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+            .class-selector-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 520px) {
+
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .top-header h1 {
+                font-size: 23px;
+            }
+        }
+
+    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}">
+
+    <!-- EduSphere shared navigation -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edusphere_navigation.css') }}">
+    <!-- EduSphere professional theme -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_theme.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_portals.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_layout.css') }}">
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_unified.css') }}">
+</head>
+
+
+<body class="edn-unified">
+<!-- EduNova unified header -->
+<header class="edn-global-header" role="banner"><div class="edn-global-brand"><span class="edn-global-context">Administration</span></div><span class="edn-global-page">Ai Subject Setup</span></header>
+
+
+<div class="page-container">
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <div class="top-header">
+
+        <div>
+
+            <h1>
+                AI Subject & Teacher Setup
+            </h1>
+
+            <p>
+                Select a class, automatically load its
+                Standard and Stream curriculum, review AI
+                subject recommendations, assign suitable
+                teachers, and approve the configuration
+                before generating the timetable.
+            </p>
+
+        </div>
+
+
+        <div class="header-actions">
+
+            <a
+                href="{{ url_for('curriculum_generator') }}"
+                class="header-button"
+            >
+                Curriculum Generator
+            </a>
+
+
+            <a
+                href="{{ url_for('admin_subjects') }}"
+                class="header-button"
+            >
+                Subjects
+            </a>
+
+
+            <a
+                href="{{ url_for('admin_dashboard') }}"
+                class="header-button"
+            >
+                Dashboard
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         FLASH
+    ====================================================== -->
+
+    {% with messages = get_flashed_messages() %}
+
+        {% if messages %}
+
+            <div class="flash-container">
+
+                {% for message in messages %}
+
+                    <div class="flash-message">
+                        {{ message }}
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% endif %}
+
+    {% endwith %}
+
+
+    <!-- =====================================================
+         CLASS SELECTOR
+    ====================================================== -->
+
+    <div class="card">
+
+        <div class="card-header">
+
+            <h2>
+                Select Class
+            </h2>
+
+            <p>
+                Choose the class whose subjects and teachers
+                you want to configure.
+            </p>
+
+        </div>
+
+
+        <div class="card-body">
+
+            <form
+                method="GET"
+                action="{{ url_for('ai_subject_setup') }}"
+            >
+
+                <div class="class-selector-grid">
+
+                    <div class="field-group">
+
+                        <label for="class_id">
+                            Class
+                        </label>
+
+
+                        <select
+                            name="class_id"
+                            id="class_id"
+                            required
+                        >
+
+                            <option value="">
+                                Select Class
+                            </option>
+
+
+                            {% for school_class in classes %}
+
+                                <option
+                                    value="{{ school_class.id }}"
+
+                                    {% if selected_class and selected_class.id == school_class.id %}
+                                        selected
+                                    {% endif %}
+                                >
+
+                                    {{ class_display_name(school_class) }}
+
+                                </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+
+                    <button
+                        type="submit"
+                        class="load-button"
+                    >
+                        Load Class
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    {% if selected_class %}
+
+        <!-- =================================================
+             CLASS BANNER
+        ================================================== -->
+
+        <div class="class-banner">
+
+            <div>
+
+                <div class="class-banner-title">
+
+                    {{ class_display_name(selected_class) }}
+
+                </div>
+
+
+                <div class="class-banner-subtitle">
+
+                    Standard
+                    {{ selected_class.standard }}
+
+                    {% if selected_class.standard in [11, 12] %}
+
+                        |
+                        Stream:
+                        {{ selected_class.stream }}
+
+                    {% endif %}
+
+                    |
+                    Division:
+                    {{ selected_class.division }}
+
+                    |
+                    Academic Year:
+                    {{ selected_class.academic_year }}
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             AUTO SUBJECT GENERATOR
+        ================================================== -->
+
+        <div class="generator-panel">
+
+            <div class="generator-info">
+
+                <h3>
+                    Automatic Subject Generator
+                </h3>
+
+                <p>
+
+                    Automatically load the curriculum for
+
+                    Standard
+                    {{ selected_class.standard }}
+
+                    {% if selected_class.standard in [11, 12] %}
+
+                        {{ selected_class.stream }}
+
+                    {% endif %}
+
+                    into this class.
+
+                    The system will use the Curriculum Master
+                    periods and preferences, then the AI
+                    recommendation engine will suggest teachers.
+
+                </p>
+
+            </div>
+
+
+            <div class="generator-actions">
+
+                <a class="auto-button" href="{{ url_for('curriculum_generator') }}" title="Open the curriculum generator to review and apply changes">Open Curriculum Generator</a>
+
+
+                <a
+                    href="{{ url_for(
+                        'curriculum_generator',
+                        standard=selected_class.standard,
+                        stream=selected_class.stream or ''
+                    ) }}"
+                    class="curriculum-button"
+                >
+                    Edit Curriculum
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             SUMMARY
+        ================================================== -->
+
+        <div class="summary-grid">
+
+            <div class="summary-card">
+
+                <div class="summary-label">
+                    Class
+                </div>
+
+                <div class="summary-value">
+                    {{ selected_class.standard }}
+                </div>
+
+                <div class="summary-small">
+
+                    Division
+                    {{ selected_class.division }}
+
+                </div>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <div class="summary-label">
+                    Stream
+                </div>
+
+                <div
+                    class="summary-value"
+                    style="font-size: 18px;"
+                >
+
+                    {% if selected_class.standard in [11, 12] %}
+
+                        {{ selected_class.stream }}
+
+                    {% else %}
+
+                        General
+
+                    {% endif %}
+
+                </div>
+
+                <div class="summary-small">
+                    Curriculum group
+                </div>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <div class="summary-label">
+                    Configured Periods
+                </div>
+
+                <div class="summary-value">
+
+                    <span id="summaryPeriods">
+                        {{ total_configured_periods }}
+                    </span>
+
+                    / 40
+
+                </div>
+
+                <div class="summary-small">
+                    Weekly timetable capacity
+                </div>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <div class="summary-label">
+                    Subjects
+                </div>
+
+                <div
+                    class="summary-value"
+                    id="activeSubjects"
+                >
+                    0
+                </div>
+
+                <div class="summary-small">
+                    Subjects with weekly periods
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             SUBJECT CONFIGURATION
+        ================================================== -->
+
+        <div class="card">
+
+            <div class="card-header">
+
+                <h2>
+                    Subject & Teacher Configuration
+                </h2>
+
+                <p>
+                    Review the generated subjects and AI
+                    teacher recommendations. You can manually
+                    change periods, preferences, or teacher
+                    before approving.
+                </p>
+
+            </div>
+
+
+            <div class="card-body">
+
+                {% if rows %}
+
+                    <form
+                        method="POST"
+                        action="{{ url_for(
+                            'ai_subject_setup',
+                            class_id=selected_class.id
+                        ) }}"
+                        id="subjectSetupForm"
+                    >
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                        <input
+                            type="hidden"
+                            name="class_id"
+                            value="{{ selected_class.id }}"
+                        >
+
+
+                        <!-- =================================
+                             CAPACITY
+                        ================================== -->
+
+                        <div class="capacity-box">
+
+                            <div class="capacity-top">
+
+                                <span>
+                                    Weekly Timetable Capacity
+                                </span>
+
+                                <span>
+
+                                    <span id="capacityValue">
+                                        {{ total_configured_periods }}
+                                    </span>
+
+                                    / 40 periods
+
+                                </span>
+
+                            </div>
+
+
+                            <div class="capacity-track">
+
+                                <div
+                                    class="capacity-fill"
+                                    id="capacityFill"
+                                ></div>
+
+                            </div>
+
+
+                            <div
+                                class="capacity-message"
+                                id="capacityMessage"
+                            >
+                                Maximum 40 periods per week.
+                            </div>
+
+                        </div>
+
+
+                        <!-- =================================
+                             TABLE
+                        ================================== -->
+
+                        <div class="table-wrapper">
+
+                            <table>
+
+                                <thead>
+
+                                    <tr>
+
+                                        <th>
+                                            Subject
+                                        </th>
+
+                                        <th>
+                                            Status
+                                        </th>
+
+                                        <th>
+                                            AI Subject Score
+                                        </th>
+
+                                        <th>
+                                            Periods / Week
+                                        </th>
+
+                                        <th>
+                                            Max / Day
+                                        </th>
+
+                                        <th>
+                                            Preferred
+                                        </th>
+
+                                        <th>
+                                            Teacher
+                                        </th>
+
+                                        <th>
+                                            AI Teacher Recommendation
+                                        </th>
+
+                                    </tr>
+
+                                </thead>
+
+
+                                <tbody>
+
+                                    {% for row in rows %}
+
+                                        <tr>
+
+                                            <!-- SUBJECT -->
+
+                                            <td>
+
+                                                <div class="subject-name">
+
+                                                    {{ row.subject.name }}
+
+                                                </div>
+
+
+                                                <div class="subject-code">
+
+                                                    {{ row.subject.code }}
+
+                                                </div>
+
+                                            </td>
+
+
+                                            <!-- STATUS -->
+
+                                            <td>
+
+                                                {% if row.requirement %}
+
+                                                    <span
+                                                        class="configured-badge"
+                                                    >
+                                                        Configured
+                                                    </span>
+
+                                                {% else %}
+
+                                                    <span
+                                                        class="suggested-badge"
+                                                    >
+                                                        AI Suggested
+                                                    </span>
+
+                                                {% endif %}
+
+                                            </td>
+
+
+                                            <!-- AI SUBJECT SCORE -->
+
+                                            <td>
+
+                                                <div
+                                                    class="score-badge"
+                                                >
+
+                                                    {{ row.subject_score }}%
+
+                                                </div>
+
+
+                                                <div
+                                                    class="score-reason"
+                                                >
+
+                                                    {{ row.subject_reason }}
+
+                                                </div>
+
+                                            </td>
+
+
+                                            <!-- PERIODS -->
+
+                                            <td>
+
+                                                <input
+                                                    type="number"
+
+                                                    name="periods_{{ row.subject.id }}"
+
+                                                    id="periods{{ row.subject.id }}"
+
+                                                    class="table-input periods-input"
+
+                                                    min="0"
+
+                                                    max="40"
+
+                                                    value="{{ row.periods_value }}"
+
+                                                    data-subject-id="{{ row.subject.id }}"
+                                                >
+
+                                            </td>
+
+
+                                            <!-- MAX DAILY -->
+
+                                            <td>
+
+                                                <input
+                                                    type="number"
+
+                                                    name="max_daily_{{ row.subject.id }}"
+
+                                                    class="table-input"
+
+                                                    min="1"
+
+                                                    max="8"
+
+                                                    value="{{ row.max_daily_value }}"
+                                                >
+
+                                            </td>
+
+
+                                            <!-- PREFERENCE -->
+
+                                            <td>
+
+                                                <select
+                                                    name="preferred_{{ row.subject.id }}"
+                                                    class="table-select"
+                                                >
+
+                                                    <option
+                                                        value=""
+
+                                                        {% if not row.preferred_value %}
+                                                            selected
+                                                        {% endif %}
+                                                    >
+                                                        No Preference
+                                                    </option>
+
+
+                                                    <option
+                                                        value="morning"
+
+                                                        {% if row.preferred_value == 'morning' %}
+                                                            selected
+                                                        {% endif %}
+                                                    >
+                                                        Morning
+                                                    </option>
+
+
+                                                    <option
+                                                        value="afternoon"
+
+                                                        {% if row.preferred_value == 'afternoon' %}
+                                                            selected
+                                                        {% endif %}
+                                                    >
+                                                        Afternoon
+                                                    </option>
+
+                                                </select>
+
+                                            </td>
+
+
+                                            <!-- TEACHER -->
+
+                                            <td>
+
+                                                <select
+                                                    name="teacher_{{ row.subject.id }}"
+                                                    class="teacher-select"
+                                                >
+
+                                                    <option value="">
+                                                        Select Teacher
+                                                    </option>
+
+
+                                                    {% for teacher_row in row.teacher_recommendations %}
+
+                                                        <option
+                                                            value="{{ teacher_row.teacher.id }}"
+
+                                                            {% if row.selected_teacher_id == teacher_row.teacher.id %}
+                                                                selected
+                                                            {% endif %}
+                                                        >
+
+                                                            {{ teacher_row.user.name }}
+
+                                                            {% if teacher_row.eligible %}
+
+                                                                - AI {{ teacher_row.score }}%
+
+                                                            {% else %}
+
+                                                                - Not Verified
+
+                                                            {% endif %}
+
+                                                        </option>
+
+                                                    {% endfor %}
+
+                                                </select>
+
+                                            </td>
+
+
+                                            <!-- AI TEACHER -->
+
+                                            <td>
+
+                                                {% if row.recommended_teacher %}
+
+                                                    <div
+                                                        class="teacher-recommendation"
+                                                    >
+
+                                                        <strong>
+
+                                                            Recommended:
+
+                                                            {{ row.recommended_teacher.user.name }}
+
+                                                            -
+
+                                                            {{ row.recommended_teacher.score }}%
+
+                                                        </strong>
+
+
+                                                        <p>
+
+                                                            {{ row.recommended_teacher.reason }}
+
+                                                        </p>
+
+                                                    </div>
+
+                                                {% else %}
+
+                                                    <div class="no-teacher">
+
+                                                        No verified teacher
+                                                        recommendation is
+                                                        currently available
+                                                        for this subject.
+
+                                                    </div>
+
+                                                {% endif %}
+
+                                            </td>
+
+                                        </tr>
+
+                                    {% endfor %}
+
+                                </tbody>
+
+                            </table>
+
+                        </div>
+
+
+                        <!-- =================================
+                             ACTIONS
+                        ================================== -->
+
+                        <div class="form-actions">
+
+                            <div>
+
+                                <a
+                                    href="{{ url_for(
+                                        'admin_timetable'
+                                    ) }}"
+                                    class="secondary-button"
+                                >
+                                    View Timetable
+                                </a>
+
+
+                                <a
+                                    href="{{ url_for(
+                                        'curriculum_generator',
+                                        standard=selected_class.standard,
+                                        stream=selected_class.stream or ''
+                                    ) }}"
+                                    class="secondary-button"
+                                >
+                                    Curriculum Generator
+                                </a>
+
+                            </div>
+
+
+                            <button
+                                type="submit"
+                                class="approve-button"
+                                id="approveButton"
+                            >
+                                Approve Subject & Teacher Setup
+                            </button>
+
+                        </div>
+
+                    </form>
+
+
+                {% else %}
+
+                    <div class="empty-state">
+
+                        <h3>
+                            No Subjects Available
+                        </h3>
+
+                        <p>
+                            Create subjects first, then configure
+                            the curriculum for this standard.
+                        </p>
+
+                        <br>
+
+                        <a
+                            href="{{ url_for('admin_subjects') }}"
+                            class="secondary-button"
+                        >
+                            Manage Subjects
+                        </a>
+
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+
+    {% else %}
+
+        <!-- =================================================
+             NO CLASS SELECTED
+        ================================================== -->
+
+        <div class="card">
+
+            <div class="empty-state">
+
+                <h3>
+                    Select a Class
+                </h3>
+
+                <p>
+                    Choose an active class above to configure
+                    its curriculum, subject requirements,
+                    teacher recommendations, and timetable
+                    preparation.
+                </p>
+
+            </div>
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+
+<script>
+
+    // =====================================================
+    // CLASS AUTO LOAD
+    // =====================================================
+
+    const classSelector =
+        document.getElementById(
+            "class_id"
+        );
+
+
+    if (classSelector) {
+
+        classSelector.addEventListener(
+            "change",
+            function () {
+
+                if (
+                    classSelector.value
+                ) {
+
+                    const url =
+                        "{{ url_for('ai_subject_setup') }}"
+                        +
+                        "?class_id="
+                        +
+                        encodeURIComponent(
+                            classSelector.value
+                        );
+
+
+                    window.location.href =
+                        url;
+
+                }
+
+            }
+        );
+
+    }
+
+
+    // =====================================================
+    // ELEMENTS
+    // =====================================================
+
+    const setupForm =
+        document.getElementById(
+            "subjectSetupForm"
+        );
+
+
+    const approveButton =
+        document.getElementById(
+            "approveButton"
+        );
+
+
+    const capacityValue =
+        document.getElementById(
+            "capacityValue"
+        );
+
+
+    const capacityFill =
+        document.getElementById(
+            "capacityFill"
+        );
+
+
+    const capacityMessage =
+        document.getElementById(
+            "capacityMessage"
+        );
+
+
+    const summaryPeriods =
+        document.getElementById(
+            "summaryPeriods"
+        );
+
+
+    const activeSubjects =
+        document.getElementById(
+            "activeSubjects"
+        );
+
+
+    // =====================================================
+    // CALCULATE WEEKLY PERIODS
+    // =====================================================
+
+    function calculateCapacity() {
+
+        const periodInputs =
+            document.querySelectorAll(
+                ".periods-input"
+            );
+
+
+        let total = 0;
+
+        let activeCount = 0;
+
+
+        periodInputs.forEach(
+            function (input) {
+
+                let value =
+                    parseInt(
+                        input.value
+                    );
+
+
+                if (
+                    isNaN(value)
+                    ||
+                    value < 0
+                ) {
+
+                    value = 0;
+
+                }
+
+
+                if (
+                    value > 0
+                ) {
+
+                    activeCount += 1;
+
+                }
+
+
+                total += value;
+
+            }
+        );
+
+
+        if (capacityValue) {
+
+            capacityValue.textContent =
+                total;
+
+        }
+
+
+        if (summaryPeriods) {
+
+            summaryPeriods.textContent =
+                total;
+
+        }
+
+
+        if (activeSubjects) {
+
+            activeSubjects.textContent =
+                activeCount;
+
+        }
+
+
+        let percentage =
+            (
+                total
+                /
+                40
+            )
+            *
+            100;
+
+
+        percentage =
+            Math.min(
+                percentage,
+                100
+            );
+
+
+        if (capacityFill) {
+
+            capacityFill.style.width =
+                percentage
+                +
+                "%";
+
+
+            capacityFill.classList.remove(
+                "warning",
+                "danger"
+            );
+
+
+            if (
+                total > 40
+            ) {
+
+                capacityFill.classList.add(
+                    "danger"
+                );
+
+            }
+
+            else if (
+                total >= 36
+            ) {
+
+                capacityFill.classList.add(
+                    "warning"
+                );
+
+            }
+
+        }
+
+
+        if (capacityMessage) {
+
+            capacityMessage.classList.remove(
+                "danger"
+            );
+
+
+            if (
+                total > 40
+            ) {
+
+                capacityMessage.textContent =
+                    "The configuration exceeds the 40-period weekly limit.";
+
+
+                capacityMessage.classList.add(
+                    "danger"
+                );
+
+
+                if (approveButton) {
+
+                    approveButton.disabled =
+                        true;
+
+                }
+
+            }
+
+            else {
+
+                const remaining =
+                    40
+                    -
+                    total;
+
+
+                capacityMessage.textContent =
+                    remaining
+                    +
+                    " timetable periods are still available.";
+
+
+                if (approveButton) {
+
+                    approveButton.disabled =
+                        false;
+
+                }
+
+            }
+
+        }
+
+    }
+
+
+    // =====================================================
+    // PERIOD INPUT EVENTS
+    // =====================================================
+
+    document
+        .querySelectorAll(
+            ".periods-input"
+        )
+        .forEach(
+            function (input) {
+
+                input.addEventListener(
+                    "input",
+                    calculateCapacity
+                );
+
+            }
+        );
+
+
+    // =====================================================
+    // FORM VALIDATION
+    // =====================================================
+
+    if (setupForm) {
+
+        setupForm.addEventListener(
+            "submit",
+            function (event) {
+
+                const periodInputs =
+                    document.querySelectorAll(
+                        ".periods-input"
+                    );
+
+
+                let total = 0;
+
+                let activeCount = 0;
+
+                let teacherMissing = false;
+
+                let missingSubjectName = "";
+
+
+                periodInputs.forEach(
+                    function (input) {
+
+                        let periods =
+                            parseInt(
+                                input.value
+                            );
+
+
+                        if (
+                            isNaN(periods)
+                            ||
+                            periods < 0
+                        ) {
+
+                            periods = 0;
+
+                        }
+
+
+                        total += periods;
+
+
+                        if (
+                            periods > 0
+                        ) {
+
+                            activeCount += 1;
+
+
+                            const subjectId =
+                                input.dataset.subjectId;
+
+
+                            const teacherSelect =
+                                document.querySelector(
+                                    '[name="teacher_'
+                                    +
+                                    subjectId
+                                    +
+                                    '"]'
+                                );
+
+
+                            if (
+                                teacherSelect
+                                &&
+                                !teacherSelect.value
+                                &&
+                                !teacherMissing
+                            ) {
+
+                                teacherMissing =
+                                    true;
+
+
+                                const row =
+                                    input.closest(
+                                        "tr"
+                                    );
+
+
+                                if (row) {
+
+                                    const name =
+                                        row.querySelector(
+                                            ".subject-name"
+                                        );
+
+
+                                    if (name) {
+
+                                        missingSubjectName =
+                                            name.textContent.trim();
+
+                                    }
+
+                                }
+
+                            }
+
+                        }
+
+                    }
+                );
+
+
+                if (
+                    total > 40
+                ) {
+
+                    event.preventDefault();
+
+
+                    alert(
+                        "The configuration cannot exceed 40 periods per week."
+                    );
+
+
+                    return;
+
+                }
+
+
+                if (
+                    activeCount === 0
+                ) {
+
+                    event.preventDefault();
+
+
+                    alert(
+                        "Please configure at least one subject."
+                    );
+
+
+                    return;
+
+                }
+
+
+                if (
+                    teacherMissing
+                ) {
+
+                    event.preventDefault();
+
+
+                    alert(
+                        "Please select a teacher for "
+                        +
+                        missingSubjectName
+                        +
+                        "."
+                    );
+
+
+                    return;
+
+                }
+
+
+                const confirmed =
+                    confirm(
+                        "Approve these subject requirements and teacher assignments for this class?"
+                    );
+
+
+                if (
+                    !confirmed
+                ) {
+
+                    event.preventDefault();
+
+                }
+
+            }
+        );
+
+    }
+
+
+    // =====================================================
+    // INITIAL CALCULATION
+    // =====================================================
+
+    calculateCapacity();
+
+</script>
+
+
+    <!-- EduSphere role navigation -->
+    {% include "components/edu_admin_sidebar.html" %}
+    <script src="{{ url_for('static', filename='js/edusphere_navigation.js') }}"></script>
+</body>
+
+</html>

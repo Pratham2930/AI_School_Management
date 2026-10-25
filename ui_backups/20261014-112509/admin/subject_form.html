@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+
+    {% if subject %}
+
+        <title>
+            Edit Subject
+        </title>
+
+    {% else %}
+
+        <title>
+            Add Subject
+        </title>
+
+    {% endif %}
+
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/admin.css') }}"
+    >
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}">
+</head>
+
+
+<body>
+
+
+<div class="form-page">
+
+
+    <div class="form-container">
+
+
+        <!-- ==========================================
+             HEADER
+        =========================================== -->
+
+        <div class="page-header">
+
+
+            <div>
+
+
+                <p class="page-label">
+                    ACADEMIC MANAGEMENT
+                </p>
+
+
+                {% if subject %}
+
+
+                    <h1>
+                        Edit Subject
+                    </h1>
+
+
+                    <p class="muted">
+
+                        Update the subject name
+                        or subject code.
+
+                    </p>
+
+
+                {% else %}
+
+
+                    <h1>
+                        Add Subject
+                    </h1>
+
+
+                    <p class="muted">
+
+                        Create a new academic subject
+                        for the school.
+
+                    </p>
+
+
+                {% endif %}
+
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- ==========================================
+             FLASH MESSAGES
+        =========================================== -->
+
+        {% with messages = get_flashed_messages() %}
+
+
+            {% if messages %}
+
+
+                {% for message in messages %}
+
+
+                    <div class="alert">
+
+                        {{ message }}
+
+                    </div>
+
+
+                {% endfor %}
+
+
+            {% endif %}
+
+
+        {% endwith %}
+
+
+
+        <!-- ==========================================
+             SUBJECT FORM
+        =========================================== -->
+
+        <form method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+
+            <!-- SUBJECT NAME -->
+
+            <div>
+
+
+                <label>
+
+                    Subject Name
+
+                </label>
+
+
+                <input
+                    type="text"
+                    name="name"
+
+                    value="{% if subject %}{{ subject.name }}{% endif %}"
+
+                    placeholder="Example: Mathematics"
+
+                    required
+                >
+
+
+            </div>
+
+
+
+            <!-- SUBJECT CODE -->
+
+            <div style="margin-top: 20px;">
+
+
+                <label>
+
+                    Subject Code
+
+                </label>
+
+
+                <input
+                    type="text"
+                    name="code"
+
+                    value="{% if subject %}{{ subject.code }}{% endif %}"
+
+                    placeholder="Example: MATH"
+
+                    maxlength="20"
+
+                    required
+                >
+
+
+            </div>
+
+
+
+            <!-- INFORMATION -->
+
+            <div
+                class="reason-box"
+                style="margin-top: 25px;"
+            >
+
+
+                <strong>
+
+                    Subject Code
+
+                </strong>
+
+
+                <p class="muted">
+
+                    Use a short unique code for
+                    each subject.
+
+                </p>
+
+
+                <p class="muted">
+
+                    Examples:
+                    Mathematics = MATH,
+                    Science = SCI,
+                    English = ENG,
+                    Computer Science = CS.
+
+                </p>
+
+
+            </div>
+
+
+
+            <!-- BUTTONS -->
+
+            <div style="margin-top: 25px;">
+
+
+                <button
+                    type="submit"
+                    class="primary-btn normal-button"
+                >
+
+
+                    {% if subject %}
+
+                        Update Subject
+
+                    {% else %}
+
+                        Create Subject
+
+                    {% endif %}
+
+
+                </button>
+
+
+
+                <a
+                    class="secondary-btn"
+                    href="{{ url_for('admin_subjects') }}"
+                >
+
+                    Cancel
+
+                </a>
+
+
+            </div>
+
+
+        </form>
+
+
+    </div>
+
+
+</div>
+
+
+</body>
+
+
+</html>

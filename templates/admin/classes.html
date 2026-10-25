@@ -1,0 +1,1060 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Classes & Divisions | School Management</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/admin.css') }}"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/portal.css') }}"
+    >
+
+    <style>
+        /* ==========================================
+           PAGE STYLING
+        ========================================== */
+
+        .classes-page {
+            max-width: 1350px;
+            margin: 0 auto;
+            padding: 30px 24px 60px;
+        }
+
+        .classes-page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+        .classes-page-header h1 {
+            font-size: 29px;
+            font-weight: 750;
+            color: #17233b;
+            margin: 0 0 8px;
+        }
+
+        .classes-page-header p {
+            color: #718096;
+            margin: 0;
+            font-size: 14px;
+        }
+
+        .classes-header-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .classes-header-actions a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 42px;
+            padding: 10px 18px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            box-sizing: border-box;
+        }
+
+        .classes-header-actions .dashboard-link {
+            background: #ffffff;
+            color: #334155;
+            border: 1px solid #dce3ed;
+        }
+
+        .classes-header-actions .add-class-link {
+            background: #315bd6;
+            color: #ffffff;
+            border: 1px solid #315bd6;
+        }
+
+        /* ==========================================
+           GENERATOR CARD
+        ========================================== */
+
+        .class-generator {
+            background: #ffffff;
+            border: 1px solid #e3eaf4;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 32px;
+            box-shadow: 0 10px 35px rgba(22, 42, 85, 0.06);
+        }
+
+        .generator-header {
+            display: flex;
+            align-items: center;
+            gap: 17px;
+            padding-bottom: 24px;
+            margin-bottom: 26px;
+            border-bottom: 1px solid #edf1f7;
+        }
+
+        .generator-icon {
+            width: 58px;
+            height: 58px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 16px;
+            background: #eaf0ff;
+            color: #315bd6;
+            font-size: 27px;
+            font-weight: 800;
+            flex-shrink: 0;
+        }
+
+        .generator-header h2 {
+            font-size: 22px;
+            color: #17233b;
+            margin: 0 0 7px;
+            font-weight: 750;
+        }
+
+        .generator-header p {
+            font-size: 14px;
+            color: #718096;
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        /* ==========================================
+           FORM FIELDS
+        ========================================== */
+
+        .generator-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 24px;
+        }
+
+        .generator-field {
+            min-width: 0;
+        }
+
+        .generator-field.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .generator-field label.field-label {
+            display: block;
+            margin-bottom: 10px;
+            color: #334155;
+            font-size: 14px;
+            font-weight: 650;
+        }
+
+        .generator-field select,
+        .generator-field input[type="text"] {
+            width: 100%;
+            height: 49px;
+            padding: 0 15px;
+            background: #f8faff;
+            color: #24334d;
+            border: 1px solid #dce4f0;
+            border-radius: 11px;
+            font-size: 14px;
+            font-family: inherit;
+            box-sizing: border-box;
+            outline: none;
+            transition: 0.2s ease;
+        }
+
+        .generator-field select:focus,
+        .generator-field input[type="text"]:focus {
+            border-color: #4169e1;
+            background: #ffffff;
+            box-shadow: 0 0 0 3px rgba(65, 105, 225, 0.12);
+        }
+
+        .generator-field .field-hint {
+            display: block;
+            margin-top: 8px;
+            color: #8190a5;
+            font-size: 12px;
+        }
+
+        /* ==========================================
+           DIVISION SELECTION
+        ========================================== */
+
+        .division-selector {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 13px;
+        }
+
+        .division-choice {
+            position: relative;
+            display: block;
+            cursor: pointer;
+        }
+
+        .division-choice input {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            opacity: 0;
+        }
+
+        .division-choice-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 90px;
+            gap: 7px;
+            padding: 12px;
+            border-radius: 13px;
+            background: #f8faff;
+            border: 2px solid #e1e8f2;
+            color: #475569;
+            box-sizing: border-box;
+            transition: all 0.2s ease;
+        }
+
+        .division-choice-number {
+            font-size: 25px;
+            font-weight: 800;
+        }
+
+        .division-choice-text {
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .division-choice input:checked + .division-choice-content {
+            background: #edf2ff;
+            border-color: #4169e1;
+            color: #315bd6;
+            box-shadow: 0 4px 15px rgba(65, 105, 225, 0.09);
+        }
+
+        .division-choice input:focus-visible + .division-choice-content {
+            outline: 3px solid #93b4ff;
+            outline-offset: 3px;
+        }
+
+        .division-choice:hover .division-choice-content {
+            border-color: #7895e9;
+        }
+
+        /* ==========================================
+           LIVE DIVISION PREVIEW
+        ========================================== */
+
+        .generator-preview {
+            margin-top: 28px;
+            padding: 22px;
+            background: #f5f8ff;
+            border: 1px solid #dfe8fb;
+            border-radius: 14px;
+        }
+
+        .generator-preview-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 17px;
+        }
+
+        .generator-preview h3 {
+            font-size: 15px;
+            color: #253858;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .preview-count {
+            padding: 6px 11px;
+            background: #e4edff;
+            color: #315bd6;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .division-preview-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            min-height: 38px;
+            align-items: center;
+        }
+
+        .division-preview-item {
+            padding: 11px 15px;
+            background: #ffffff;
+            border: 1px solid #d9e4f8;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 650;
+            color: #3156a7;
+        }
+
+        .preview-placeholder {
+            color: #7c8aa0;
+            font-size: 13px;
+        }
+
+        .preview-note {
+            margin: 15px 0 0;
+            color: #72829a;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        /* ==========================================
+           GENERATE BUTTON
+        ========================================== */
+
+        .generate-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            margin-top: 25px;
+            min-height: 52px;
+            padding: 14px 22px;
+            background: linear-gradient(135deg, #315bd6, #5277eb);
+            border: none;
+            border-radius: 12px;
+            color: #ffffff;
+            font-size: 15px;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .generate-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 20px rgba(49, 91, 214, 0.22);
+        }
+
+        .generate-button:focus-visible {
+            outline: 3px solid #93b4ff;
+            outline-offset: 3px;
+        }
+
+        /* ==========================================
+           EXISTING CLASSES TABLE
+        ========================================== */
+
+        .classes-table-panel {
+            background: #ffffff;
+            border: 1px solid #e3eaf4;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 8px 28px rgba(22, 42, 85, 0.04);
+        }
+
+        .classes-table-header {
+            padding: 23px 25px;
+            border-bottom: 1px solid #edf1f7;
+        }
+
+        .classes-table-header h2 {
+            margin: 0 0 6px;
+            font-size: 19px;
+            color: #17233b;
+        }
+
+        .classes-table-header p {
+            margin: 0;
+            font-size: 13px;
+            color: #8190a5;
+        }
+
+        .classes-table-scroll {
+            overflow-x: auto;
+        }
+
+        .classes-data-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            min-width: 700px;
+        }
+
+        .classes-data-table thead {
+            background: #f7f9fd;
+        }
+
+        .classes-data-table th {
+            padding: 17px 20px;
+            color: #64748b;
+            font-size: 12px;
+            font-weight: 750;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+
+        .classes-data-table td {
+            padding: 17px 20px;
+            border-top: 1px solid #eef2f7;
+            color: #334155;
+            font-size: 14px;
+        }
+
+        .classes-data-table tbody tr:hover {
+            background: #f9fbff;
+        }
+
+        .class-name {
+            font-weight: 700;
+            color: #294c9b;
+        }
+
+        .classes-status {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 11px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 750;
+        }
+
+        .classes-status.open {
+            background: #e7f7ee;
+            color: #16804b;
+        }
+
+        .classes-status.full {
+            background: #fff0ee;
+            color: #c34b3d;
+        }
+
+        .classes-alert {
+            padding: 14px 18px;
+            margin-bottom: 20px;
+            background: #edf3ff;
+            border: 1px solid #cddcff;
+            border-radius: 10px;
+            color: #294b98;
+            font-size: 14px;
+        }
+
+        .classes-empty {
+            text-align: center;
+            color: #94a3b8;
+            padding: 35px 20px !important;
+        }
+
+        /* ==========================================
+           RESPONSIVE
+        ========================================== */
+
+        @media (max-width: 768px) {
+            .classes-page {
+                padding: 18px 14px 40px;
+            }
+
+            .class-generator {
+                padding: 22px 18px;
+            }
+
+            .generator-grid {
+                grid-template-columns: 1fr;
+                gap: 19px;
+            }
+
+            .generator-field.full-width {
+                grid-column: auto;
+            }
+
+            .generator-header h2 {
+                font-size: 19px;
+            }
+
+            .division-selector {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .classes-page-header h1 {
+                font-size: 24px;
+            }
+        }
+
+        @media (max-width: 420px) {
+            .generator-header {
+                align-items: flex-start;
+            }
+
+            .generator-icon {
+                width: 46px;
+                height: 46px;
+                font-size: 23px;
+            }
+
+            .division-choice-content {
+                min-height: 76px;
+            }
+        }
+    </style>
+
+    <!-- EduSphere shared navigation -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edusphere_navigation.css') }}">
+    <!-- EduSphere professional theme -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_theme.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_portals.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_layout.css') }}">
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_unified.css') }}">
+</head>
+
+<body class="edn-unified">
+<!-- EduNova unified header -->
+<header class="edn-global-header" role="banner"><div class="edn-global-brand"><span class="edn-global-context">Administration</span></div><span class="edn-global-page">Classes</span></header>
+
+
+<div class="main-content full-page">
+
+    <main class="classes-page">
+
+        <!-- ==========================================
+             PAGE HEADER
+        ========================================== -->
+
+        <div class="classes-page-header">
+
+            <div>
+                <h1>Classes & Divisions</h1>
+
+                <p>
+                    Manage classes, division capacity and student allocation.
+                </p>
+            </div>
+
+            <div class="classes-header-actions">
+
+                <a
+                    href="{{ url_for('admin_dashboard') }}"
+                    class="dashboard-link"
+                >
+                    Dashboard
+                </a>
+
+                <a
+                    href="{{ url_for('add_class') }}"
+                    class="add-class-link"
+                >
+                    + Add Class / Division
+                </a>
+
+            </div>
+
+        </div>
+
+        <!-- ==========================================
+             FLASH MESSAGES
+        ========================================== -->
+
+        {% with messages = get_flashed_messages() %}
+
+            {% for message in messages %}
+                <div class="classes-alert" role="status">
+                    {{ message }}
+                </div>
+            {% endfor %}
+
+        {% endwith %}
+
+        <!-- ==========================================
+             AUTOMATIC CLASS GENERATOR
+        ========================================== -->
+
+        <section class="class-generator">
+
+            <div class="generator-header">
+
+                <div class="generator-icon" aria-hidden="true">
+                    C
+                </div>
+
+                <div>
+                    <h2>Automatic Class & Division Generator</h2>
+
+                    <p>
+                        Select a class, choose a stream when needed,
+                        and generate up to four divisions automatically.
+                    </p>
+                </div>
+
+            </div>
+
+            <form
+                method="POST"
+                action="{{ url_for('auto_create_class_divisions') }}"
+                id="classGeneratorForm"
+            >
+
+                <!-- CSRF PROTECTION -->
+                <input
+                    type="hidden"
+                    name="csrf_token"
+                    value="{{ csrf_token() }}"
+                >
+
+                <div class="generator-grid">
+
+                    <!-- SELECT CLASS -->
+                    <div class="generator-field">
+
+                        <label
+                            for="autoStandard"
+                            class="field-label"
+                        >
+                            Select Class
+                        </label>
+
+                        <select
+                            name="standard"
+                            id="autoStandard"
+                            required
+                        >
+
+                            <option value="">
+                                Choose Class
+                            </option>
+
+                            {% for number in range(1, 13) %}
+
+                                <option value="{{ number }}">
+                                    Class {{ number }}
+                                </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                        <span class="field-hint">
+                            Available classes: 1 to 12
+                        </span>
+
+                    </div>
+
+                    <!-- ACADEMIC YEAR -->
+                    <div class="generator-field">
+
+                        <label
+                            for="autoAcademicYear"
+                            class="field-label"
+                        >
+                            Academic Year
+                        </label>
+
+                        <input
+                            type="text"
+                            id="autoAcademicYear"
+                            name="academic_year"
+                            placeholder="2026-2027"
+                            maxlength="20"
+                            required
+                        >
+
+                        <span class="field-hint">
+                            Example: 2026-2027
+                        </span>
+
+                    </div>
+
+                    <!-- STREAM FOR CLASS 11 AND 12 -->
+                    <div
+                        class="generator-field full-width"
+                        id="autoStreamBox"
+                        hidden
+                    >
+
+                        <label
+                            for="autoStream"
+                            class="field-label"
+                        >
+                            Select Stream
+                        </label>
+
+                        <select
+                            name="stream"
+                            id="autoStream"
+                        >
+
+                            <option value="">
+                                Choose Stream
+                            </option>
+
+                            <option value="Science">
+                                Science
+                            </option>
+
+                            <option value="Commerce">
+                                Commerce
+                            </option>
+
+                            <option value="Arts">
+                                Arts
+                            </option>
+
+                        </select>
+
+                        <span class="field-hint">
+                            Stream selection is required for Classes 11 and 12.
+                        </span>
+
+                    </div>
+
+                    <!-- DIVISION SELECTION -->
+                    <div class="generator-field full-width">
+
+                        <label class="field-label">
+                            Number of Divisions
+                        </label>
+
+                        <div
+                            class="division-selector"
+                            role="group"
+                            aria-label="Number of divisions"
+                        >
+
+                            {% for number in range(1, 5) %}
+
+                                <label class="division-choice">
+
+                                    <input
+                                        type="radio"
+                                        name="division_count"
+                                        value="{{ number }}"
+                                        {% if number == 4 %}checked{% endif %}
+                                    >
+
+                                    <span class="division-choice-content">
+
+                                        <span class="division-choice-number">
+                                            {{ number }}
+                                        </span>
+
+                                        <span class="division-choice-text">
+                                            {% if number == 1 %}
+                                                Division
+                                            {% else %}
+                                                Divisions
+                                            {% endif %}
+                                        </span>
+
+                                    </span>
+
+                                </label>
+
+                            {% endfor %}
+
+                        </div>
+
+                        <span class="field-hint">
+                            1 = A, 2 = A–B, 3 = A–C, 4 = A–D
+                        </span>
+
+                    </div>
+
+                </div>
+
+                <!-- ==========================================
+                     LIVE PREVIEW
+                ========================================== -->
+
+                <div class="generator-preview">
+
+                    <div class="generator-preview-heading">
+
+                        <h3>Division Preview</h3>
+
+                        <span
+                            class="preview-count"
+                            id="previewCount"
+                        >
+                            4 Divisions
+                        </span>
+
+                    </div>
+
+                    <div
+                        class="division-preview-list"
+                        id="divisionPreview"
+                        aria-live="polite"
+                    >
+                        <span class="preview-placeholder">
+                            Select a class to preview divisions.
+                        </span>
+                    </div>
+
+                    <p class="preview-note">
+                        Each new division has a default capacity of
+                        40 students. Existing divisions will not be duplicated.
+                    </p>
+
+                </div>
+
+                <!-- GENERATE BUTTON -->
+                <button
+                    type="submit"
+                    class="generate-button"
+                    id="generateDivisionsBtn"
+                >
+                    Generate 4 Divisions
+                </button>
+
+            </form>
+
+        </section>
+
+        <!-- ==========================================
+             EXISTING CLASS TABLE
+        ========================================== -->
+
+        <section class="classes-table-panel">
+
+            <div class="classes-table-header">
+
+                <h2>Existing Classes & Divisions</h2>
+
+                <p>
+                    View student counts, capacity, allocation rules,
+                    and available seats.
+                </p>
+
+            </div>
+
+            <div class="classes-table-scroll">
+
+                <table class="classes-data-table">
+
+                    <thead>
+                        <tr>
+                            <th>Class</th>
+                            <th>Percentage Rule</th>
+                            <th>Students</th>
+                            <th>Capacity</th>
+                            <th>Available</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for item in class_data %}
+
+                        <tr>
+
+                            <td>
+                                <span class="class-name">
+                                    {{ item.class.standard }}{% if item.class.stream %}-{{ item.class.stream }}{% endif %}-{{ item.class.division }}
+                                </span>
+                            </td>
+
+                            <td>
+                                {% if item.rule %}
+                                    {{ item.rule.minimum_percentage }}%
+                                    -
+                                    {{ item.rule.maximum_percentage }}%
+                                {% else %}
+                                    No rule
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                {{ item.student_count }}
+                            </td>
+
+                            <td>
+                                {{ item.class.capacity }}
+                            </td>
+
+                            <td>
+                                {{ item.available_seats }}
+                            </td>
+
+                            <td>
+
+                                {% if item.available_seats == 0 %}
+
+                                    <span class="classes-status full">
+                                        FULL
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="classes-status open">
+                                        OPEN
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+                        </tr>
+
+                        {% else %}
+
+                        <tr>
+                            <td colspan="6" class="classes-empty">
+                                No classes have been created yet.
+                            </td>
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+<!-- ==========================================
+     CLASS GENERATOR JAVASCRIPT
+========================================== -->
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const standardSelect = document.getElementById("autoStandard");
+    const streamBox = document.getElementById("autoStreamBox");
+    const streamSelect = document.getElementById("autoStream");
+
+    const previewContainer = document.getElementById("divisionPreview");
+    const previewCount = document.getElementById("previewCount");
+    const generateButton = document.getElementById("generateDivisionsBtn");
+
+    const divisionRadios = document.querySelectorAll(
+        'input[name="division_count"]'
+    );
+
+    function updateGenerator() {
+
+        // Read selected class.
+        const standard = Number(standardSelect.value);
+
+        // Check whether stream selection is needed.
+        const seniorClass = standard === 11 || standard === 12;
+
+        // Show or hide stream selection.
+        streamBox.hidden = !seniorClass;
+        streamSelect.required = seniorClass;
+
+        // Clear stream for Classes 1 to 10.
+        if (!seniorClass) {
+            streamSelect.value = "";
+        }
+
+        // Get selected division count.
+        const selectedRadio = document.querySelector(
+            'input[name="division_count"]:checked'
+        );
+
+        const divisionCount = selectedRadio
+            ? Number(selectedRadio.value)
+            : 4;
+
+        // Update button text.
+        generateButton.textContent =
+            "Generate " +
+            divisionCount +
+            (divisionCount === 1 ? " Division" : " Divisions");
+
+        // Update count badge.
+        previewCount.textContent =
+            divisionCount +
+            (divisionCount === 1 ? " Division" : " Divisions");
+
+        // Clear previous preview.
+        previewContainer.replaceChildren();
+
+        // Show placeholder when class is not selected.
+        if (!standard) {
+            const placeholder = document.createElement("span");
+            placeholder.className = "preview-placeholder";
+            placeholder.textContent =
+                "Select a class to preview divisions.";
+
+            previewContainer.appendChild(placeholder);
+            return;
+        }
+
+        // Require stream for Classes 11 and 12.
+        if (seniorClass && !streamSelect.value) {
+            const placeholder = document.createElement("span");
+            placeholder.className = "preview-placeholder";
+            placeholder.textContent =
+                "Select Science, Commerce, or Arts to preview divisions.";
+
+            previewContainer.appendChild(placeholder);
+            return;
+        }
+
+        // Available divisions.
+        const divisions = ["A", "B", "C", "D"];
+
+        // Create only the requested preview divisions.
+        divisions.slice(0, divisionCount).forEach(function (division) {
+
+            const item = document.createElement("span");
+
+            item.className = "division-preview-item";
+
+            const streamName = seniorClass
+                ? " " + streamSelect.value
+                : "";
+
+            item.textContent =
+                "Class " +
+                standard +
+                streamName +
+                " - " +
+                division;
+
+            previewContainer.appendChild(item);
+        });
+    }
+
+    // Update when class changes.
+    standardSelect.addEventListener("change", updateGenerator);
+
+    // Update when stream changes.
+    streamSelect.addEventListener("change", updateGenerator);
+
+    // Update when division count changes.
+    divisionRadios.forEach(function (radio) {
+        radio.addEventListener("change", updateGenerator);
+    });
+
+    // Initialize generator.
+    updateGenerator();
+
+});
+</script>
+
+
+    <!-- EduSphere role navigation -->
+    {% include "components/edu_admin_sidebar.html" %}
+    <script src="{{ url_for('static', filename='js/edusphere_navigation.js') }}"></script>
+</body>
+</html>

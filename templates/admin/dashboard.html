@@ -1,0 +1,907 @@
+
+
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+    <title>Admin Dashboard</title>
+
+    <link
+
+        rel="stylesheet"
+
+        href="{{ url_for('static', filename='css/admin.css') }}"
+
+    >
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}">
+
+    <!-- EduSphere shared navigation -->
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edusphere_navigation.css') }}">
+
+    <!-- EduSphere professional theme -->
+
+
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_dashboard_v2.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_analytics.css') }}">
+</head>
+
+<body class="nova-admin-dashboard">
+<div class="nova-global-header">
+  <div class="nova-global-brand"><span class="nova-brand-icon">✦</span><span>EduSphere <strong>AI</strong></span><span class="nova-brand-divider"></span><span class="nova-brand-subtitle">School Administration</span></div>
+  <div class="nova-global-right"><span class="nova-status-dot"></span> System Dashboard <a href="{{ url_for('admin_logout') }}">Sign out</a></div>
+</div>
+
+
+
+
+<!-- =====================================================
+
+     SIDEBAR
+
+\===================================================== -->
+
+<div class="main-content">
+
+    <!-- =================================================
+
+         TOP BAR
+
+    ================================================== -->
+
+    <header class="nova-header">
+    <div class="nova-header-main">
+        <div class="nova-breadcrumb">School Management <span>/</span> Overview</div>
+        <h1>Dashboard Overview</h1>
+        <p>Welcome back, {{ current_user.name }}. Here is what is happening across your school.</p>
+    </div>
+    <div class="nova-header-actions">
+        <a class="nova-header-link" href="{{ url_for('admin_reports') }}">View Reports</a>
+        <a class="nova-header-primary" href="{{ url_for('new_admission') }}">+ New Admission</a>
+        <div class="nova-avatar" title="{{ current_user.name }}">{{ (current_user.name or 'A')[0]|upper }}</div>
+    </div>
+</header>
+
+<!-- =================================================
+
+         FLASH MESSAGES
+
+    ================================================== -->
+
+    {% with messages = get_flashed_messages() %}
+
+        {% for message in messages %}
+
+            <div class="alert">
+
+                {{ message }}
+
+            </div>
+
+        {% endfor %}
+
+    {% endwith %}
+
+    <!-- =================================================
+
+         SCHOOL STATISTICS
+
+    ================================================== -->
+
+    <div class="nova-section-title"><div><h2>School at a glance</h2><p>Live totals from your school database</p></div><span class="nova-live-pill">Live overview</span></div>
+<div class="stats-grid">
+
+        <div class="stat-card stat-students">
+
+            <span>
+
+                Students
+
+            </span>
+
+            <h2>
+
+                {{ total_students }}
+
+            </h2>
+
+        </div>
+
+        <div class="stat-card stat-teachers">
+
+            <span>
+
+                Teachers
+
+            </span>
+
+            <h2>
+
+                {{ total_teachers }}
+
+            </h2>
+
+        </div>
+
+        <div class="stat-card stat-parents">
+
+            <span>
+
+                Parents
+
+            </span>
+
+            <h2>
+
+                {{ total_parents }}
+
+            </h2>
+
+        </div>
+
+        <div class="stat-card stat-staff">
+
+            <span>
+
+                Staff
+
+            </span>
+
+            <h2>
+
+                {{ total_staff }}
+
+            </h2>
+
+        </div>
+
+        <div class="stat-card stat-classes">
+
+            <span>
+
+                Classes
+
+            </span>
+
+            <h2>
+
+                {{ total_classes }}
+
+            </h2>
+
+        </div>
+
+        <div class="stat-card stat-subjects">
+
+            <span>
+
+                Subjects
+
+            </span>
+
+            <h2>
+
+                {{ total_subjects }}
+
+            </h2>
+
+        </div>
+
+    </div>
+
+    
+<!-- EDUNOVA_ANALYTICS_V1 -->
+<section class="edna-section" aria-label="School analytics">
+  <div class="edna-heading"><div><h2>Analytics & Insights</h2><p>Current school totals and health indicators from your dashboard data</p></div><button type="button" class="edna-export" id="edna-export">Export overview CSV</button></div>
+  <div class="edna-layout">
+    <article class="edna-card"><div class="edna-card-heading"><h3>School community</h3><span>Current totals</span></div><div id="edna-bars" class="edna-bars" role="img" aria-label="Bar chart of students, teachers, parents and staff"></div><p class="edna-note">Values are current totals, not historical trends.</p></article>
+    <article class="edna-card"><div class="edna-card-heading"><h3>School health</h3><span>Current indicators</span></div><div class="edna-health"><div class="edna-ring" id="edna-ring"><div><strong id="edna-score">—</strong><small>out of 100</small></div></div><div class="edna-health-details"><div><span>Attendance</span><strong id="edna-attendance">—</strong></div><div><span>Academic performance</span><strong id="edna-academic">—</strong></div><div><span>Status</span><strong id="edna-status">—</strong></div></div></div><p class="edna-note">Health metrics reflect the latest values supplied by the application.</p></article>
+  </div>
+  <div class="edna-bottom"><div><strong>School structure</strong><span id="edna-structure">Loading school totals…</span></div><a href="{{ url_for('admin_reports') }}">Open detailed reports →</a></div>
+</section>
+<script id="edna-data" type="application/json">{{ {'students': total_students, 'teachers': total_teachers, 'parents': total_parents, 'staff': total_staff, 'classes': total_classes, 'subjects': total_subjects, 'score': school_health.score, 'attendance': school_health.attendance, 'academic': school_health.academic, 'status': school_health.status}|tojson }}</script>
+<!-- /EDUNOVA_ANALYTICS_V1 -->
+
+<!-- =================================================
+
+         QUICK ACTIONS
+
+    ================================================== -->
+
+    <div class="panel">
+
+        <div class="panel-title">
+
+            <div>
+
+                <h2>
+
+                    Quick Actions
+
+                </h2>
+
+                <p class="muted">
+
+                    Common school administration tasks
+
+                </p>
+
+            </div>
+
+        </div>
+
+        <div class="quick-grid">
+
+            <!-- New Admission -->
+
+            <a href="{{ url_for('new_admission') }}">
+
+                <strong>
+
+                    New Student Admission
+
+                </strong>
+
+                <p>
+
+                    Register a student and automatically
+
+                    allocate a division.
+
+                </p>
+
+            </a>
+
+            <!-- Admission History -->
+
+            <a href="{{ url_for('admission_records') }}">
+
+                <strong>
+
+                    Admission Records
+
+                </strong>
+
+                <p>
+
+                    View automatic division allocation history.
+
+                </p>
+
+            </a>
+
+            <!-- Classes -->
+
+            <a href="{{ url_for('admin_classes') }}">
+
+                <strong>
+
+                    Classes & Divisions
+
+                </strong>
+
+                <p>
+
+                    Configure divisions, capacity and
+
+                    percentage rules.
+
+                </p>
+
+            </a>
+
+            <!-- Students -->
+
+            <a href="{{ url_for('admin_students') }}">
+
+                <strong>
+
+                    Students
+
+                </strong>
+
+                <p>
+
+                    View and manage admitted students.
+
+                </p>
+
+            </a>
+
+            <!-- Teachers -->
+
+            <a href="{{ url_for('admin_teachers') }}">
+
+                <strong>
+
+                    Teachers
+
+                </strong>
+
+                <p>
+
+                    Add and manage school teachers.
+
+                </p>
+
+            </a>
+
+            <!-- Parents -->
+
+            <a href="{{ url_for('admin_parents') }}">
+
+                <strong>
+
+                    Parents
+
+                </strong>
+
+                <p>
+
+                    Manage parent accounts and child links.
+
+                </p>
+
+            </a>
+
+            <!-- Staff -->
+
+            <a href="{{ url_for('admin_staff') }}">
+
+                <strong>
+
+                    Staff
+
+                </strong>
+
+                <p>
+
+                    Manage non-teaching school staff.
+
+                </p>
+
+            </a>
+
+            <!-- Subjects -->
+
+            <a href="{{ url_for('admin_subjects') }}">
+
+                <strong>
+
+                    Subjects
+
+                </strong>
+
+                <p>
+
+                    Create and manage school subjects.
+
+                </p>
+
+            </a>
+
+            <!-- Events -->
+
+            <a href="{{ url_for('admin_events') }}">
+
+                <strong>
+
+                    Events
+
+                </strong>
+
+                <p>
+
+                    Create and manage school events.
+
+                </p>
+
+            </a>
+
+            <a href="{{ url_for('admin_notices') }}">
+
+                <strong>School Notices</strong>
+
+                <p>Publish announcements to all users, teachers, or students in a selected class.</p>
+
+            </a>
+
+            <a href="{{ url_for('admin_exams') }}">
+
+                <strong>Online Exam Management</strong>
+
+                <p>Review teacher-created exams, manage publishing, and inspect student attempts.</p>
+
+            </a>
+
+            <a href="{{ url_for('admin_reports') }}">
+
+                <strong>School Reports</strong>
+
+                <p>Filter attendance, marks, admissions, and online-exam activity by date and class.</p>
+
+            </a>
+
+            <a href="{{ url_for('admin_ai_training') }}">
+
+                <strong>Student Progress AI</strong>
+
+                <p>Queue Kafka-based model training from authorized historical data and review holdout metrics.</p>
+
+            </a>
+
+            <a href="{{ url_for('admin_kafka_outbox') }}">
+
+                <strong>Kafka Event Outbox</strong>
+
+                <p>Monitor pending, published, and failed events; retry events that exhausted automatic delivery attempts.</p>
+
+            </a>
+
+         <a href="{{ url_for('school_ai_assistant') }}">
+
+                 AI School Assistant
+
+                </a>
+
+            <a href="{{ url_for('curriculum_generator') }}">
+
+                <strong>
+
+                    One-Click AI Academic Setup
+
+                </strong>
+
+                <p>
+
+                    Configure CBSE starter curricula for Standards 1–12, recommend teacher assignments, and create conflict-checked timetable drafts.
+
+                </p>
+
+            </a>
+
+            <a href="{{ url_for('admin_leave_requests') }}">
+
+                <strong>
+
+                    Leave Requests ({{ pending_leave_requests }} pending)
+
+                </strong>
+
+                <p>
+
+                    Review student and teacher leave applications and see teachers currently on approved leave.
+
+                </p>
+
+            </a>
+
+            <a href="{{ url_for('school_ai_assistant') }}">
+
+                <strong>
+
+                    Local AI Assistant
+
+                </strong>
+
+                <p>
+
+                    Ask the Ollama-powered assistant for school administration guidance.
+
+                </p>
+
+            </a>
+
+        </div>
+
+    </div>
+
+    <!-- =================================================
+
+         AI SCHOOL HEALTH
+
+    ================================================== -->
+
+    <div class="dashboard-grid">
+
+        <!-- School Health -->
+
+        <div class="panel">
+
+            <div class="panel-title">
+
+                <div>
+
+                    <h2>
+
+                        AI School Health
+
+                    </h2>
+
+                    <p class="muted">
+
+                        Calculated from real school data
+
+                    </p>
+
+                </div>
+
+                <div class="health-score">
+
+                    {{ school_health.score }}
+
+                    <small>
+
+                        /100
+
+                    </small>
+
+                </div>
+
+            </div>
+
+            <div class="health-status">
+
+                {{ school_health.status }}
+
+            </div>
+
+            <!-- Attendance -->
+
+            <div class="metric">
+
+                <span>
+
+                    Student Attendance
+
+                </span>
+
+                <strong>
+
+                    {{ school_health.attendance }}%
+
+                </strong>
+
+            </div>
+
+            <div class="progress">
+
+                <div
+
+                    class="progress-bar"
+
+                    style="width: {{ school_health.attendance }}%"
+
+                >
+
+                </div>
+
+            </div>
+
+            <!-- Academic Performance -->
+
+            <div class="metric">
+
+                <span>
+
+                    Academic Performance
+
+                </span>
+
+                <strong>
+
+                    {{ school_health.academic }}%
+
+                </strong>
+
+            </div>
+
+            <div class="progress">
+
+                <div
+
+                    class="progress-bar"
+
+                    style="width: {{ school_health.academic }}%"
+
+                >
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- =================================================
+
+             AI INSIGHTS
+
+        ================================================== -->
+
+        <div class="panel">
+
+            <h2>
+
+                AI Insights
+
+            </h2>
+
+            <p class="muted">
+
+                Automatic school-level observations
+
+            </p>
+
+            {% for insight in school_health.insights %}
+
+                <div class="insight">
+
+                    {{ insight }}
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+    <!-- =================================================
+
+         ADMISSION MANAGEMENT
+
+    ================================================== -->
+
+    <div class="panel">
+
+        <div class="panel-title">
+
+            <div>
+
+                <h2>
+
+                    Admission Management
+
+                </h2>
+
+                <p class="muted">
+
+                    Register students and manage automatic
+
+                    division allocation.
+
+                </p>
+
+            </div>
+
+        </div>
+
+        <div class="quick-grid">
+
+            <a href="{{ url_for('new_admission') }}">
+
+                <strong>
+
+                    Start New Admission
+
+                </strong>
+
+                <p>
+
+                    Enter previous standard and marks.
+
+                    The system automatically recommends
+
+                    the correct division.
+
+                </p>
+
+            </a>
+
+            <a href="{{ url_for('admin_classes') }}">
+
+                <strong>
+
+                    Division Rules
+
+                </strong>
+
+                <p>
+
+                    Configure percentage ranges and
+
+                    maximum capacity.
+
+                </p>
+
+            </a>
+
+            <a href="{{ url_for('admission_records') }}">
+
+                <strong>
+
+                    Allocation History
+
+                </strong>
+
+                <p>
+
+                    See why each student was assigned
+
+                    to a particular division.
+
+                </p>
+
+            </a>
+
+        </div>
+
+    </div>
+
+    <!-- =================================================
+
+         UPCOMING EVENTS
+
+    ================================================== -->
+
+    <div class="panel">
+
+        <div class="panel-title">
+
+            <div>
+
+                <h2>
+
+                    Upcoming Events
+
+                </h2>
+
+                <p class="muted">
+
+                    School calendar and upcoming activities
+
+                </p>
+
+            </div>
+
+            <a
+
+                class="primary-link"
+
+                href="{{ url_for('admin_events') }}"
+
+            >
+
+                Manage Events
+
+            </a>
+
+        </div>
+
+        {% if upcoming_events %}
+
+            {% for event in upcoming_events %}
+
+                <div class="event-row">
+
+                    <div>
+
+                        <strong>
+
+                            {{ event.title }}
+
+                        </strong>
+
+                        {% if event.description %}
+
+                            <p class="muted">
+
+                                {{ event.description }}
+
+                            </p>
+
+                        {% endif %}
+
+                    </div>
+
+                    <span>
+
+                        {{ event.event_date.strftime('%d %b %Y') }}
+
+                    </span>
+
+                </div>
+
+            {% endfor %}
+
+        {% else %}
+
+            <p class="muted">
+
+                No upcoming events.
+
+            </p>
+
+        {% endif %}
+
+    </div>
+
+    <div class="panel">
+
+        <div class="panel-title">
+
+            <div>
+
+                <h2>Recent Notices</h2>
+
+                <p class="muted">Latest active announcements across the school</p>
+
+            </div>
+
+            <a class="primary-link" href="{{ url_for('admin_notices') }}">Manage Notices</a>
+
+        </div>
+
+        {% if recent_notices %}
+
+            {% for notice in recent_notices %}
+
+                <div class="event-row">
+
+                    <div>
+
+                        <strong>{{ notice.title }}</strong>
+
+                        <p class="muted">{{ notice.message }}</p>
+
+                    </div>
+
+                    <span>{{ notice.created_at.strftime('%d %b %Y') if notice.created_at else '' }}</span>
+
+                </div>
+
+            {% endfor %}
+
+        {% else %}
+
+            <p class="muted">No active school notices.</p>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+<!-- AI SCHOOL ASSISTANT FLOATING BUTTON -->
+
+<a href="{{ url_for('school_ai_assistant') }}"
+
+   class="school-ai-button"
+
+   title="Open AI School Assistant"
+
+   aria-label="Open AI School Assistant">
+
+    <span class="school-ai-icon">AI</span>
+
+    <span>AI Assistant</span>
+
+</a>
+
+
+
+    <!-- EduSphere role navigation -->
+
+    {% include "components/edu_admin_sidebar.html" %}
+
+    <script src="{{ url_for('static', filename='js/edusphere_navigation.js') }}"></script>
+
+<script defer src="{{ url_for('static', filename='js/edunova_analytics.js') }}"></script>
+<p style="text-align:center"><a href="{{ url_for('admin_class_teachers') }}">Assign Class Teachers</a></p></body>
+
+</html>

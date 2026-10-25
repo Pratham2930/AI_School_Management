@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        My Profile | AI School Management
+    </title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f7fb;
+            color: #172033;
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* =====================================================
+           SIDEBAR
+        ====================================================== */
+
+        .sidebar {
+            width: 260px;
+            background: #102a56;
+            color: white;
+            padding: 28px 20px;
+        }
+
+        .brand {
+            font-size: 21px;
+            font-weight: 700;
+            margin-bottom: 30px;
+        }
+
+        .student-box {
+            background: rgba(255, 255, 255, 0.09);
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+        }
+
+        .student-box strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .student-box span {
+            display: block;
+            font-size: 13px;
+            opacity: 0.8;
+            margin-top: 4px;
+        }
+
+        .nav {
+            display: block;
+            color: white;
+            text-decoration: none;
+            padding: 12px 14px;
+            border-radius: 9px;
+            margin: 6px 0;
+            font-size: 14px;
+        }
+
+        .nav:hover,
+        .nav.active {
+            background: rgba(255, 255, 255, 0.13);
+        }
+
+        /* =====================================================
+           MAIN CONTENT
+        ====================================================== */
+
+        .main {
+            flex: 1;
+            padding: 30px;
+        }
+
+        .header {
+            margin-bottom: 24px;
+        }
+
+        .header h1 {
+            margin: 0 0 7px;
+        }
+
+        .header p {
+            margin: 0;
+            color: #667085;
+        }
+
+        /* =====================================================
+           FLASH MESSAGE
+        ====================================================== */
+
+        .flash {
+            background: #fff4d6;
+            border: 1px solid #f0d17a;
+            padding: 12px 15px;
+            border-radius: 9px;
+            margin-bottom: 18px;
+        }
+
+        /* =====================================================
+           PROFILE CONTAINER
+        ====================================================== */
+
+        .profile-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid #e6ebf2;
+            border-radius: 14px;
+            padding: 22px;
+        }
+
+        /* =====================================================
+           PROFILE SUMMARY
+        ====================================================== */
+
+        .profile-summary {
+            text-align: center;
+        }
+
+        .avatar {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            background: #2457a6;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 34px;
+            font-weight: 700;
+        }
+
+        .profile-summary h2 {
+            margin: 0 0 7px;
+        }
+
+        .profile-summary .student-id {
+            color: #667085;
+            font-size: 14px;
+            margin-bottom: 18px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            background: #eaf6ee;
+            color: #177a4b;
+            padding: 7px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .summary-divider {
+            height: 1px;
+            background: #e6ebf2;
+            margin: 22px 0;
+        }
+
+        .summary-item {
+            text-align: left;
+            margin-bottom: 16px;
+        }
+
+        .summary-item span {
+            display: block;
+            color: #667085;
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+
+        .summary-item strong {
+            font-size: 14px;
+        }
+
+        /* =====================================================
+           FORM
+        ====================================================== */
+
+        .form-card h2 {
+            margin: 0 0 6px;
+        }
+
+        .form-card > p {
+            margin: 0 0 22px;
+            color: #667085;
+            font-size: 14px;
+        }
+
+        .section-title {
+            margin: 25px 0 15px;
+            padding-bottom: 9px;
+            border-bottom: 1px solid #e6ebf2;
+            font-size: 16px;
+        }
+
+        .section-title:first-of-type {
+            margin-top: 0;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 17px;
+        }
+
+        .form-group {
+            margin-bottom: 3px;
+        }
+
+        .form-group.full {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 7px;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 11px 12px;
+            border: 1px solid #ccd3df;
+            border-radius: 8px;
+            background: white;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 14px;
+            color: #172033;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #2457a6;
+            box-shadow: 0 0 0 3px rgba(36, 87, 166, 0.10);
+        }
+
+        textarea {
+            min-height: 110px;
+            resize: vertical;
+        }
+
+        input[readonly] {
+            background: #f3f5f8;
+            color: #667085;
+            cursor: not-allowed;
+        }
+
+        .help-text {
+            color: #667085;
+            font-size: 11px;
+            margin-top: 5px;
+            line-height: 1.4;
+        }
+
+        /* =====================================================
+           READ ONLY INFORMATION
+        ====================================================== */
+
+        .readonly-box {
+            background: #f8fafc;
+            border: 1px solid #e6ebf2;
+            border-radius: 10px;
+            padding: 16px;
+            margin-top: 20px;
+        }
+
+        .readonly-box p {
+            margin: 0;
+            color: #667085;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        /* =====================================================
+           BUTTONS
+        ====================================================== */
+
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid #e6ebf2;
+        }
+
+        .btn {
+            display: inline-block;
+            border: 0;
+            border-radius: 8px;
+            padding: 11px 18px;
+            font-size: 14px;
+            font-weight: 700;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: #2457a6;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1d4788;
+        }
+
+        .btn-secondary {
+            background: #eef2f7;
+            color: #172033;
+        }
+
+        .btn-secondary:hover {
+            background: #e1e7ef;
+        }
+
+        .btn-password {
+            width: 100%;
+            margin-top: 12px;
+            background: #f1f6ff;
+            color: #2457a6;
+            border: 1px solid #cddcf5;
+        }
+
+        .btn-password:hover {
+            background: #e6efff;
+        }
+
+        /* =====================================================
+           RESPONSIVE
+        ====================================================== */
+
+        @media (max-width: 950px) {
+            .profile-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .layout {
+                display: block;
+            }
+
+            .sidebar {
+                width: 100%;
+            }
+
+            .main {
+                padding: 18px 12px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-group.full {
+                grid-column: auto;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                text-align: center;
+                width: 100%;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}">
+
+    <!-- EduSphere shared navigation -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edusphere_navigation.css') }}">
+    <!-- EduSphere professional theme -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edusphere_professional_theme.css') }}">
+</head>
+
+<body>
+
+    <div class="layout">
+
+        <!-- =====================================================
+             SIDEBAR
+        ====================================================== -->
+
+        <aside class="sidebar">
+
+            <div class="brand">
+                AI School Management
+            </div>
+
+            <div class="student-box">
+
+                <strong>
+                    {{ student.name }}
+                </strong>
+
+                <span>
+                    {{ student.student_id }}
+                </span>
+
+                {% if school_class %}
+
+                    <span>
+                        Standard {{ school_class.standard }}
+
+                        {% if school_class.stream %}
+                            -
+                            {{ school_class.stream }}
+                        {% endif %}
+
+                        -
+                        {{ school_class.division }}
+                    </span>
+
+                {% endif %}
+
+            </div>
+
+
+            <a
+                class="nav"
+                href="{{ url_for('student_dashboard') }}"
+            >
+                Dashboard
+            </a>
+
+
+            <a
+                class="nav active"
+                href="{{ url_for('student_profile') }}"
+            >
+                My Profile
+            </a>
+
+
+            <a
+                class="nav"
+                href="{{ url_for('student_online_exams') }}"
+            >
+                Online Exams & Quizzes
+            </a>
+
+
+            <a
+                class="nav"
+                href="{{ url_for('student_change_password') }}"
+            >
+                Change Password
+            </a>
+
+
+            <a
+                class="nav"
+                href="{{ url_for('student_logout') }}"
+            >
+                Logout
+            </a>
+
+        </aside>
+
+
+        <!-- =====================================================
+             MAIN CONTENT
+        ====================================================== -->
+
+        <main class="main">
+
+            <!-- =================================================
+                 PAGE HEADER
+            ================================================== -->
+
+            <div class="header">
+
+                <h1>
+                    My Profile
+                </h1>
+
+                <p>
+                    View your school information and update
+                    your personal contact details.
+                </p>
+
+            </div>
+
+
+            <!-- =================================================
+                 FLASH MESSAGES
+            ================================================== -->
+
+            {% with messages = get_flashed_messages() %}
+
+                {% if messages %}
+
+                    {% for message in messages %}
+
+                        <div class="flash">
+                            {{ message }}
+                        </div>
+
+                    {% endfor %}
+
+                {% endif %}
+
+            {% endwith %}
+
+
+            <div class="profile-layout">
+
+                <!-- =============================================
+                     PROFILE SUMMARY
+                ============================================== -->
+
+                <div>
+
+                    <div class="card profile-summary">
+
+                        <div class="avatar">
+
+                            {% if student.name %}
+                                {{ student.name[0] | upper }}
+                            {% else %}
+                                S
+                            {% endif %}
+
+                        </div>
+
+
+                        <h2>
+                            {{ student.name }}
+                        </h2>
+
+
+                        <div class="student-id">
+                            {{ student.student_id }}
+                        </div>
+
+
+                        <span class="status-badge">
+                            {{ student.admission_status }}
+                        </span>
+
+
+                        <div class="summary-divider"></div>
+
+
+                        <div class="summary-item">
+
+                            <span>
+                                Admission Number
+                            </span>
+
+                            <strong>
+                                {{ student.admission_number or '-' }}
+                            </strong>
+
+                        </div>
+
+
+                        <div class="summary-item">
+
+                            <span>
+                                Class
+                            </span>
+
+                            <strong>
+
+                                {% if school_class %}
+
+                                    Standard
+                                    {{ school_class.standard }}
+
+                                    {% if school_class.stream %}
+                                        -
+                                        {{ school_class.stream }}
+                                    {% endif %}
+
+                                    -
+                                    {{ school_class.division }}
+
+                                {% else %}
+
+                                    -
+
+                                {% endif %}
+
+                            </strong>
+
+                        </div>
+
+
+                        <div class="summary-item">
+
+                            <span>
+                                Academic Year
+                            </span>
+
+                            <strong>
+
+                                {% if school_class %}
+                                    {{ school_class.academic_year }}
+                                {% else %}
+                                    -
+                                {% endif %}
+
+                            </strong>
+
+                        </div>
+
+
+                        <a
+                            class="btn btn-password"
+                            href="{{ url_for('student_change_password') }}"
+                        >
+                            Change Password
+                        </a>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =============================================
+                     EDIT PROFILE FORM
+                ============================================== -->
+
+                <div class="card form-card">
+
+                    <h2>
+                        Personal Information
+                    </h2>
+
+                    <p>
+                        You can update your personal details below.
+                        School-controlled information cannot be changed.
+                    </p>
+
+
+                    <form
+                        method="post"
+                        action="{{ url_for('student_profile') }}"
+                    >
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                        <!-- =====================================
+                             EDITABLE INFORMATION
+                        ====================================== -->
+
+                        <h3 class="section-title">
+                            Editable Information
+                        </h3>
+
+
+                        <div class="form-grid">
+
+                            <!-- NAME -->
+
+                            <div class="form-group">
+
+                                <label for="name">
+                                    Full Name
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="name"
+                                    name="name"
+                                    maxlength="100"
+                                    value="{{ student.name or '' }}"
+                                    required
+                                >
+
+                                <div class="help-text">
+                                    Your name will also be updated
+                                    on your student login account.
+                                </div>
+
+                            </div>
+
+
+                            <!-- EMAIL -->
+
+                            <div class="form-group">
+
+                                <label for="email">
+                                    Email Address
+                                </label>
+
+                                <input
+                                    type="email"
+                                    id="email"
+                                    name="email"
+                                    maxlength="120"
+                                    value="{{ student.email or '' }}"
+                                    placeholder="student@example.com"
+                                >
+
+                            </div>
+
+
+                            <!-- PHONE -->
+
+                            <div class="form-group">
+
+                                <label for="phone">
+                                    Phone Number
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="phone"
+                                    name="phone"
+                                    maxlength="30"
+                                    value="{{ student.phone or '' }}"
+                                    placeholder="Enter phone number"
+                                >
+
+                            </div>
+
+
+                            <!-- DATE OF BIRTH -->
+
+                            <div class="form-group">
+
+                                <label for="date_of_birth">
+                                    Date of Birth
+                                </label>
+
+                                <input
+                                    type="date"
+                                    id="date_of_birth"
+                                    name="date_of_birth"
+                                    value="{% if student.date_of_birth %}{{ student.date_of_birth.strftime('%Y-%m-%d') }}{% endif %}"
+                                >
+
+                            </div>
+
+
+                            <!-- GENDER -->
+
+                            <div class="form-group">
+
+                                <label for="gender">
+                                    Gender
+                                </label>
+
+                                <select
+                                    id="gender"
+                                    name="gender"
+                                >
+
+                                    <option value="">
+                                        Select Gender
+                                    </option>
+
+                                    <option
+                                        value="Male"
+                                        {% if student.gender == 'Male' %}
+                                            selected
+                                        {% endif %}
+                                    >
+                                        Male
+                                    </option>
+
+                                    <option
+                                        value="Female"
+                                        {% if student.gender == 'Female' %}
+                                            selected
+                                        {% endif %}
+                                    >
+                                        Female
+                                    </option>
+
+                                    <option
+                                        value="Other"
+                                        {% if student.gender == 'Other' %}
+                                            selected
+                                        {% endif %}
+                                    >
+                                        Other
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+
+                            <!-- ADDRESS -->
+
+                            <div class="form-group full">
+
+                                <label for="address">
+                                    Address
+                                </label>
+
+                                <textarea
+                                    id="address"
+                                    name="address"
+                                    maxlength="500"
+                                    placeholder="Enter your current address"
+                                >{{ student.address or '' }}</textarea>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- =====================================
+                             SCHOOL INFORMATION
+                        ====================================== -->
+
+                        <h3 class="section-title">
+                            School Information
+                        </h3>
+
+
+                        <div class="form-grid">
+
+                            <!-- STUDENT ID -->
+
+                            <div class="form-group">
+
+                                <label>
+                                    Student ID
+                                </label>
+
+                                <input
+                                    type="text"
+                                    value="{{ student.student_id }}"
+                                    readonly
+                                >
+
+                            </div>
+
+
+                            <!-- ADMISSION NUMBER -->
+
+                            <div class="form-group">
+
+                                <label>
+                                    Admission Number
+                                </label>
+
+                                <input
+                                    type="text"
+                                    value="{{ student.admission_number or '-' }}"
+                                    readonly
+                                >
+
+                            </div>
+
+
+                            <!-- STANDARD -->
+
+                            <div class="form-group">
+
+                                <label>
+                                    Standard
+                                </label>
+
+                                <input
+                                    type="text"
+                                    value="{% if school_class %}{{ school_class.standard }}{% else %}{{ student.current_standard }}{% endif %}"
+                                    readonly
+                                >
+
+                            </div>
+
+
+                            <!-- STREAM -->
+
+                            <div class="form-group">
+
+                                <label>
+                                    Stream
+                                </label>
+
+                                <input
+                                    type="text"
+                                    value="{% if school_class and school_class.stream %}{{ school_class.stream }}{% else %}Not Applicable{% endif %}"
+                                    readonly
+                                >
+
+                            </div>
+
+
+                            <!-- DIVISION -->
+
+                            <div class="form-group">
+
+                                <label>
+                                    Division
+                                </label>
+
+                                <input
+                                    type="text"
+                                    value="{% if school_class %}{{ school_class.division }}{% else %}-{% endif %}"
+                                    readonly
+                                >
+
+                            </div>
+
+
+                            <!-- ACADEMIC YEAR -->
+
+                            <div class="form-group">
+
+                                <label>
+                                    Academic Year
+                                </label>
+
+                                <input
+                                    type="text"
+                                    value="{% if school_class %}{{ school_class.academic_year }}{% else %}-{% endif %}"
+                                    readonly
+                                >
+
+                            </div>
+
+
+                            <!-- ADMISSION STATUS -->
+
+                            <div class="form-group">
+
+                                <label>
+                                    Admission Status
+                                </label>
+
+                                <input
+                                    type="text"
+                                    value="{{ student.admission_status or '-' }}"
+                                    readonly
+                                >
+
+                            </div>
+
+
+                            <!-- LOGIN ID -->
+
+                            <div class="form-group">
+
+                                <label>
+                                    Login ID
+                                </label>
+
+                                <input
+                                    type="text"
+                                    value="{{ current_user.username }}"
+                                    readonly
+                                >
+
+                                <div class="help-text">
+                                    Your Login ID cannot be changed
+                                    from the student portal.
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="readonly-box">
+
+                            <p>
+                                Student ID, Login ID, admission number,
+                                class, stream, division, academic year
+                                and admission status are maintained by
+                                the school administration and cannot be
+                                changed from this page.
+                            </p>
+
+                        </div>
+
+
+                        <!-- =====================================
+                             FORM ACTIONS
+                        ====================================== -->
+
+                        <div class="form-actions">
+
+                            <button
+                                class="btn btn-primary"
+                                type="submit"
+                            >
+                                Save Profile Changes
+                            </button>
+
+
+                            <a
+                                class="btn btn-secondary"
+                                href="{{ url_for('student_dashboard') }}"
+                            >
+                                Cancel
+                            </a>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </main>
+
+    </div>
+
+
+    <!-- EduSphere role navigation -->
+    {% include "components/edu_student_sidebar.html" %}
+    <script src="{{ url_for('static', filename='js/edusphere_navigation.js') }}"></script>
+</body>
+
+</html>

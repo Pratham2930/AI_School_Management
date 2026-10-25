@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Google Sheets Import Preview | AI School Management</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}">
+    <style>
+        .sync-page { max-width: 1240px; }
+        .sync-panel { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 22px; margin: 18px 0; }
+        .sync-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+        .sync-form label { display: block; font-weight: 650; margin-bottom: 6px; }
+        .sync-form input, .sync-form select { width: 100%; min-height: 42px; padding: 9px 11px; border: 1px solid #cbd5e1; border-radius: 7px; font: inherit; }
+        .sync-form .wide { grid-column: 1 / -1; }
+        .sync-help, .muted { color: #64748b; }
+        .sync-help { line-height: 1.6; }
+        .sync-errors { color: #9a3412; white-space: pre-line; }
+        .sync-table-wrap { overflow-x: auto; }
+        .sync-table { width: 100%; border-collapse: collapse; }
+        .sync-table th, .sync-table td { padding: 10px; border-bottom: 1px solid #e2e8f0; text-align: left; vertical-align: top; }
+        .sync-status { font-weight: 700; }
+        .sync-actions { display: flex; gap: 10px; align-items: center; }
+        @media (max-width: 720px) { .sync-form { grid-template-columns: 1fr; } .sync-form .wide { grid-column: auto; } }
+    </style>
+
+    <!-- EduSphere shared navigation -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edusphere_navigation.css') }}">
+    <!-- EduSphere professional theme -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_theme.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_portals.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_layout.css') }}">
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_unified.css') }}">
+</head>
+<body class="edn-unified">
+<!-- EduNova unified header -->
+<header class="edn-global-header" role="banner"><div class="edn-global-brand"><span class="edn-global-context">Administration</span></div><span class="edn-global-page">Google Sheets Sync</span></header>
+
+
+<main class="full-page sync-page">
+    <header class="page-header">
+        <div>
+            <p class="page-label">ADMINISTRATION</p>
+            <h1>Google Sheets Integration</h1>
+            <p class="muted">Review imports and monitor automatic exports of admissions and teacher registrations.</p>
+        </div>
+        <a class="secondary-btn" href="{{ url_for('admin_dashboard') }}">Admin Dashboard</a>
+    </header>
+    {% for message in get_flashed_messages() %}
+        <div class="alert">{{ message }}</div>
+    {% endfor %}
+
+    <section class="sync-panel">
+        <h2>Automatic school-record exports</h2>
+        <p class="sync-help">New admin-entered admissions and teacher registrations are queued with their database transaction, then written to their configured Google spreadsheet. Passwords and login credentials are never exported.</p>
+        <div class="sync-table-wrap">
+            <table class="sync-table">
+                <thead><tr><th>Queued</th><th>Type</th><th>Record ID</th><th>Status</th><th>Attempts</th><th>Last error</th></tr></thead>
+                <tbody>
+                {% for export in exports %}
+                    <tr>
+                        <td>{{ export.created_at.strftime('%Y-%m-%d %H:%M UTC') }}</td>
+                        <td>{{ export.record_type|title }}</td>
+                        <td>{{ export.record_id }}</td>
+                        <td class="sync-status">{{ 'Exported' if export.exported_at else ('Retry scheduled' if export.last_error else 'Pending') }}</td>
+                        <td>{{ export.attempts }}</td>
+                        <td class="sync-errors">{{ export.last_error or '—' }}</td>
+                    </tr>
+                {% else %}
+                    <tr><td colspan="6">No admission or teacher exports have been queued.</td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="sync-panel">
+        <h2>Create a preview</h2>
+        <p class="sync-help">Use a Google service account with Viewer access. The sheet must have one header row, no duplicate IDs, and only the documented columns. Preview data is stored privately for review; absent sheet rows never delete school records.</p>
+        <form class="sync-form" method="post">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div>
+                <label for="record_type">Record type</label>
+                <select id="record_type" name="record_type" required>
+                    <option value="">Choose a record type</option>
+                    <option value="admissions">Admissions</option>
+                    <option value="teachers">Teachers</option>
+                    <option value="staff">Staff</option>
+                </select>
+            </div>
+            <div>
+                <label for="spreadsheet_id">Spreadsheet ID</label>
+                <input id="spreadsheet_id" name="spreadsheet_id" maxlength="200" autocomplete="off" required>
+            </div>
+            <div class="wide">
+                <label for="sheet_range">Sheet range (including headers)</label>
+                <input id="sheet_range" name="sheet_range" maxlength="200" placeholder="Admissions!A1:M2000" required>
+            </div>
+            <div class="wide">
+                <button class="primary-btn" type="submit">Fetch &amp; validate preview</button>
+            </div>
+        </form>
+    </section>
+
+    <details class="sync-panel">
+        <summary><strong>Recommended sheet headers</strong></summary>
+        <p><strong>Admissions (required):</strong> <code>admission_number, name, current_standard, division, academic_year, previous_percentage, guardian_name, guardian_relationship</code></p>
+        <p><strong>Admissions (optional):</strong> <code>stream, date_of_birth (YYYY-MM-DD), gender, phone, email, address, previous_school, previous_standard, admission_fee, guardian_phone, guardian_email</code></p>
+        <p><strong>Teachers:</strong> <code>employee_id, name, email, phone</code>; optional: <code>qualification</code>. New teacher accounts use the employee ID as username and receive a generated temporary password via configured email/SMS.</p>
+        <p><strong>Staff:</strong> <code>employee_id, name, position</code>; optional: <code>phone, active</code>.</p>
+        <p class="sync-help">Each batch is limited to 2,000 rows. Existing records match by admission_number or employee_id. Approval upserts only supplied optional values; it does not delete records absent from the sheet or overwrite fee/payment status.</p>
+    </details>
+
+    {% if selected_batch %}
+    <section class="sync-panel">
+        <div class="page-header">
+            <div>
+                <h2>Batch preview</h2>
+                <p class="muted">{{ selected_batch.record_type|title }} · {{ selected_batch.sheet_range }} · {{ selected_batch.created_at.strftime('%Y-%m-%d %H:%M UTC') }}</p>
+                <p class="sync-status">Status: {{ selected_batch.status }} · {{ selected_batch.row_count }} rows</p>
+            </div>
+        </div>
+        {% if selected_batch.status == 'Needs review' %}
+            <p class="sync-errors">This preview became stale or could not be applied. No records from that batch were committed. Correct the source or resolve the conflict, then fetch a new preview.</p>
+        {% endif %}
+        <div class="sync-table-wrap">
+            <table class="sync-table">
+                <thead><tr><th>Sheet row</th><th>Stable ID</th><th>Action</th><th>Submitted values</th><th>Validation</th><th>Applied record</th></tr></thead>
+                <tbody>
+                {% for item in preview_rows %}
+                    {% set row = item.row %}
+                    <tr>
+                        <td>{{ row.row_number }}</td>
+                        <td>{{ row.stable_id }}</td>
+                        <td>{{ row.action }}</td>
+                        <td>
+                            {% for key, value in item.values.items() %}
+                                <strong>{{ key|replace('_', ' ')|title }}:</strong> {{ value }}{% if not loop.last %}<br>{% endif %}
+                            {% endfor %}
+                        </td>
+                        <td>
+                            {% if item.errors %}
+                                <span class="sync-errors">{{ item.errors|join('\n') }}</span>
+                            {% else %}
+                                <span class="sync-status">Valid</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ row.target_id if row.target_id else '—' }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% if selected_batch.status == 'Preview' %}
+            <form method="post" action="{{ url_for('approve_google_sheets_sync', batch_id=selected_batch.id) }}" class="sync-actions" style="margin-top:18px;">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <label><input type="checkbox" name="confirm_approval" value="yes" required> I reviewed these rows and approve applying this batch.</label>
+                <button class="primary-btn" type="submit">Approve &amp; apply batch</button>
+            </form>
+        {% elif selected_batch.approved_at %}
+            <p class="muted">Applied {{ selected_batch.applied_count }} records on {{ selected_batch.approved_at.strftime('%Y-%m-%d %H:%M UTC') }}.</p>
+        {% endif %}
+    </section>
+    {% endif %}
+
+    <section class="sync-panel">
+        <h2>Recent import history</h2>
+        <div class="sync-table-wrap">
+            <table class="sync-table">
+                <thead><tr><th>Created</th><th>Type</th><th>Sheet range</th><th>Rows</th><th>Status</th><th></th></tr></thead>
+                <tbody>
+                {% for batch in batches %}
+                    <tr>
+                        <td>{{ batch.created_at.strftime('%Y-%m-%d %H:%M UTC') }}</td>
+                        <td>{{ batch.record_type|title }}</td>
+                        <td>{{ batch.sheet_range }}</td>
+                        <td>{{ batch.row_count }}</td>
+                        <td>{{ batch.status }}</td>
+                        <td><a href="{{ url_for('admin_google_sheets_sync', batch=batch.id) }}">Review</a></td>
+                    </tr>
+                {% else %}
+                    <tr><td colspan="6">No imports have been previewed.</td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+
+    <!-- EduSphere role navigation -->
+    {% include "components/edu_admin_sidebar.html" %}
+    <script src="{{ url_for('static', filename='js/edusphere_navigation.js') }}"></script>
+</body>
+</html>

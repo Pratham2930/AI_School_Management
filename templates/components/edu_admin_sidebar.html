@@ -1,0 +1,43 @@
+<button id="edu-menu-trigger" type="button" aria-controls="edu-sidebar" aria-expanded="false">&#9776; School Menu</button>
+<div id="edu-menu-overlay"></div>
+<nav id="edu-sidebar" aria-label="School navigation" aria-hidden="true">
+<div class="edu-top"><div class="edu-brand">EduSphere AI<small>School Management</small></div><button id="edu-menu-close" class="edu-close" type="button" aria-label="Close menu">&times;</button></div>
+<div class="edu-heading">Overview</div>
+<a class="edu-link" href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+<div class="edu-heading">Students & Admissions</div>
+<a class="edu-link" href="{{ url_for('admin_students') }}">Students</a>
+<a class="edu-link" href="{{ url_for('new_admission') }}">New Admission</a>
+<a class="edu-link" href="{{ url_for('admission_records') }}">Admission Records</a>
+<a class="edu-link" href="{{ url_for('admin_classes') }}">Classes & Divisions</a>
+<a class="edu-link" href="{{ url_for('admin_parents') }}">Parents</a>
+<div class="edu-heading">Teachers & Staff</div>
+<a class="edu-link" href="{{ url_for('admin_teachers') }}">Teachers</a>
+<a class="edu-link" href="{{ url_for('add_teacher') }}">Add Teacher</a>
+<a class="edu-link" href="{{ url_for('admin_subjects') }}">Subjects</a>
+<a class="edu-link" href="{{ url_for('admin_teacher_documents') }}">Teacher Documents</a>
+<a class="edu-link" href="{{ url_for('admin_leave_requests') }}">Leave Requests</a>
+<a class="edu-link" href="{{ url_for('admin_staff') }}">Staff Management</a>
+<div class="edu-heading">Academics</div>
+<a class="edu-link" href="{{ url_for('admin_exams') }}">Exams</a>
+<a class="edu-link" href="{{ url_for('admin_exam_new') }}">New Exam</a>
+<a class="edu-link" href="{{ url_for('admin_timetable') }}">Timetable</a>
+<a class="edu-link" href="{{ url_for('timetable_requirements') }}">Timetable Requirements</a>
+<a class="edu-link" href="{{ url_for('curriculum_generator') }}">Curriculum Generator</a>
+<div class="edu-heading">Finance</div>
+<a class="edu-link" href="{{ url_for('fees_collect') }}">Collect Fees</a>
+<a class="edu-link" href="{{ url_for('admin_fee_verify') }}">Verify Payments</a>
+<div class="edu-heading">AI & Automation</div>
+<a class="edu-link" href="{{ url_for('admin_ai_training') }}">AI Training</a>
+<a class="edu-link" href="{{ url_for('ai_subject_setup') }}">AI Subject Setup</a>
+<a class="edu-link" href="{{ url_for('school_ai_assistant') }}">AI Assistant</a>
+<div class="edu-heading">Communication</div>
+<a class="edu-link" href="{{ url_for('admin_notices') }}">Notices</a>
+<a class="edu-link" href="{{ url_for('admin_events') }}">Events</a>
+<div class="edu-heading">Data & Reports</div>
+<a class="edu-link" href="{{ url_for('admin_reports') }}">Reports</a>
+<a class="edu-link" href="{{ url_for('admin_powerbi_reports') }}">Power BI</a>
+<a class="edu-link" href="{{ url_for('admin_google_sheets_sync') }}">Google Sheets</a>
+<a class="edu-link" href="{{ url_for('admin_kafka_outbox') }}">Kafka Outbox</a>
+<div class="edu-heading">Account</div>
+<a class="edu-link" href="{{ url_for('admin_logout') }}">Log out</a>
+</nav>

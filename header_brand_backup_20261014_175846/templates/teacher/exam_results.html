@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Exam Results
+    </title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f7fb;
+            margin: 0;
+            color: #172033;
+        }
+
+        .wrap {
+            max-width: 1150px;
+            margin: 30px auto;
+            padding: 0 18px;
+        }
+
+        .header {
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            margin-bottom: 7px;
+        }
+
+        .card {
+            background: white;
+            padding: 22px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.07);
+            margin-top: 18px;
+            overflow-x: auto;
+        }
+
+        .btn {
+            display: inline-block;
+            background: #2457a6;
+            color: white;
+            border: 0;
+            border-radius: 8px;
+            padding: 10px 15px;
+            text-decoration: none;
+            cursor: pointer;
+            font-weight: 700;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #e7ebf1;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            background: #f8fafc;
+        }
+
+        .flash {
+            background: #fff4d6;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .answer {
+            margin: 8px 0;
+            padding: 10px;
+            background: #f8fafc;
+            border-radius: 8px;
+            line-height: 1.6;
+        }
+
+        .marks-input {
+            width: 90px;
+            padding: 7px;
+            border: 1px solid #ccd3df;
+            border-radius: 6px;
+        }
+
+        .status {
+            display: inline-block;
+            background: #eaf0fb;
+            padding: 5px 9px;
+            border-radius: 20px;
+        }
+
+        .muted {
+            color: #667085;
+            font-size: 13px;
+        }
+
+        @media (max-width: 700px) {
+            .wrap {
+                margin: 20px auto;
+                padding: 0 10px;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}">
+
+    <!-- EduSphere shared navigation -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edusphere_navigation.css') }}">
+    <!-- EduSphere professional theme -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_theme.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_portals.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_layout.css') }}">
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_unified.css') }}">
+</head>
+
+<body class="edn-unified">
+<!-- EduNova unified header -->
+<header class="edn-global-header" role="banner"><div class="edn-global-brand"><span class="edn-global-icon">✦</span><span>EduNova <b>AI</b></span><span class="edn-global-divider">/</span><span class="edn-global-context">Teacher Portal</span></div><span class="edn-global-page">Exam Results</span></header>
+
+
+<div class="wrap">
+
+        <!-- =====================================================
+             PAGE HEADER
+        ====================================================== -->
+
+        <div class="header">
+
+            <a
+                class="btn"
+                href="{{ url_for('teacher_online_exams') }}"
+            >
+                Back to Exams
+            </a>
+
+            <h1>
+                {{ exam.title }} Results
+            </h1>
+
+            <div class="muted">
+                Review student attempts, scores and
+                manually grade short-answer questions.
+            </div>
+
+        </div>
+
+
+        <!-- =====================================================
+             FLASH MESSAGES
+        ====================================================== -->
+
+        {% with messages = get_flashed_messages() %}
+
+            {% for message in messages %}
+
+                <div class="flash">
+                    {{ message }}
+                </div>
+
+            {% endfor %}
+
+        {% endwith %}
+
+
+        <!-- =====================================================
+             RESULTS TABLE
+        ====================================================== -->
+
+        <div class="card">
+
+            {% if attempts %}
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>Student</th>
+                            <th>Status</th>
+                            <th>Submitted</th>
+                            <th>Score</th>
+                            <th>Manual Review</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for attempt in attempts %}
+
+                            <tr>
+
+                                <!-- STUDENT -->
+
+                                <td>
+
+                                    <strong>
+                                        {{ attempt.student.name }}
+                                    </strong>
+
+                                    <br>
+
+                                    <span class="muted">
+                                        {{ attempt.student.student_id }}
+                                    </span>
+
+                                </td>
+
+
+                                <!-- STATUS -->
+
+                                <td>
+
+                                    <span class="status">
+                                        {{ attempt.status }}
+                                    </span>
+
+                                    {% if attempt.auto_submitted %}
+
+                                        <br>
+
+                                        <small>
+                                            Auto submitted
+                                        </small>
+
+                                    {% endif %}
+
+                                </td>
+
+
+                                <!-- SUBMITTED TIME -->
+
+                                <td>
+
+                                    {% if attempt.submitted_at %}
+
+                                        {{
+                                            attempt.submitted_at.strftime(
+                                                '%d %b %Y %I:%M %p'
+                                            )
+                                        }}
+
+                                    {% else %}
+
+                                        -
+
+                                    {% endif %}
+
+                                </td>
+
+
+                                <!-- SCORE -->
+
+                                <td>
+
+                                    {{ attempt.score | round(2) }}
+
+                                    /
+
+                                    {{ exam.total_marks | round(2) }}
+
+                                    <br>
+
+                                    {{ attempt.percentage | round(2) }}%
+
+                                </td>
+
+
+                                <!-- MANUAL REVIEW -->
+
+                                <td>
+
+                                    {% set short_answers =
+                                        attempt.answers
+                                        | selectattr(
+                                            'question.question_type',
+                                            'equalto',
+                                            'short_answer'
+                                        )
+                                        | list
+                                    %}
+
+
+                                    {% if short_answers %}
+
+                                        <form method="post">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                                            <input
+                                                type="hidden"
+                                                name="attempt_id"
+                                                value="{{ attempt.id }}"
+                                            >
+
+
+                                            {% for answer in short_answers %}
+
+                                                <div class="answer">
+
+                                                    <strong>
+                                                        {{
+                                                            answer.question
+                                                            .question_text
+                                                        }}
+                                                    </strong>
+
+                                                    <br>
+
+                                                    Answer:
+
+                                                    {{
+                                                        answer.answer_text
+                                                        or 'No answer'
+                                                    }}
+
+                                                    <br>
+
+                                                    Marks:
+
+                                                    <input
+                                                        class="marks-input"
+                                                        type="number"
+                                                        name="marks_{{ answer.id }}"
+                                                        min="0"
+                                                        max="{{ answer.question.marks }}"
+                                                        step="0.25"
+                                                        value="{{ answer.awarded_marks }}"
+                                                    >
+
+                                                    /
+
+                                                    {{ answer.question.marks }}
+
+                                                </div>
+
+                                            {% endfor %}
+
+
+                                            <button
+                                                class="btn"
+                                                type="submit"
+                                            >
+                                                Save Grading
+                                            </button>
+
+                                        </form>
+
+                                    {% else %}
+
+                                        No manual grading needed
+
+                                    {% endif %}
+
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            {% else %}
+
+                <p>
+                    No students have started this exam yet.
+                </p>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+
+    <!-- EduSphere role navigation -->
+    {% include "components/edu_teacher_sidebar.html" %}
+    <script src="{{ url_for('static', filename='js/edusphere_navigation.js') }}"></script>
+</body>
+
+</html>

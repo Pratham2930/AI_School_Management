@@ -1,0 +1,2044 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Curriculum Generator | AI School Management
+    </title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            background:
+                #f4f7fb;
+
+            color:
+                #1f2937;
+        }
+
+        /* =====================================================
+           PAGE
+        ===================================================== */
+
+        .page-container {
+            max-width: 1500px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+
+        /* =====================================================
+           TOP HEADER
+        ===================================================== */
+
+        .top-header {
+            background:
+                linear-gradient(
+                    135deg,
+                    #172554,
+                    #1d4ed8
+                );
+
+            color: white;
+
+            border-radius: 18px;
+
+            padding: 28px 32px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 20px;
+
+            margin-bottom: 25px;
+
+            box-shadow:
+                0 10px 30px
+                rgba(15, 23, 42, 0.12);
+        }
+
+        .top-header h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .top-header p {
+            color: #dbeafe;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .header-button {
+            display: inline-block;
+
+            text-decoration: none;
+
+            padding: 11px 17px;
+
+            border-radius: 9px;
+
+            font-size: 14px;
+
+            font-weight: 700;
+
+            background: white;
+
+            color: #1d4ed8;
+
+            border: none;
+
+            cursor: pointer;
+        }
+
+        .header-button:hover {
+            background: #eff6ff;
+        }
+
+        /* =====================================================
+           FLASH MESSAGES
+        ===================================================== */
+
+        .flash-container {
+            margin-bottom: 20px;
+        }
+
+        .flash-message {
+            background: #eff6ff;
+
+            border-left:
+                5px solid #2563eb;
+
+            color: #1e3a8a;
+
+            padding: 14px 18px;
+
+            border-radius: 8px;
+
+            margin-bottom: 10px;
+
+            font-size: 14px;
+
+            line-height: 1.5;
+        }
+
+        /* =====================================================
+           CARD
+        ===================================================== */
+
+        .card {
+            background: white;
+
+            border-radius: 16px;
+
+            border:
+                1px solid #e5e7eb;
+
+            box-shadow:
+                0 8px 25px
+                rgba(15, 23, 42, 0.05);
+
+            margin-bottom: 24px;
+
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 20px 24px;
+
+            border-bottom:
+                1px solid #e5e7eb;
+        }
+
+        .card-header h2 {
+            font-size: 19px;
+            margin-bottom: 6px;
+        }
+
+        .card-header p {
+            font-size: 13px;
+            color: #64748b;
+            line-height: 1.5;
+        }
+
+        .card-body {
+            padding: 24px;
+        }
+
+        /* =====================================================
+           SELECTOR
+        ===================================================== */
+
+        .selector-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    2,
+                    minmax(220px, 1fr)
+                );
+
+            gap: 18px;
+
+            align-items: end;
+        }
+
+        .field-group label {
+            display: block;
+
+            font-size: 13px;
+
+            font-weight: 700;
+
+            color: #374151;
+
+            margin-bottom: 8px;
+        }
+
+        .field-group select,
+        .field-group input {
+            width: 100%;
+
+            padding: 11px 12px;
+
+            border:
+                1px solid #cbd5e1;
+
+            border-radius: 8px;
+
+            background: white;
+
+            font-size: 14px;
+
+            outline: none;
+        }
+
+        .field-group select:focus,
+        .field-group input:focus {
+            border-color: #2563eb;
+
+            box-shadow:
+                0 0 0 3px
+                rgba(37, 99, 235, 0.10);
+        }
+
+        .stream-hidden {
+            display: none;
+        }
+
+        /* =====================================================
+           SUMMARY
+        ===================================================== */
+
+        .summary-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    4,
+                    minmax(160px, 1fr)
+                );
+
+            gap: 16px;
+
+            margin-bottom: 24px;
+        }
+
+        .summary-card {
+            background: white;
+
+            border:
+                1px solid #e5e7eb;
+
+            border-radius: 14px;
+
+            padding: 20px;
+
+            box-shadow:
+                0 6px 20px
+                rgba(15, 23, 42, 0.04);
+        }
+
+        .summary-label {
+            color: #64748b;
+
+            font-size: 12px;
+
+            font-weight: 700;
+
+            text-transform: uppercase;
+
+            letter-spacing: 0.5px;
+
+            margin-bottom: 10px;
+        }
+
+        .summary-value {
+            font-size: 25px;
+
+            font-weight: 800;
+
+            color: #172554;
+        }
+
+        .summary-small {
+            font-size: 12px;
+
+            color: #64748b;
+
+            margin-top: 5px;
+        }
+
+        /* =====================================================
+           CAPACITY
+        ===================================================== */
+
+        .capacity-box {
+            margin-top: 20px;
+
+            padding: 18px;
+
+            background: #f8fafc;
+
+            border:
+                1px solid #e2e8f0;
+
+            border-radius: 12px;
+        }
+
+        .capacity-top {
+            display: flex;
+
+            justify-content: space-between;
+
+            gap: 20px;
+
+            margin-bottom: 10px;
+
+            font-size: 13px;
+
+            font-weight: 700;
+        }
+
+        .capacity-track {
+            width: 100%;
+
+            height: 12px;
+
+            background: #e2e8f0;
+
+            border-radius: 999px;
+
+            overflow: hidden;
+        }
+
+        .capacity-fill {
+            height: 100%;
+
+            width: 0;
+
+            background: #2563eb;
+
+            transition:
+                width 0.25s ease;
+        }
+
+        .capacity-fill.warning {
+            background: #f59e0b;
+        }
+
+        .capacity-fill.danger {
+            background: #dc2626;
+        }
+
+        .capacity-message {
+            margin-top: 9px;
+
+            color: #64748b;
+
+            font-size: 12px;
+        }
+
+        .capacity-message.danger {
+            color: #b91c1c;
+            font-weight: 700;
+        }
+
+        /* =====================================================
+           TABLE
+        ===================================================== */
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+
+            border-collapse: collapse;
+
+            min-width: 1050px;
+        }
+
+        thead {
+            background: #f8fafc;
+        }
+
+        th {
+            text-align: left;
+
+            padding: 14px;
+
+            color: #475569;
+
+            font-size: 12px;
+
+            text-transform: uppercase;
+
+            letter-spacing: 0.4px;
+
+            border-bottom:
+                1px solid #e2e8f0;
+        }
+
+        td {
+            padding: 14px;
+
+            border-bottom:
+                1px solid #eef2f7;
+
+            vertical-align: middle;
+
+            font-size: 14px;
+        }
+
+        tbody tr:hover {
+            background: #f8fbff;
+        }
+
+        .subject-cell {
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+        }
+
+        .subject-checkbox {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .subject-name {
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .subject-code {
+            font-size: 12px;
+            color: #64748b;
+            margin-top: 4px;
+        }
+
+        .status-badge {
+            display: inline-block;
+
+            padding: 5px 9px;
+
+            border-radius: 999px;
+
+            font-size: 11px;
+
+            font-weight: 700;
+        }
+
+        .status-active {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-available {
+            background: #f1f5f9;
+            color: #64748b;
+        }
+
+        .table-input {
+            width: 90px;
+
+            padding: 9px;
+
+            border:
+                1px solid #cbd5e1;
+
+            border-radius: 7px;
+
+            font-size: 13px;
+        }
+
+        .table-select {
+            min-width: 135px;
+
+            padding: 9px;
+
+            border:
+                1px solid #cbd5e1;
+
+            border-radius: 7px;
+
+            background: white;
+
+            font-size: 13px;
+        }
+
+        .disabled-row {
+            opacity: 0.55;
+        }
+
+        .disabled-row
+        .table-input,
+
+        .disabled-row
+        .table-select {
+            background: #f1f5f9;
+        }
+
+        /* =====================================================
+           CLASS LIST
+        ===================================================== */
+
+        .class-list {
+            display: flex;
+
+            gap: 10px;
+
+            flex-wrap: wrap;
+
+            margin-top: 15px;
+        }
+
+        .class-chip {
+            background: #eff6ff;
+
+            color: #1d4ed8;
+
+            border:
+                1px solid #bfdbfe;
+
+            padding: 8px 12px;
+
+            border-radius: 999px;
+
+            font-size: 12px;
+
+            font-weight: 700;
+        }
+
+        .empty-text {
+            color: #64748b;
+
+            font-size: 13px;
+
+            line-height: 1.6;
+        }
+
+        /* =====================================================
+           ACTIONS
+        ===================================================== */
+
+        .form-actions {
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            gap: 15px;
+
+            flex-wrap: wrap;
+
+            padding-top: 20px;
+        }
+
+        .save-button {
+            background: #2563eb;
+
+            color: white;
+
+            border: none;
+
+            border-radius: 9px;
+
+            padding: 12px 22px;
+
+            font-size: 14px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+        }
+
+        .save-button:hover {
+            background: #1d4ed8;
+        }
+
+        .save-button:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+        }
+
+        .secondary-button {
+            display: inline-block;
+
+            text-decoration: none;
+
+            background: #f1f5f9;
+
+            color: #334155;
+
+            border:
+                1px solid #cbd5e1;
+
+            border-radius: 9px;
+
+            padding: 11px 17px;
+
+            font-size: 13px;
+
+            font-weight: 700;
+        }
+
+        .secondary-button:hover {
+            background: #e2e8f0;
+        }
+
+        /* =====================================================
+           EMPTY SUBJECTS
+        ===================================================== */
+
+        .empty-subjects {
+            text-align: center;
+
+            padding: 45px 20px;
+
+            color: #64748b;
+        }
+
+        .empty-subjects h3 {
+            color: #334155;
+
+            margin-bottom: 10px;
+        }
+
+        /* =====================================================
+           RESPONSIVE
+        ===================================================== */
+
+        @media (
+            max-width: 900px
+        ) {
+
+            .page-container {
+                padding: 18px;
+            }
+
+            .top-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .selector-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .summary-grid {
+                grid-template-columns:
+                    repeat(
+                        2,
+                        1fr
+                    );
+            }
+        }
+
+        @media (
+            max-width: 520px
+        ) {
+
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .top-header h1 {
+                font-size: 23px;
+            }
+        }
+
+    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}">
+
+    <!-- EduSphere shared navigation -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edusphere_navigation.css') }}">
+    <!-- EduSphere professional theme -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edusphere_professional_theme.css') }}">
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_theme.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_portals.css') }}">
+</head>
+
+
+<body>
+<div id="nova-topbar"><div class="nova-brand"><span class="nova-mark">✦</span><span>EduSphere AI <span class="nova-tag">School Management</span></span></div><div class="nova-right"><span class="nova-pill">School Portal</span></div></div>
+
+
+<div class="page-container">
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <div class="top-header">
+
+        <div>
+
+            <h1>
+                Curriculum Generator
+            </h1>
+
+            <p>
+                Configure which subjects belong to each
+                standard and stream. This curriculum will
+                be used by the Automatic Subject Generator,
+                AI Teacher Recommendation, and AI Timetable.
+            </p>
+
+        </div>
+
+        <div class="header-actions">
+
+            <a
+                href="{{ url_for('admin_subjects') }}"
+                class="header-button"
+            >
+                Subject Management
+            </a>
+
+            <a
+                href="{{ url_for('ai_subject_setup') }}"
+                class="header-button"
+            >
+                AI Subject Setup
+            </a>
+
+            <a
+                href="{{ url_for('admin_dashboard') }}"
+                class="header-button"
+            >
+                Dashboard
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         FLASH MESSAGES
+    ====================================================== -->
+
+    {% with messages = get_flashed_messages() %}
+
+        {% if messages %}
+
+            <div class="flash-container">
+
+                {% for message in messages %}
+
+                    <div class="flash-message">
+                        {{ message }}
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% endif %}
+
+    {% endwith %}
+
+
+    <!-- =====================================================
+         STANDARD / STREAM SELECTOR
+    ====================================================== -->
+
+    <div class="card">
+
+        <div class="card-header">
+
+            <h2>
+                Select Curriculum
+            </h2>
+
+            <p>
+                Standards 1 to 10 use a common standard
+                curriculum. Standards 11 and 12 use
+                Science, Commerce, or Arts streams.
+            </p>
+
+        </div>
+
+
+        <div class="card-body">
+
+            <form
+                id="selectorForm"
+                method="GET"
+                action="{{ url_for('curriculum_generator') }}"
+            >
+
+                <div class="selector-grid">
+
+                    <div class="field-group">
+
+                        <label for="standardSelector">
+                            Standard
+                        </label>
+
+                        <select
+                            id="standardSelector"
+                            name="standard"
+                        >
+
+                            {% for standard in range(1, 13) %}
+
+                                <option
+                                    value="{{ standard }}"
+                                    {% if selected_standard == standard %}
+                                        selected
+                                    {% endif %}
+                                >
+                                    Standard {{ standard }}
+                                </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+
+                    <div
+                        class="field-group"
+                        id="streamField"
+                    >
+
+                        <label for="streamSelector">
+                            Stream
+                        </label>
+
+                        <select
+                            id="streamSelector"
+                            name="stream"
+                        >
+
+                            {% for stream in streams %}
+
+                                <option
+                                    value="{{ stream }}"
+                                    {% if selected_stream == stream %}
+                                        selected
+                                    {% endif %}
+                                >
+                                    {{ stream }}
+                                </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         SUMMARY
+    ====================================================== -->
+
+    <div class="summary-grid">
+
+        <div class="summary-card">
+
+            <div class="summary-label">
+                Standard
+            </div>
+
+            <div class="summary-value">
+                {{ selected_standard }}
+            </div>
+
+            <div class="summary-small">
+
+                {% if selected_standard in [11, 12] %}
+
+                    {{ selected_stream }} Stream
+
+                {% else %}
+
+                    No stream required
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+
+        <div class="summary-card">
+
+            <div class="summary-label">
+                Active Subjects
+            </div>
+
+            <div
+                class="summary-value"
+                id="activeSubjectCount"
+            >
+                {{ active_subject_count }}
+            </div>
+
+            <div class="summary-small">
+                Subjects in curriculum
+            </div>
+
+        </div>
+
+
+        <div class="summary-card">
+
+            <div class="summary-label">
+                Weekly Periods
+            </div>
+
+            <div class="summary-value">
+
+                <span id="totalPeriods">
+                    {{ total_periods }}
+                </span>
+
+                / 40
+
+            </div>
+
+            <div class="summary-small">
+                Maximum timetable capacity
+            </div>
+
+        </div>
+
+
+        <div class="summary-card">
+
+            <div class="summary-label">
+                Matching Classes
+            </div>
+
+            <div class="summary-value">
+                {{ matching_classes|length }}
+            </div>
+
+            <div class="summary-small">
+                Classes using this curriculum
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         MATCHING CLASSES
+    ====================================================== -->
+
+    <div class="card">
+
+        <div class="card-header">
+
+            <h2>
+                Classes Using This Curriculum
+            </h2>
+
+            <p>
+                These active classes match the selected
+                standard and stream.
+            </p>
+
+        </div>
+
+
+        <div class="card-body">
+
+            {% if matching_classes %}
+
+                <div class="class-list">
+
+                    {% for school_class in matching_classes %}
+
+                        <span class="class-chip">
+
+                            {{ class_display_name(school_class) }}
+
+                        </span>
+
+                    {% endfor %}
+
+                </div>
+
+            {% else %}
+
+                <p class="empty-text">
+
+                    No active classes currently match this
+                    standard and stream. You can still save
+                    the curriculum now and use it when a
+                    matching class is created.
+
+                </p>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         CURRICULUM FORM
+    ====================================================== -->
+
+    <div class="card">
+
+        <div class="card-header">
+
+            <h2>
+
+                {% if selected_standard in [11, 12] %}
+
+                    Standard
+                    {{ selected_standard }}
+                    {{ selected_stream }}
+                    Curriculum
+
+                {% else %}
+
+                    Standard
+                    {{ selected_standard }}
+                    Curriculum
+
+                {% endif %}
+
+            </h2>
+
+            <p>
+                Enable the subjects that belong to this
+                curriculum and configure their timetable
+                requirements.
+            </p>
+
+        </div>
+
+
+        <div class="card-body">
+
+            {% if subject_rows %}
+
+                <form
+                    method="POST"
+                    action="{{ url_for('curriculum_generator') }}"
+                    id="curriculumForm"
+                >
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                    <input
+                        type="hidden"
+                        name="standard"
+                        value="{{ selected_standard }}"
+                    >
+
+
+                    <input
+                        type="hidden"
+                        name="stream"
+                        value="{{ selected_stream }}"
+                    >
+
+
+                    <!-- =====================================
+                         CAPACITY
+                    ====================================== -->
+
+                    <div class="capacity-box">
+
+                        <div class="capacity-top">
+
+                            <span>
+                                Weekly Timetable Capacity
+                            </span>
+
+                            <span>
+
+                                <span id="capacityValue">
+                                    {{ total_periods }}
+                                </span>
+
+                                / 40 periods
+
+                            </span>
+
+                        </div>
+
+
+                        <div class="capacity-track">
+
+                            <div
+                                class="capacity-fill"
+                                id="capacityFill"
+                            ></div>
+
+                        </div>
+
+
+                        <div
+                            class="capacity-message"
+                            id="capacityMessage"
+                        >
+                            Configure subjects within the
+                            40-period weekly limit.
+                        </div>
+
+                    </div>
+
+
+                    <br>
+
+
+                    <!-- =====================================
+                         SUBJECT TABLE
+                    ====================================== -->
+
+                    <div class="table-wrapper">
+
+                        <table>
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>
+                                        Use
+                                    </th>
+
+                                    <th>
+                                        Subject
+                                    </th>
+
+                                    <th>
+                                        Status
+                                    </th>
+
+                                    <th>
+                                        Periods / Week
+                                    </th>
+
+                                    <th>
+                                        Max / Day
+                                    </th>
+
+                                    <th>
+                                        Preferred Time
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+
+                            <tbody>
+
+                                {% for row in subject_rows %}
+
+                                    <tr
+                                        id="subjectRow{{ row.subject.id }}"
+                                        class="{% if not row.enabled %}disabled-row{% endif %}"
+                                    >
+
+                                        <td>
+
+                                            <input
+                                                type="checkbox"
+
+                                                class="subject-checkbox"
+
+                                                name="enabled_{{ row.subject.id }}"
+
+                                                value="1"
+
+                                                data-subject-id="{{ row.subject.id }}"
+
+                                                {% if row.enabled %}
+                                                    checked
+                                                {% endif %}
+                                            >
+
+                                        </td>
+
+
+                                        <td>
+
+                                            <div class="subject-cell">
+
+                                                <div>
+
+                                                    <div class="subject-name">
+                                                        {{ row.subject.name }}
+                                                    </div>
+
+                                                    <div class="subject-code">
+                                                        {{ row.subject.code }}
+                                                    </div>
+
+                                                </div>
+
+                                            </div>
+
+                                        </td>
+
+
+                                        <td>
+
+                                            <span
+                                                id="status{{ row.subject.id }}"
+                                                class="
+                                                    status-badge
+                                                    {% if row.enabled %}
+                                                        status-active
+                                                    {% else %}
+                                                        status-available
+                                                    {% endif %}
+                                                "
+                                            >
+
+                                                {% if row.enabled %}
+
+                                                    In Curriculum
+
+                                                {% else %}
+
+                                                    Available
+
+                                                {% endif %}
+
+                                            </span>
+
+                                        </td>
+
+
+                                        <td>
+
+                                            <input
+                                                type="number"
+
+                                                name="periods_{{ row.subject.id }}"
+
+                                                id="periods{{ row.subject.id }}"
+
+                                                class="table-input periods-input"
+
+                                                min="1"
+
+                                                max="40"
+
+                                                value="{{ row.periods_value }}"
+
+                                                data-subject-id="{{ row.subject.id }}"
+                                            >
+
+                                        </td>
+
+
+                                        <td>
+
+                                            <input
+                                                type="number"
+
+                                                name="max_daily_{{ row.subject.id }}"
+
+                                                id="maxDaily{{ row.subject.id }}"
+
+                                                class="table-input"
+
+                                                min="1"
+
+                                                max="8"
+
+                                                value="{{ row.max_daily_value }}"
+                                            >
+
+                                        </td>
+
+
+                                        <td>
+
+                                            <select
+                                                name="preferred_{{ row.subject.id }}"
+                                                id="preferred{{ row.subject.id }}"
+                                                class="table-select"
+                                            >
+
+                                                <option
+                                                    value=""
+                                                    {% if not row.preferred_value %}
+                                                        selected
+                                                    {% endif %}
+                                                >
+                                                    No Preference
+                                                </option>
+
+
+                                                <option
+                                                    value="morning"
+                                                    {% if row.preferred_value == 'morning' %}
+                                                        selected
+                                                    {% endif %}
+                                                >
+                                                    Morning
+                                                </option>
+
+
+                                                <option
+                                                    value="afternoon"
+                                                    {% if row.preferred_value == 'afternoon' %}
+                                                        selected
+                                                    {% endif %}
+                                                >
+                                                    Afternoon
+                                                </option>
+
+                                            </select>
+
+                                        </td>
+
+                                    </tr>
+
+                                {% endfor %}
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+
+                    <!-- =====================================
+                         ACTIONS
+                    ====================================== -->
+
+                    <div class="form-actions">
+
+                        <div>
+
+                            <a
+                                href="{{ url_for('admin_subjects') }}"
+                                class="secondary-button"
+                            >
+                                Manage Subjects
+                            </a>
+
+                        </div>
+
+
+                        <button
+                            type="submit"
+                            class="save-button"
+                            id="saveButton"
+                        >
+                            Save Curriculum
+                        </button>
+
+                    </div>
+
+                </form>
+
+
+            {% else %}
+
+                <div class="empty-subjects">
+
+                    <h3>
+                        No Subjects Available
+                    </h3>
+
+                    <p>
+                        Create subjects in Subject Management
+                        before configuring the curriculum.
+                    </p>
+
+                    <br>
+
+                    <a
+                        href="{{ url_for('admin_subjects') }}"
+                        class="secondary-button"
+                    >
+                        Go to Subject Management
+                    </a>
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    // =====================================================
+    // ELEMENTS
+    // =====================================================
+
+    const standardSelector =
+        document.getElementById(
+            "standardSelector"
+        );
+
+    const streamSelector =
+        document.getElementById(
+            "streamSelector"
+        );
+
+    const streamField =
+        document.getElementById(
+            "streamField"
+        );
+
+    const selectorForm =
+        document.getElementById(
+            "selectorForm"
+        );
+
+    const curriculumForm =
+        document.getElementById(
+            "curriculumForm"
+        );
+
+    const saveButton =
+        document.getElementById(
+            "saveButton"
+        );
+
+
+    // =====================================================
+    // SHOW / HIDE STREAM
+    // =====================================================
+
+    function updateStreamVisibility() {
+
+        const standard =
+            parseInt(
+                standardSelector.value
+            );
+
+
+        if (
+            standard === 11
+            ||
+            standard === 12
+        ) {
+
+            streamField.style.display =
+                "block";
+
+            streamSelector.disabled =
+                false;
+
+        }
+
+        else {
+
+            streamField.style.display =
+                "none";
+
+            streamSelector.disabled =
+                true;
+
+        }
+
+    }
+
+
+    // =====================================================
+    // CHANGE STANDARD
+    // =====================================================
+
+    standardSelector.addEventListener(
+        "change",
+        function () {
+
+            const standard =
+                parseInt(
+                    standardSelector.value
+                );
+
+
+            if (
+                standard === 11
+                ||
+                standard === 12
+            ) {
+
+                streamSelector.disabled =
+                    false;
+
+            }
+
+            else {
+
+                streamSelector.disabled =
+                    true;
+
+            }
+
+
+            selectorForm.submit();
+
+        }
+    );
+
+
+    // =====================================================
+    // CHANGE STREAM
+    // =====================================================
+
+    streamSelector.addEventListener(
+        "change",
+        function () {
+
+            streamSelector.disabled =
+                false;
+
+            selectorForm.submit();
+
+        }
+    );
+
+
+    // =====================================================
+    // SUBJECT ROW STATE
+    // =====================================================
+
+    function updateSubjectRow(
+        checkbox
+    ) {
+
+        const subjectId =
+            checkbox.dataset.subjectId;
+
+        const row =
+            document.getElementById(
+                "subjectRow"
+                +
+                subjectId
+            );
+
+        const status =
+            document.getElementById(
+                "status"
+                +
+                subjectId
+            );
+
+
+        if (checkbox.checked) {
+
+            row.classList.remove(
+                "disabled-row"
+            );
+
+
+            status.textContent =
+                "In Curriculum";
+
+
+            status.classList.remove(
+                "status-available"
+            );
+
+
+            status.classList.add(
+                "status-active"
+            );
+
+        }
+
+        else {
+
+            row.classList.add(
+                "disabled-row"
+            );
+
+
+            status.textContent =
+                "Available";
+
+
+            status.classList.remove(
+                "status-active"
+            );
+
+
+            status.classList.add(
+                "status-available"
+            );
+
+        }
+
+    }
+
+
+    // =====================================================
+    // CALCULATE PERIOD CAPACITY
+    // =====================================================
+
+    function calculateCapacity() {
+
+        const checkboxes =
+            document.querySelectorAll(
+                ".subject-checkbox"
+            );
+
+
+        let totalPeriods = 0;
+
+        let activeSubjects = 0;
+
+
+        checkboxes.forEach(
+            function (checkbox) {
+
+                updateSubjectRow(
+                    checkbox
+                );
+
+
+                if (
+                    checkbox.checked
+                ) {
+
+                    activeSubjects += 1;
+
+
+                    const subjectId =
+                        checkbox.dataset.subjectId;
+
+
+                    const periodsInput =
+                        document.getElementById(
+                            "periods"
+                            +
+                            subjectId
+                        );
+
+
+                    let periods =
+                        parseInt(
+                            periodsInput.value
+                        );
+
+
+                    if (
+                        isNaN(periods)
+                        ||
+                        periods < 0
+                    ) {
+
+                        periods = 0;
+
+                    }
+
+
+                    totalPeriods +=
+                        periods;
+
+                }
+
+            }
+        );
+
+
+        const totalPeriodsElement =
+            document.getElementById(
+                "totalPeriods"
+            );
+
+
+        const activeSubjectElement =
+            document.getElementById(
+                "activeSubjectCount"
+            );
+
+
+        const capacityValue =
+            document.getElementById(
+                "capacityValue"
+            );
+
+
+        const capacityFill =
+            document.getElementById(
+                "capacityFill"
+            );
+
+
+        const capacityMessage =
+            document.getElementById(
+                "capacityMessage"
+            );
+
+
+        if (totalPeriodsElement) {
+
+            totalPeriodsElement.textContent =
+                totalPeriods;
+
+        }
+
+
+        if (activeSubjectElement) {
+
+            activeSubjectElement.textContent =
+                activeSubjects;
+
+        }
+
+
+        if (capacityValue) {
+
+            capacityValue.textContent =
+                totalPeriods;
+
+        }
+
+
+        let percentage =
+            (
+                totalPeriods
+                /
+                40
+            )
+            *
+            100;
+
+
+        percentage =
+            Math.min(
+                percentage,
+                100
+            );
+
+
+        if (capacityFill) {
+
+            capacityFill.style.width =
+                percentage
+                +
+                "%";
+
+
+            capacityFill.classList.remove(
+                "warning",
+                "danger"
+            );
+
+
+            if (
+                totalPeriods > 40
+            ) {
+
+                capacityFill.classList.add(
+                    "danger"
+                );
+
+            }
+
+            else if (
+                totalPeriods >= 36
+            ) {
+
+                capacityFill.classList.add(
+                    "warning"
+                );
+
+            }
+
+        }
+
+
+        if (capacityMessage) {
+
+            capacityMessage.classList.remove(
+                "danger"
+            );
+
+
+            if (
+                totalPeriods > 40
+            ) {
+
+                capacityMessage.textContent =
+                    "The curriculum exceeds the 40-period weekly limit.";
+
+
+                capacityMessage.classList.add(
+                    "danger"
+                );
+
+
+                if (saveButton) {
+
+                    saveButton.disabled =
+                        true;
+
+                }
+
+            }
+
+            else {
+
+                const remaining =
+                    40
+                    -
+                    totalPeriods;
+
+
+                capacityMessage.textContent =
+                    remaining
+                    +
+                    " timetable periods are still available.";
+
+
+                if (saveButton) {
+
+                    saveButton.disabled =
+                        false;
+
+                }
+
+            }
+
+        }
+
+    }
+
+
+    // =====================================================
+    // CHECKBOX EVENTS
+    // =====================================================
+
+    document
+        .querySelectorAll(
+            ".subject-checkbox"
+        )
+        .forEach(
+            function (checkbox) {
+
+                checkbox.addEventListener(
+                    "change",
+                    calculateCapacity
+                );
+
+            }
+        );
+
+
+    // =====================================================
+    // PERIOD INPUT EVENTS
+    // =====================================================
+
+    document
+        .querySelectorAll(
+            ".periods-input"
+        )
+        .forEach(
+            function (input) {
+
+                input.addEventListener(
+                    "input",
+                    calculateCapacity
+                );
+
+            }
+        );
+
+
+    // =====================================================
+    // FINAL FORM VALIDATION
+    // =====================================================
+
+    if (curriculumForm) {
+
+        curriculumForm.addEventListener(
+            "submit",
+            function (event) {
+
+                const checkboxes =
+                    document.querySelectorAll(
+                        ".subject-checkbox"
+                    );
+
+
+                let totalPeriods = 0;
+
+                let enabledCount = 0;
+
+
+                checkboxes.forEach(
+                    function (checkbox) {
+
+                        if (
+                            checkbox.checked
+                        ) {
+
+                            enabledCount += 1;
+
+
+                            const subjectId =
+                                checkbox.dataset.subjectId;
+
+
+                            const periodsInput =
+                                document.getElementById(
+                                    "periods"
+                                    +
+                                    subjectId
+                                );
+
+
+                            let periods =
+                                parseInt(
+                                    periodsInput.value
+                                );
+
+
+                            if (
+                                isNaN(periods)
+                                ||
+                                periods < 1
+                            ) {
+
+                                periods = 0;
+
+                            }
+
+
+                            totalPeriods +=
+                                periods;
+
+                        }
+
+                    }
+                );
+
+
+                if (
+                    totalPeriods > 40
+                ) {
+
+                    event.preventDefault();
+
+
+                    alert(
+                        "The curriculum cannot exceed 40 periods per week."
+                    );
+
+
+                    return;
+
+                }
+
+
+                if (
+                    enabledCount === 0
+                ) {
+
+                    const confirmed =
+                        confirm(
+                            "No subjects are selected. This will disable all subjects for this curriculum. Continue?"
+                        );
+
+
+                    if (
+                        !confirmed
+                    ) {
+
+                        event.preventDefault();
+
+                    }
+
+                }
+
+            }
+        );
+
+    }
+
+
+    // =====================================================
+    // INITIAL PAGE LOAD
+    // =====================================================
+
+    updateStreamVisibility();
+
+    calculateCapacity();
+
+</script>
+
+
+    <!-- EduSphere role navigation -->
+    {% include "components/edu_admin_sidebar.html" %}
+    <script src="{{ url_for('static', filename='js/edusphere_navigation.js') }}"></script>
+</body>
+
+</html>

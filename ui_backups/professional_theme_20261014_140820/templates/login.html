@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>AI School Login</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/admin.css') }}"
+    >
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}">
+</head>
+
+<body>
+
+<div class="form-page">
+
+    <div class="form-container">
+
+        <div style="text-align: center; margin-bottom: 30px;">
+
+            <h2 style="color: #2563eb;">
+                AI SCHOOL
+            </h2>
+
+            <h1>
+                Welcome Back
+            </h1>
+
+            <p class="muted">
+                Login to your school account
+            </p>
+
+        </div>
+
+
+        <!-- FLASH MESSAGES -->
+
+        {% with messages = get_flashed_messages() %}
+
+            {% if messages %}
+
+                {% for message in messages %}
+
+                    <div class="alert">
+                        {{ message }}
+                    </div>
+
+                {% endfor %}
+
+            {% endif %}
+
+        {% endwith %}
+
+
+        <!-- COMMON LOGIN FORM -->
+
+        <form
+            method="POST"
+            action="{{ url_for('common_login') }}"
+        >
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+            <div>
+
+                <label>
+                    Login ID
+                </label>
+
+                <input
+                    type="text"
+                    name="username"
+                    placeholder="Enter your Login ID"
+                    autocomplete="username"
+                    required
+                >
+
+            </div>
+
+
+            <div style="margin-top: 20px;">
+
+                <label>
+                    Password
+                </label>
+
+                <input
+                    type="password"
+                    name="password"
+                    placeholder="Enter your password"
+                    autocomplete="current-password"
+                    required
+                >
+
+            </div>
+
+
+            <div style="margin-top: 25px;">
+
+                <button
+                    type="submit"
+                    class="primary-btn normal-button"
+                    style="width: 100%;"
+                >
+                    Login
+                </button>
+
+            </div>
+
+        </form>
+
+
+        <!-- ADMIN REGISTRATION -->
+
+        {% if not super_admin_exists %}
+
+            <div
+                style="
+                    margin-top: 25px;
+                    text-align: center;
+                "
+            >
+
+                <p class="muted">
+                    First time school setup?
+                </p>
+
+                <a
+                    href="{{ url_for('admin_register') }}"
+                    class="secondary-btn"
+                >
+                    Admin Registration
+                </a>
+
+            </div>
+
+        {% endif %}
+
+
+        <div
+            class="reason-box"
+            style="margin-top: 30px;"
+        >
+
+            <strong>
+                School Account Login
+            </strong>
+
+            <p class="muted">
+                Admin, Teacher, Student and Parent
+                accounts use this login page.
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>

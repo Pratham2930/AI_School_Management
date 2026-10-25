@@ -1,0 +1,73 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Fee Receipt</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/fees.css') }}">
+</head>
+<body>
+
+<main class="wrap">
+    <section class="card receipt">
+
+        <h1>School Fee Receipt</h1>
+
+        <h2>{{ payment.receipt_number }}</h2>
+
+        <p><strong>Student:</strong> {{ student.name }}</p>
+
+        <p>
+            <strong>Admission Number:</strong>
+            {{ student.admission_number }}
+        </p>
+
+        <p>
+            <strong>Class:</strong>
+            {{ student.current_standard }}
+        </p>
+
+        <p>
+            <strong>Amount Paid:</strong>
+            {{ payment.amount }}
+        </p>
+
+        <p>
+            <strong>Payment Method:</strong>
+            {{ payment.payment_method }}
+        </p>
+
+        <p>
+            <strong>Transaction Reference:</strong>
+            {{ payment.transaction_reference or 'N/A' }}
+        </p>
+
+        <p>
+            <strong>Payment Date:</strong>
+            {{ payment.paid_at.strftime('%d %b %Y %H:%M') }}
+        </p>
+
+        <p>
+            <strong>Receipt Status:</strong>
+            {{ payment.payment_status }}
+        </p>
+
+        <p class="notice">
+            Admission will be confirmed after admin verification.
+        </p>
+
+        <button type="button" onclick="window.print()">
+            Print Receipt
+        </button>
+
+        <a href="{{ url_for('fees_collect') }}">
+            Back to Fees Room
+        </a>
+
+    </section>
+</main>
+
+</body>
+</html>

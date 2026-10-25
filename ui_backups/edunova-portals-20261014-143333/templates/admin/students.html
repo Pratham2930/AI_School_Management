@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>Students</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/admin.css') }}"
+    >
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}">
+
+    <!-- EduSphere shared navigation -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edusphere_navigation.css') }}">
+    <!-- EduSphere professional theme -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edusphere_professional_theme.css') }}">
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_theme.css') }}">
+</head>
+
+<body>
+<div id="nova-topbar"><div class="nova-brand"><span class="nova-mark">✦</span><span>EduSphere AI <span class="nova-tag">School Management</span></span></div><div class="nova-right"><span class="nova-pill">School Portal</span></div></div>
+
+
+<div class="main-content full-page">
+
+    <div class="page-header">
+
+        <div>
+
+            <h1>
+                Student Management
+            </h1>
+
+            <p class="muted">
+                Admitted students and assigned divisions.
+            </p>
+
+        </div>
+
+        <div>
+
+            <a
+                class="secondary-btn"
+                href="{{ url_for('admin_dashboard') }}"
+            >
+                Dashboard
+            </a>
+
+            <a
+                class="primary-link"
+                href="{{ url_for('new_admission') }}"
+            >
+                + New Admission
+            </a>
+
+        </div>
+
+    </div>
+
+
+    {% with messages = get_flashed_messages() %}
+
+        {% for message in messages %}
+
+            <div class="alert">
+                {{ message }}
+            </div>
+
+        {% endfor %}
+
+    {% endwith %}
+
+
+    <div class="panel">
+
+        <table class="data-table">
+
+            <thead>
+
+                <tr>
+
+                    <th>Admission No.</th>
+
+                    <th>Student</th>
+
+                    <th>Previous Class</th>
+
+                    <th>Previous Result</th>
+
+                    <th>Current Class</th>
+
+                    <th>Admission Date</th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                {% for student in students %}
+
+                <tr>
+
+                    <td>
+                        {{ student.admission_number }}
+                    </td>
+
+                    <td>
+                        {{ student.name }}
+                    </td>
+
+                    <td>
+                        {{ student.previous_standard }}
+                    </td>
+
+                    <td>
+                        {{ student.previous_percentage }}%
+                    </td>
+
+                    <td>
+
+                        {{ student.school_class.standard }}
+                        -
+                        {{ student.school_class.division }}
+
+                    </td>
+
+                    <td>
+
+                        {{ student.admission_date.strftime('%d %b %Y') }}
+
+                    </td>
+
+                </tr>
+
+                {% else %}
+
+                <tr>
+
+                    <td colspan="6">
+
+                        No students have been admitted.
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+    <!-- EduSphere role navigation -->
+    {% include "components/edu_admin_sidebar.html" %}
+    <script src="{{ url_for('static', filename='js/edusphere_navigation.js') }}"></script>
+</body>
+
+</html>

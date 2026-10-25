@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        {{ exam.title }} | Online Exam
+    </title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f7fb;
+            color: #172033;
+        }
+
+        .exam-header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: #102a56;
+            color: white;
+            padding: 15px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .exam-header h2 {
+            margin: 0;
+            font-size: 18px;
+        }
+
+        .timer-box {
+            background: rgba(255, 255, 255, 0.12);
+            padding: 9px 15px;
+            border-radius: 9px;
+            white-space: nowrap;
+        }
+
+        .timer-label {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        .timer {
+            font-size: 23px;
+            font-weight: 700;
+            margin-left: 6px;
+        }
+
+        .wrap {
+            max-width: 950px;
+            margin: 25px auto;
+            padding: 0 18px 40px;
+        }
+
+        .info {
+            background: white;
+            border: 1px solid #e6ebf2;
+            border-radius: 14px;
+            padding: 22px;
+            margin-bottom: 20px;
+        }
+
+        .info h1 {
+            margin: 0 0 12px;
+        }
+
+        .exam-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px 20px;
+            color: #667085;
+            margin-bottom: 15px;
+        }
+
+        .instructions {
+            background: #f8fafc;
+            border-radius: 9px;
+            padding: 14px;
+            line-height: 1.6;
+            margin-top: 15px;
+        }
+
+        .warning {
+            background: #fff4d6;
+            border: 1px solid #f0d17a;
+            color: #8a5a00;
+            padding: 13px;
+            border-radius: 9px;
+            line-height: 1.5;
+            margin-top: 15px;
+        }
+
+        .question {
+            background: white;
+            border: 1px solid #e6ebf2;
+            border-radius: 14px;
+            padding: 22px;
+            margin-bottom: 17px;
+        }
+
+        .question-number {
+            color: #2457a6;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 7px;
+        }
+
+        .question h3 {
+            margin: 0 0 18px;
+            line-height: 1.55;
+            font-size: 17px;
+        }
+
+        .marks {
+            color: #667085;
+            font-size: 13px;
+            font-weight: normal;
+        }
+
+        .option {
+            display: block;
+            border: 1px solid #dde3ec;
+            border-radius: 9px;
+            padding: 12px 14px;
+            margin: 9px 0;
+            cursor: pointer;
+            line-height: 1.5;
+        }
+
+        .option:hover {
+            background: #f6f9ff;
+            border-color: #9db8e4;
+        }
+
+        .option input {
+            margin-right: 9px;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 125px;
+            border: 1px solid #ccd3df;
+            border-radius: 9px;
+            padding: 12px;
+            resize: vertical;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 14px;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #2457a6;
+            box-shadow: 0 0 0 3px rgba(36, 87, 166, 0.10);
+        }
+
+        .save-status {
+            min-height: 18px;
+            margin-top: 8px;
+            color: #667085;
+            font-size: 12px;
+        }
+
+        .submit-area {
+            background: white;
+            border: 1px solid #e6ebf2;
+            border-radius: 14px;
+            padding: 22px;
+            text-align: center;
+        }
+
+        .submit-area p {
+            color: #667085;
+            margin-top: 0;
+        }
+
+        .btn-submit {
+            background: #177a4b;
+            color: white;
+            border: 0;
+            border-radius: 9px;
+            padding: 14px 24px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .btn-submit:hover {
+            background: #12633d;
+        }
+
+        @media (max-width: 650px) {
+            .exam-header {
+                padding: 13px;
+                align-items: flex-start;
+            }
+
+            .exam-header h2 {
+                font-size: 15px;
+            }
+
+            .timer {
+                display: block;
+                margin-left: 0;
+                margin-top: 3px;
+            }
+
+            .wrap {
+                padding: 0 10px 30px;
+            }
+
+            .question,
+            .info {
+                padding: 17px;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}">
+
+    <!-- EduSphere shared navigation -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edusphere_navigation.css') }}">
+    <!-- EduSphere professional theme -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edusphere_professional_theme.css') }}">
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_theme.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_portals.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_layout.css') }}">
+</head>
+
+<body>
+<!-- edunova-layout-shell: shared visual header, no backend changes -->
+<header class="edunova-layout-shell" role="banner"><a class="edunova-layout-brand" href="{{ url_for('student_dashboard') }}"><span class="edunova-layout-logo">✦</span><span>EduNova <small>AI School</small></span></a><div class="edunova-layout-context"><span class="edunova-layout-role">Student Portal</span><span class="edunova-layout-dot"></span> School Management</div><a class="edunova-layout-home" href="{{ url_for('student_dashboard') }}">Dashboard</a></header>
+
+<div id="nova-topbar"><div class="nova-brand"><span class="nova-mark">✦</span><span>EduSphere AI <span class="nova-tag">School Management</span></span></div><div class="nova-right"><span class="nova-pill">School Portal</span></div></div>
+
+
+    <!-- =========================================================
+         EXAM HEADER / TIMER
+    ========================================================== -->
+
+    <header class="exam-header">
+
+        <h2>
+            {{ exam.title }}
+        </h2>
+
+        <div class="timer-box">
+
+            <span class="timer-label">
+                Time Left
+            </span>
+
+            <span
+                class="timer"
+                id="timer"
+            >
+                --:--
+            </span>
+
+        </div>
+
+    </header>
+
+
+    <div class="wrap">
+
+        <!-- =====================================================
+             EXAM INFORMATION
+        ====================================================== -->
+
+        <div class="info">
+
+            <h1>
+                {{ exam.title }}
+            </h1>
+
+            <div class="exam-meta">
+
+                <span>
+                    <strong>Subject:</strong>
+                    {{ exam.subject.name }}
+                </span>
+
+                <span>
+                    <strong>Total Marks:</strong>
+                    {{ exam.total_marks | round(2) }}
+                </span>
+
+                <span>
+                    <strong>Duration:</strong>
+                    {{ exam.duration_minutes }} minutes
+                </span>
+
+            </div>
+
+
+            {% if exam.instructions %}
+
+                <div class="instructions">
+
+                    <strong>
+                        Instructions
+                    </strong>
+
+                    <br><br>
+
+                    {{ exam.instructions }}
+
+                </div>
+
+            {% endif %}
+
+
+            <div class="warning">
+
+                Your exam timer is already running.
+
+                Your answers are automatically saved when
+                you select or type an answer.
+
+                If the timer reaches zero, the exam will
+                automatically submit.
+
+            </div>
+
+        </div>
+
+
+        <!-- =====================================================
+             EXAM FORM
+        ====================================================== -->
+
+        <form
+            id="examForm"
+            method="post"
+        >
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+            {% for q in questions %}
+
+                <div
+                    class="question"
+                    data-question="{{ q.id }}"
+                >
+
+                    <div class="question-number">
+                        QUESTION {{ loop.index }}
+                    </div>
+
+                    <h3>
+
+                        {{ q.question_text }}
+
+                        <span class="marks">
+                            ({{ q.marks }} marks)
+                        </span>
+
+                    </h3>
+
+
+                    {% set saved =
+                        saved_answers.get(
+                            q.id,
+                            ''
+                        )
+                    %}
+
+
+                    <!-- =========================================
+                         MULTIPLE CHOICE QUESTION
+                    ========================================== -->
+
+                    {% if q.question_type == 'mcq' %}
+
+                        {% for value, label in [
+                            ('A', q.option_a),
+                            ('B', q.option_b),
+                            ('C', q.option_c),
+                            ('D', q.option_d)
+                        ] %}
+
+                            <label class="option">
+
+                                <input
+                                    class="answer-input"
+                                    type="radio"
+                                    name="question_{{ q.id }}"
+                                    value="{{ value }}"
+                                    data-qid="{{ q.id }}"
+                                    {% if saved == value %}
+                                        checked
+                                    {% endif %}
+                                >
+
+                                <strong>
+                                    {{ value }}.
+                                </strong>
+
+                                {{ label }}
+
+                            </label>
+
+                        {% endfor %}
+
+
+                    <!-- =========================================
+                         TRUE / FALSE QUESTION
+                    ========================================== -->
+
+                    {% elif q.question_type == 'true_false' %}
+
+                        <label class="option">
+
+                            <input
+                                class="answer-input"
+                                type="radio"
+                                name="question_{{ q.id }}"
+                                value="true"
+                                data-qid="{{ q.id }}"
+                                {% if saved == 'true' %}
+                                    checked
+                                {% endif %}
+                            >
+
+                            True
+
+                        </label>
+
+
+                        <label class="option">
+
+                            <input
+                                class="answer-input"
+                                type="radio"
+                                name="question_{{ q.id }}"
+                                value="false"
+                                data-qid="{{ q.id }}"
+                                {% if saved == 'false' %}
+                                    checked
+                                {% endif %}
+                            >
+
+                            False
+
+                        </label>
+
+
+                    <!-- =========================================
+                         SHORT ANSWER QUESTION
+                    ========================================== -->
+
+                    {% else %}
+
+                        <textarea
+                            class="answer-input"
+                            name="question_{{ q.id }}"
+                            data-qid="{{ q.id }}"
+                            placeholder="Type your answer here..."
+                        >{{ saved }}</textarea>
+
+                    {% endif %}
+
+
+                    <!-- AUTO SAVE STATUS -->
+
+                    <div
+                        class="save-status"
+                        id="save-{{ q.id }}"
+                    ></div>
+
+                </div>
+
+            {% endfor %}
+
+
+            <!-- =================================================
+                 FINAL SUBMISSION
+            ================================================== -->
+
+            <div class="submit-area">
+
+                <p>
+                    Check your answers carefully before
+                    submitting. You cannot change answers
+                    after final submission.
+                </p>
+
+                <button
+                    class="btn-submit"
+                    type="submit"
+                    onclick="return confirm(
+                        'Submit your final exam? You cannot change your answers after submission.'
+                    );"
+                >
+                    Submit Final Exam
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+
+    <!-- =========================================================
+         TIMER + AUTO SAVE
+    ========================================================== -->
+
+    <script>
+
+        /*
+         * Remaining exam time comes from the server.
+         * The server remains responsible for enforcing
+         * the real exam deadline.
+         */
+        let remaining =
+            {{ remaining_seconds }};
+
+
+        const timer =
+            document.getElementById(
+                "timer"
+            );
+
+
+        const form =
+            document.getElementById(
+                "examForm"
+            );
+
+
+        /*
+         * Prevent the timeout logic from submitting
+         * the exam more than once.
+         */
+        let timeoutSubmitted =
+            false;
+
+
+        /*
+         * Update countdown timer.
+         */
+        function updateTimer() {
+
+            if (remaining <= 0) {
+
+                timer.textContent =
+                    "00:00";
+
+
+                if (!timeoutSubmitted) {
+
+                    timeoutSubmitted =
+                        true;
+
+                    form.submit();
+
+                }
+
+                return;
+            }
+
+
+            const minutes =
+                Math.floor(
+                    remaining / 60
+                );
+
+
+            const seconds =
+                remaining % 60;
+
+
+            timer.textContent =
+                String(minutes).padStart(
+                    2,
+                    "0"
+                )
+                +
+                ":"
+                +
+                String(seconds).padStart(
+                    2,
+                    "0"
+                );
+
+
+            remaining--;
+
+        }
+
+
+        /*
+         * Show timer immediately.
+         */
+        updateTimer();
+
+
+        /*
+         * Update timer every second.
+         */
+        const timerInterval =
+            setInterval(
+                updateTimer,
+                1000
+            );
+
+
+        /*
+         * Each question gets its own debounce timer.
+         * This prevents excessive save requests while
+         * the student is typing a short answer.
+         */
+        const debounceTimers = {};
+
+
+        /*
+         * Listen for changes to every answer.
+         */
+        document
+            .querySelectorAll(
+                ".answer-input"
+            )
+            .forEach(
+                function (element) {
+
+                    const eventName =
+                        element.tagName === "TEXTAREA"
+                            ? "input"
+                            : "change";
+
+
+                    element.addEventListener(
+                        eventName,
+                        function () {
+
+                            const questionId =
+                                element.dataset.qid;
+
+
+                            clearTimeout(
+                                debounceTimers[
+                                    questionId
+                                ]
+                            );
+
+
+                            const delay =
+                                element.tagName === "TEXTAREA"
+                                    ? 600
+                                    : 0;
+
+
+                            debounceTimers[
+                                questionId
+                            ] =
+                                setTimeout(
+                                    function () {
+
+                                        saveAnswer(
+                                            element
+                                        );
+
+                                    },
+                                    delay
+                                );
+
+                        }
+                    );
+
+                }
+            );
+
+
+        /*
+         * Save a single answer to the server.
+         */
+        function saveAnswer(element) {
+
+            const questionId =
+                element.dataset.qid;
+
+
+            let answerValue = "";
+
+
+            /*
+             * Radio button answer.
+             */
+            if (
+                element.type === "radio"
+            ) {
+
+                const selected =
+                    document.querySelector(
+                        'input[name="question_'
+                        +
+                        questionId
+                        +
+                        '"]:checked'
+                    );
+
+
+                answerValue =
+                    selected
+                        ? selected.value
+                        : "";
+
+            } else {
+
+                /*
+                 * Short answer textarea.
+                 */
+                answerValue =
+                    element.value;
+
+            }
+
+
+            const status =
+                document.getElementById(
+                    "save-" + questionId
+                );
+
+
+            status.textContent =
+                "Saving...";
+
+
+            fetch(
+                '{{ url_for(
+                    "student_online_exam_save_answer",
+                    exam_id=exam.id
+                ) }}',
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json",
+                        "X-CSRFToken":
+                            "{{ csrf_token() }}"
+                    },
+
+                    body: JSON.stringify({
+                        question_id:
+                            questionId,
+
+                        answer:
+                            answerValue
+                    })
+                }
+            )
+            .then(
+                function (response) {
+
+                    return response.json();
+
+                }
+            )
+            .then(
+                function (data) {
+
+                    if (data.ok) {
+
+                        status.textContent =
+                            "Answer saved";
+
+                    } else {
+
+                        status.textContent =
+                            "Answer was not saved";
+
+                    }
+
+                }
+            )
+            .catch(
+                function () {
+
+                    status.textContent =
+                        "Unable to save answer";
+
+                }
+            );
+
+        }
+
+
+        /*
+         * Stop the timer interval when the form
+         * is being submitted normally.
+         */
+        form.addEventListener(
+            "submit",
+            function () {
+
+                clearInterval(
+                    timerInterval
+                );
+
+            }
+        );
+
+    </script>
+
+
+    <!-- EduSphere role navigation -->
+    {% include "components/edu_student_sidebar.html" %}
+    <script src="{{ url_for('static', filename='js/edusphere_navigation.js') }}"></script>
+</body>
+
+</html>

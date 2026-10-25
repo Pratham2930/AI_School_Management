@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Weekly Timetable</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/admin.css') }}"
+    >
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}">
+
+    <!-- EduSphere shared navigation -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edusphere_navigation.css') }}">
+    <!-- EduSphere professional theme -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edusphere_professional_theme.css') }}">
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_theme.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_portals.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_layout.css') }}">
+</head>
+
+
+<body>
+<!-- edunova-layout-shell: shared visual header, no backend changes -->
+<header class="edunova-layout-shell" role="banner"><a class="edunova-layout-brand" href="{{ url_for('admin_dashboard') }}"><span class="edunova-layout-logo">✦</span><span>EduNova <small>AI School</small></span></a><div class="edunova-layout-context"><span class="edunova-layout-role">Administration</span><span class="edunova-layout-dot"></span> School Management</div><a class="edunova-layout-home" href="{{ url_for('admin_dashboard') }}">Dashboard</a></header>
+
+<div id="nova-topbar"><div class="nova-brand"><span class="nova-mark">✦</span><span>EduSphere AI <span class="nova-tag">School Management</span></span></div><div class="nova-right"><span class="nova-pill">School Portal</span></div></div>
+
+
+<div class="main-content full-page">
+
+
+    <!-- ==========================================
+         PAGE HEADER
+    =========================================== -->
+
+    <div class="page-header">
+
+        <div>
+
+            <p class="page-label">
+                ACADEMIC MANAGEMENT
+            </p>
+
+            <h1>
+                Weekly Timetable
+            </h1>
+
+            <p class="muted">
+                Manage the weekly class schedule,
+                subjects and teacher periods.
+            </p>
+
+        </div>
+
+
+        <div class="page-header-actions">
+
+            <a
+    href="{{ url_for('timetable_requirements') }}"
+    class="secondary-btn"
+>
+    AI Configuration
+</a>
+
+            <a
+                href="{{ url_for('admin_dashboard') }}"
+                class="secondary-btn"
+            >
+                Dashboard
+            </a>
+
+            <a
+                href="{{ url_for('add_timetable_period') }}"
+                class="primary-link"
+            >
+                + Add Period
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- ==========================================
+         FLASH MESSAGES
+    =========================================== -->
+
+    {% with messages = get_flashed_messages() %}
+
+        {% if messages %}
+
+            {% for message in messages %}
+
+                <div class="alert">
+                    {{ message }}
+                </div>
+
+            {% endfor %}
+
+        {% endif %}
+
+    {% endwith %}
+
+
+    <!-- ==========================================
+         CLASS SELECTION
+    =========================================== -->
+
+    <div class="panel">
+
+        <h2>
+            Select Class
+        </h2>
+
+        <form
+            method="GET"
+            action="{{ url_for('admin_timetable') }}"
+        >
+
+            <div class="parent-info-grid">
+
+                <div>
+
+                    <label>
+                        Standard / Division
+                    </label>
+
+                    <select
+                        name="class_id"
+                        required
+                    >
+
+                        <option value="">
+                            Select Class
+                        </option>
+
+                        {% for school_class in classes %}
+
+                            <option
+                                value="{{ school_class.id }}"
+
+                                {% if selected_class
+                                      and
+                                      selected_class.id == school_class.id %}
+
+                                    selected
+
+                                {% endif %}
+                            >
+
+                                Standard
+                                {{ school_class.standard }}
+
+                                -
+
+                                {{ school_class.division }}
+
+                                |
+
+                                {{ school_class.academic_year }}
+
+                            </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <div style="margin-top: 20px;">
+
+                <button
+                    type="submit"
+                    class="primary-btn normal-button"
+                >
+                    View Timetable
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+
+    {% if selected_class %}
+
+
+        <!-- ==========================================
+             CLASS INFORMATION
+        =========================================== -->
+
+        <div class="panel">
+
+            <div class="section-header">
+
+                <div>
+
+                    <p class="page-label">
+                        CLASS TIMETABLE
+                    </p>
+
+                    <h2>
+
+                        Standard
+                        {{ selected_class.standard }}
+
+                        <p class="muted">
+
+    Generated timetable for
+    Standard {{ selected_class.standard }}
+    -
+    {{ selected_class.division }}.
+
+</p>
+
+                        {{ selected_class.division }}
+
+                    </h2>
+
+                    <p class="muted">
+
+                        Academic Year:
+                        {{ selected_class.academic_year }}
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ==========================================
+             WEEKLY TIMETABLE
+        =========================================== -->
+
+        <div class="panel">
+
+            <div class="table-wrapper">
+
+                <table class="data-table timetable-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Period
+                            </th>
+
+                            {% for day in days %}
+
+                                <th>
+                                    {{ day }}
+                                </th>
+
+                            {% endfor %}
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for period in periods %}
+
+                            <tr>
+
+                                <td>
+
+                                    <strong>
+                                        Period {{ period }}
+                                    </strong>
+
+                                </td>
+
+
+                                {% for day in days %}
+
+                                    {% set item = timetable_data.get(
+                                        (day, period)
+                                    ) %}
+
+
+                                    <td>
+
+                                        {% if item %}
+
+                                            <div class="timetable-cell">
+
+                                                <strong>
+
+                                                    {% if item.subject %}
+
+                                                        {{ item.subject.name }}
+
+                                                    {% else %}
+
+                                                        Subject
+
+                                                    {% endif %}
+
+                                                </strong>
+
+
+                                                <div class="muted">
+
+                                                    {{ item.record.start_time }}
+
+                                                    -
+
+                                                    {{ item.record.end_time }}
+
+                                                </div>
+
+
+                                                {% if item.teacher_user %}
+
+                                                    <div>
+
+                                                        {{ item.teacher_user.name }}
+
+                                                    </div>
+
+                                                {% elif item.teacher %}
+
+                                                    <div>
+
+                                                        {{ item.teacher.employee_id }}
+
+                                                    </div>
+
+                                                {% endif %}
+
+
+                                                {% if item.record.room %}
+
+                                                    <div class="muted">
+
+                                                        Room:
+                                                        {{ item.record.room }}
+
+                                                    </div>
+
+                                                {% endif %}
+
+
+                                                <form
+                                                    method="POST"
+
+                                                    action="{{ url_for(
+                                                        'delete_timetable_period',
+                                                        timetable_id=item.record.id
+                                                    ) }}"
+
+                                                    style="margin-top: 10px;"
+                                                >
+                                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                                                    <button
+                                                        type="submit"
+                                                        class="secondary-btn"
+
+                                                        onclick="
+                                                            return confirm(
+                                                                'Remove this timetable period?'
+                                                            );
+                                                        "
+                                                    >
+                                                        Remove
+                                                    </button>
+
+                                                </form>
+
+                                            </div>
+
+                                        {% else %}
+
+                                            <span class="muted">
+                                                Free
+                                            </span>
+
+                                        {% endif %}
+
+                                    </td>
+
+                                {% endfor %}
+
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+
+    {% else %}
+
+
+        <!-- ==========================================
+             NO CLASS SELECTED
+        =========================================== -->
+
+        <div class="panel">
+
+            <div class="empty-state">
+
+                <h3>
+                    Select a Class
+                </h3>
+
+                <p class="muted">
+
+                    Select a standard and division
+                    above to view its weekly timetable.
+
+                </p>
+
+            </div>
+
+        </div>
+
+
+    {% endif %}
+
+
+</div>
+
+
+    <!-- EduSphere role navigation -->
+    {% include "components/edu_admin_sidebar.html" %}
+    <script src="{{ url_for('static', filename='js/edusphere_navigation.js') }}"></script>
+</body>
+
+</html>

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Kafka Event Outbox | AI School Management</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}">
+    <style>
+        .outbox-page { max-width: 1200px; }
+        .outbox-metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 20px 0; }
+        .outbox-metric { padding: 16px; border: 1px solid #e2e9f2; border-radius: 10px; background: #f8faff; }
+        .outbox-metric strong { display: block; color: #183f7a; font-size: 24px; }
+        .outbox-metric span, .muted { color: #66758b; }
+        .outbox-error { max-width: 340px; overflow-wrap: anywhere; color: #9a3412; }
+        .status { display: inline-block; padding: 4px 9px; border-radius: 999px; background: #edf4ff; color: #183f7a; font-weight: 700; white-space: nowrap; }
+        .status.failed { background: #fff0ed; color: #9a3412; }
+        .status.published { background: #e9f8ef; color: #166534; }
+        @media (max-width: 760px) { .outbox-metrics { grid-template-columns: 1fr; } }
+    </style>
+
+    <!-- EduSphere shared navigation -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edusphere_navigation.css') }}">
+    <!-- EduSphere professional theme -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_theme.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_portals.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_layout.css') }}">
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_unified.css') }}">
+</head>
+<body class="edn-unified">
+<!-- EduNova unified header -->
+<header class="edn-global-header" role="banner"><div class="edn-global-brand"><span class="edn-global-icon">✦</span><span>EduNova <b>AI</b></span><span class="edn-global-divider">/</span><span class="edn-global-context">Administration</span></div><span class="edn-global-page">Kafka Outbox</span></header>
+
+
+<main class="full-page outbox-page">
+    <header class="page-header">
+        <div>
+            <p class="page-label">SYSTEM OPERATIONS</p>
+            <h1>Kafka Event Outbox</h1>
+            <p class="muted">Events are saved in the school database before publishing. Delivery is at least once; consumers use stable event IDs to ignore replays.</p>
+        </div>
+        <a class="secondary-btn" href="{{ url_for('admin_dashboard') }}">Admin Dashboard</a>
+    </header>
+
+    {% for message in get_flashed_messages() %}
+        <div class="alert">{{ message }}</div>
+    {% endfor %}
+
+    <section class="outbox-metrics" aria-label="Outbox event counts">
+        <div class="outbox-metric"><span>Pending or retrying</span><strong>{{ pending_count }}</strong></div>
+        <div class="outbox-metric"><span>Needs administrator retry</span><strong>{{ failed_count }}</strong></div>
+        <div class="outbox-metric"><span>Published</span><strong>{{ published_count }}</strong></div>
+    </section>
+
+    <section class="panel">
+        <h2>Recent events</h2>
+        <p class="muted">Showing up to 100 newest events. Event payloads are not displayed.</p>
+        <div class="table-wrapper">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Event</th>
+                        <th>Entity</th>
+                        <th>Status</th>
+                        <th>Attempts / Next retry</th>
+                        <th>Last error</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for event in events %}
+                    <tr>
+                        <td>{{ event.id }}</td>
+                        <td>{{ event.event_type }}<br><small>{{ event.event_id }}</small></td>
+                        <td>{{ event.entity_id }}</td>
+                        <td>
+                            {% if event.published_at %}
+                                <span class="status published">Published</span>
+                                <br><small>{{ event.published_at.strftime('%Y-%m-%d %H:%M:%S UTC') }}</small>
+                            {% elif event.failed_at %}
+                                <span class="status failed">Failed</span>
+                                <br><small>{{ event.failed_at.strftime('%Y-%m-%d %H:%M:%S UTC') }}</small>
+                            {% elif event.claim_token %}
+                                <span class="status">Publishing</span>
+                            {% else %}
+                                <span class="status">Pending</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {{ event.attempts }}
+                            {% if event.next_attempt_at %}
+                                <br><small>{{ event.next_attempt_at.strftime('%Y-%m-%d %H:%M:%S UTC') }}</small>
+                            {% endif %}
+                        </td>
+                        <td><div class="outbox-error">{{ event.last_error or '—' }}</div></td>
+                        <td>
+                            {% if event.failed_at and not event.published_at %}
+                                <form method="post" action="{{ url_for('retry_kafka_outbox_event', event_id=event.id) }}">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <button class="secondary-btn" type="submit">Retry</button>
+                                </form>
+                            {% else %}
+                                <span class="muted">—</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr><td colspan="7">No Kafka outbox events have been recorded.</td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+
+    <!-- EduSphere role navigation -->
+    {% include "components/edu_admin_sidebar.html" %}
+    <script src="{{ url_for('static', filename='js/edusphere_navigation.js') }}"></script>
+</body>
+</html>

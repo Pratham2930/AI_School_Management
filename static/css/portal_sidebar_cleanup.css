@@ -1,0 +1,26 @@
+
+/* Remove old permanent sidebars from Student and Teacher pages */
+body:has(#edu-menu-trigger) .layout > aside.sidebar {
+    display: none !important;
+}
+
+/* Expand the Student and Teacher dashboards */
+body:has(#edu-menu-trigger) .layout > main.main {
+    flex: 1 1 auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin-left: 0 !important;
+}
+
+/* Keep the full-page Parent dashboard */
+body:has(#edu-menu-trigger) .main-content.full-page {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: 0 !important;
+}
+
+/* Preserve the new EduSphere navigation */
+#edu-sidebar {
+    display: block;
+}

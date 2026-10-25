@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Exam Results - {{ exam.title }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+    <style>
+        .page { max-width: 1100px; margin: 0 auto; }
+        .panel { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 22px; margin-top: 20px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: left; vertical-align: top; }
+        .answer { padding: 10px; margin: 8px 0; background: #f8fafc; border-radius: 8px; }
+        .marks-input { width: 90px; padding: 7px; border: 1px solid #ccd3df; border-radius: 6px; }
+    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}">
+
+    <!-- EduSphere shared navigation -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edusphere_navigation.css') }}">
+    <!-- EduSphere professional theme -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edusphere_professional_theme.css') }}">
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_theme.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_portals.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_layout.css') }}">
+</head>
+<body>
+<!-- edunova-layout-shell: shared visual header, no backend changes -->
+<header class="edunova-layout-shell" role="banner"><a class="edunova-layout-brand" href="{{ url_for('admin_dashboard') }}"><span class="edunova-layout-logo">✦</span><span>EduNova <small>AI School</small></span></a><div class="edunova-layout-context"><span class="edunova-layout-role">Administration</span><span class="edunova-layout-dot"></span> School Management</div><a class="edunova-layout-home" href="{{ url_for('admin_dashboard') }}">Dashboard</a></header>
+
+<div id="nova-topbar"><div class="nova-brand"><span class="nova-mark">✦</span><span>EduSphere AI <span class="nova-tag">School Management</span></span></div><div class="nova-right"><span class="nova-pill">School Portal</span></div></div>
+
+<main class="full-page page">
+    <header class="topbar">
+        <div><h1>{{ exam.title }} — Results</h1><p>{{ exam.subject.name }} · Standard {{ exam.school_class.standard }} {{ exam.school_class.division }}</p></div>
+        <a class="primary-link" href="{{ url_for('admin_exams') }}">Back to exams</a>
+    </header>
+    <section class="panel">
+        {% if attempts %}
+        <div style="overflow-x:auto"><table>
+            <thead><tr><th>Student</th><th>Student ID</th><th>Started</th><th>Submitted</th><th>Status</th><th>Score</th><th>Percentage</th><th>Short-answer grading</th></tr></thead>
+            <tbody>{% for attempt in attempts %}
+                <tr>
+                    <td>{{ attempt.student.name if attempt.student else 'Unknown' }}</td>
+                    <td>{{ attempt.student.student_id if attempt.student else '-' }}</td>
+                    <td>{{ attempt.started_at.strftime('%d %b %Y %H:%M') if attempt.started_at else '-' }}</td>
+                    <td>{{ attempt.submitted_at.strftime('%d %b %Y %H:%M') if attempt.submitted_at else '-' }}</td>
+                    <td>{{ attempt.status }}</td>
+                    <td>{{ '%.1f'|format(attempt.score) }} / {{ exam.total_marks }}</td>
+                    <td>{{ '%.1f'|format(attempt.percentage) }}%</td>
+                    <td>
+                        {% set short_answers = attempt.answers|selectattr('question.question_type', 'equalto', 'short_answer')|list %}
+                        {% if short_answers and attempt.status == 'Submitted' %}
+                        <form method="post">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <input type="hidden" name="attempt_id" value="{{ attempt.id }}">
+                            {% for answer in short_answers %}
+                            <div class="answer">
+                                <strong>{{ answer.question.question_text }}</strong><br>
+                                {{ answer.answer_text or 'No answer' }}<br>
+                                <label>Marks (0–{{ answer.question.marks }})
+                                    <input class="marks-input" type="number" name="marks_{{ answer.id }}" min="0" max="{{ answer.question.marks }}" step="0.25" value="{{ answer.awarded_marks }}" required>
+                                </label>
+                            </div>
+                            {% endfor %}
+                            <button type="submit">Save grading</button>
+                        </form>
+                        {% elif short_answers %}
+                        Waiting for student submission
+                        {% else %}
+                        No manual grading needed
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}</tbody>
+        </table></div>
+        {% else %}<p>No students have attempted this exam yet.</p>{% endif %}
+    </section>
+</main>
+
+    <!-- EduSphere role navigation -->
+    {% include "components/edu_admin_sidebar.html" %}
+    <script src="{{ url_for('static', filename='js/edusphere_navigation.js') }}"></script>
+</body>
+</html>

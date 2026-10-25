@@ -1,0 +1,2342 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        AI Timetable Draft
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/admin.css') }}"
+    >
+
+    <style>
+
+        :root {
+            --bg: #f5f7fb;
+            --card: #ffffff;
+            --border: #e4e7ec;
+            --text: #182230;
+            --muted: #667085;
+
+            --primary: #4f46e5;
+            --primary-dark: #4338ca;
+            --primary-light: #eef2ff;
+
+            --success: #16a34a;
+            --success-light: #ecfdf3;
+
+            --warning: #d97706;
+            --warning-light: #fff7ed;
+
+            --danger: #dc2626;
+            --danger-light: #fef2f2;
+
+            --info: #0284c7;
+            --info-light: #f0f9ff;
+
+            --radius: 16px;
+
+            --shadow:
+                0 10px 30px rgba(15, 23, 42, 0.06);
+        }
+
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        body {
+            margin: 0;
+
+            background: var(--bg);
+
+            color: var(--text);
+        }
+
+
+        .draft-page {
+            max-width: 1600px;
+
+            margin: 0 auto;
+
+            padding: 30px;
+        }
+
+
+        /* =========================================================
+           HEADER
+        ========================================================= */
+
+        .page-header {
+            display: flex;
+
+            justify-content: space-between;
+            align-items: flex-start;
+
+            gap: 25px;
+
+            margin-bottom: 24px;
+        }
+
+
+        .header-left {
+            display: flex;
+
+            align-items: flex-start;
+
+            gap: 16px;
+        }
+
+
+        .header-icon {
+            width: 58px;
+            height: 58px;
+
+            flex-shrink: 0;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 16px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #4f46e5,
+                    #7c3aed
+                );
+
+            color: white;
+
+            font-size: 20px;
+            font-weight: 900;
+
+            box-shadow:
+                0 10px 25px rgba(79, 70, 229, 0.25);
+        }
+
+
+        .page-label {
+            margin: 0 0 5px;
+
+            color: var(--primary);
+
+            font-size: 12px;
+            font-weight: 800;
+
+            letter-spacing: 1.2px;
+
+            text-transform: uppercase;
+        }
+
+
+        .page-header h1 {
+            margin: 0;
+
+            font-size: 30px;
+            line-height: 1.2;
+        }
+
+
+        .page-description {
+            max-width: 750px;
+
+            margin: 8px 0 0;
+
+            color: var(--muted);
+
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+
+        .header-actions {
+            display: flex;
+
+            gap: 10px;
+
+            flex-wrap: wrap;
+        }
+
+
+        /* =========================================================
+           BUTTONS
+        ========================================================= */
+
+        .btn {
+            min-height: 42px;
+
+            padding: 10px 16px;
+
+            display: inline-flex;
+
+            align-items: center;
+            justify-content: center;
+
+            gap: 7px;
+
+            border: 1px solid transparent;
+
+            border-radius: 10px;
+
+            font-size: 13px;
+            font-weight: 800;
+
+            text-decoration: none;
+
+            cursor: pointer;
+
+            transition:
+                transform 0.2s ease,
+                background 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+
+        .btn:hover {
+            transform: translateY(-1px);
+        }
+
+
+        .btn-secondary {
+            background: white;
+
+            color: #344054;
+
+            border-color: var(--border);
+        }
+
+
+        .btn-secondary:hover {
+            background: #f9fafb;
+        }
+
+
+        .btn-primary {
+            color: white;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #4f46e5,
+                    #7c3aed
+                );
+
+            box-shadow:
+                0 6px 18px rgba(79, 70, 229, 0.22);
+        }
+
+
+        .btn-primary:hover {
+            background:
+                linear-gradient(
+                    135deg,
+                    #4338ca,
+                    #6d28d9
+                );
+        }
+
+
+        .btn-danger {
+            color: #b42318;
+
+            background: var(--danger-light);
+
+            border-color: #fecaca;
+        }
+
+
+        .btn-danger:hover {
+            background: #fee2e2;
+        }
+
+
+        .btn-success {
+            color: white;
+
+            background: var(--success);
+
+            box-shadow:
+                0 6px 18px rgba(22, 163, 74, 0.20);
+        }
+
+
+        .btn-success:hover {
+            background: #15803d;
+        }
+
+
+        /* =========================================================
+           FLASH
+        ========================================================= */
+
+        .flash-area {
+            margin-bottom: 20px;
+        }
+
+
+        .flash-message {
+            padding: 14px 17px;
+
+            margin-bottom: 10px;
+
+            background: var(--info-light);
+
+            border:
+                1px solid #bae6fd;
+
+            border-left:
+                4px solid var(--info);
+
+            border-radius: 10px;
+
+            color: #075985;
+
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+
+        /* =========================================================
+           CLASS INFORMATION
+        ========================================================= */
+
+        .class-banner {
+            display: flex;
+
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 20px;
+
+            padding: 20px 22px;
+
+            margin-bottom: 22px;
+
+            background: white;
+
+            border:
+                1px solid var(--border);
+
+            border-radius: var(--radius);
+
+            box-shadow: var(--shadow);
+        }
+
+
+        .class-label {
+            color: var(--muted);
+
+            font-size: 11px;
+            font-weight: 800;
+
+            letter-spacing: 0.8px;
+
+            text-transform: uppercase;
+        }
+
+
+        .class-name {
+            margin: 4px 0 0;
+
+            font-size: 22px;
+            font-weight: 900;
+        }
+
+
+        .class-year {
+            margin-top: 5px;
+
+            color: var(--muted);
+
+            font-size: 13px;
+        }
+
+
+        .draft-badge {
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 7px;
+
+            padding: 8px 12px;
+
+            background: var(--warning-light);
+
+            border:
+                1px solid #fed7aa;
+
+            border-radius: 50px;
+
+            color: #9a3412;
+
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+
+        .draft-dot {
+            width: 8px;
+            height: 8px;
+
+            border-radius: 50%;
+
+            background: var(--warning);
+        }
+
+
+        /* =========================================================
+           METRIC CARDS
+        ========================================================= */
+
+        .metrics-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(5, minmax(0, 1fr));
+
+            gap: 14px;
+
+            margin-bottom: 22px;
+        }
+
+
+        .metric-card {
+            padding: 18px;
+
+            background: white;
+
+            border:
+                1px solid var(--border);
+
+            border-radius: 14px;
+
+            box-shadow:
+                0 4px 15px rgba(15, 23, 42, 0.04);
+        }
+
+
+        .metric-header {
+            display: flex;
+
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 8px;
+
+            margin-bottom: 13px;
+        }
+
+
+        .metric-label {
+            color: var(--muted);
+
+            font-size: 11px;
+            font-weight: 800;
+
+            letter-spacing: 0.5px;
+
+            text-transform: uppercase;
+        }
+
+
+        .metric-icon {
+            width: 34px;
+            height: 34px;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 9px;
+
+            background: var(--primary-light);
+
+            color: var(--primary);
+
+            font-size: 12px;
+            font-weight: 900;
+        }
+
+
+        .metric-value {
+            margin: 0;
+
+            font-size: 25px;
+            font-weight: 900;
+
+            color: var(--text);
+        }
+
+
+        .metric-help {
+            margin-top: 5px;
+
+            color: var(--muted);
+
+            font-size: 11px;
+        }
+
+
+        .metric-success {
+            color: var(--success);
+        }
+
+
+        .metric-danger {
+            color: var(--danger);
+        }
+
+
+        /* =========================================================
+           QUALITY PANEL
+        ========================================================= */
+
+        .quality-panel {
+            display: grid;
+
+            grid-template-columns:
+                230px
+                minmax(0, 1fr);
+
+            gap: 25px;
+
+            padding: 22px;
+
+            margin-bottom: 22px;
+
+            background: white;
+
+            border:
+                1px solid var(--border);
+
+            border-radius: var(--radius);
+
+            box-shadow: var(--shadow);
+        }
+
+
+        .score-section {
+            display: flex;
+
+            flex-direction: column;
+
+            align-items: center;
+            justify-content: center;
+
+            padding: 15px;
+
+            border-right:
+                1px solid var(--border);
+        }
+
+
+        .score-circle {
+            width: 145px;
+            height: 145px;
+
+            display: flex;
+
+            flex-direction: column;
+
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 50%;
+
+            background:
+                conic-gradient(
+                    var(--primary)
+                    calc(
+                        var(--score) * 1%
+                    ),
+                    #e9eaf0 0
+                );
+
+            position: relative;
+        }
+
+
+        .score-circle::after {
+            content: "";
+
+            position: absolute;
+
+            width: 115px;
+            height: 115px;
+
+            background: white;
+
+            border-radius: 50%;
+        }
+
+
+        .score-number {
+            position: relative;
+
+            z-index: 2;
+
+            font-size: 31px;
+            font-weight: 900;
+
+            color: var(--text);
+        }
+
+
+        .score-label {
+            position: relative;
+
+            z-index: 2;
+
+            margin-top: 2px;
+
+            color: var(--muted);
+
+            font-size: 10px;
+            font-weight: 800;
+
+            text-transform: uppercase;
+        }
+
+
+        .quality-content h2 {
+            margin:
+                0 0 6px;
+
+            font-size: 19px;
+        }
+
+
+        .quality-description {
+            margin:
+                0 0 18px;
+
+            color: var(--muted);
+
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+
+        .check-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+
+            gap: 10px;
+        }
+
+
+        .quality-check {
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+
+            padding: 12px;
+
+            background: #fafafa;
+
+            border:
+                1px solid var(--border);
+
+            border-radius: 10px;
+        }
+
+
+        .check-icon {
+            width: 28px;
+            height: 28px;
+
+            flex-shrink: 0;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 50%;
+
+            font-size: 12px;
+            font-weight: 900;
+        }
+
+
+        .check-success {
+            background: var(--success-light);
+
+            color: var(--success);
+        }
+
+
+        .check-danger {
+            background: var(--danger-light);
+
+            color: var(--danger);
+        }
+
+
+        .check-title {
+            color: #344054;
+
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+
+        .check-value {
+            margin-top: 2px;
+
+            color: var(--muted);
+
+            font-size: 11px;
+        }
+
+
+        /* =========================================================
+           TIMETABLE CARD
+        ========================================================= */
+
+        .timetable-card {
+            margin-bottom: 22px;
+
+            background: white;
+
+            border:
+                1px solid var(--border);
+
+            border-radius: var(--radius);
+
+            box-shadow: var(--shadow);
+
+            overflow: hidden;
+        }
+
+
+        .card-header {
+            display: flex;
+
+            justify-content: space-between;
+            align-items: center;
+
+            gap: 15px;
+
+            padding: 20px 22px;
+
+            border-bottom:
+                1px solid var(--border);
+        }
+
+
+        .card-header h2 {
+            margin: 0;
+
+            font-size: 18px;
+        }
+
+
+        .card-header p {
+            margin:
+                5px 0 0;
+
+            color: var(--muted);
+
+            font-size: 12px;
+        }
+
+
+        .preview-badge {
+            padding: 6px 10px;
+
+            background: var(--primary-light);
+
+            border-radius: 7px;
+
+            color: var(--primary);
+
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+
+        .table-wrapper {
+            width: 100%;
+
+            overflow-x: auto;
+        }
+
+
+        .timetable-grid {
+            width: 100%;
+
+            min-width: 1150px;
+
+            border-collapse: collapse;
+        }
+
+
+        .timetable-grid thead th {
+            padding: 13px;
+
+            background: #f8fafc;
+
+            border-bottom:
+                1px solid var(--border);
+
+            border-right:
+                1px solid var(--border);
+
+            color: #475467;
+
+            font-size: 12px;
+            font-weight: 800;
+
+            text-align: center;
+
+            text-transform: uppercase;
+        }
+
+
+        .timetable-grid thead th:first-child {
+            width: 130px;
+        }
+
+
+        .timetable-grid tbody td {
+            min-width: 190px;
+
+            height: 125px;
+
+            padding: 10px;
+
+            vertical-align: top;
+
+            border-right:
+                1px solid var(--border);
+
+            border-bottom:
+                1px solid var(--border);
+        }
+
+
+        .timetable-grid tbody td:first-child {
+            min-width: 130px;
+
+            background: #fafafa;
+
+            text-align: center;
+
+            vertical-align: middle;
+        }
+
+
+        .period-number {
+            font-size: 14px;
+            font-weight: 900;
+
+            color: #344054;
+        }
+
+
+        .period-time {
+            margin-top: 5px;
+
+            color: var(--muted);
+
+            font-size: 10px;
+        }
+
+
+        /* =========================================================
+           TIMETABLE SLOT
+        ========================================================= */
+
+        .schedule-slot {
+            height: 100%;
+
+            padding: 11px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #f8f7ff,
+                    #ffffff
+                );
+
+            border:
+                1px solid #ddd6fe;
+
+            border-radius: 10px;
+        }
+
+
+        .slot-subject {
+            margin-bottom: 7px;
+
+            color: #3730a3;
+
+            font-size: 13px;
+            font-weight: 900;
+        }
+
+
+        .slot-teacher {
+            margin-bottom: 5px;
+
+            color: #475467;
+
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+
+        .slot-time {
+            color: var(--muted);
+
+            font-size: 10px;
+        }
+
+
+        .slot-room {
+            display: inline-block;
+
+            margin-top: 7px;
+
+            padding: 3px 6px;
+
+            background: #eef2ff;
+
+            border-radius: 5px;
+
+            color: #4338ca;
+
+            font-size: 9px;
+            font-weight: 800;
+        }
+
+
+        .free-slot {
+            height: 100%;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            color: #98a2b3;
+
+            font-size: 11px;
+
+            border:
+                1px dashed #e4e7ec;
+
+            border-radius: 9px;
+        }
+
+
+        /* =========================================================
+           SUBJECT DISTRIBUTION
+        ========================================================= */
+
+        .distribution-card {
+            margin-bottom: 22px;
+
+            background: white;
+
+            border:
+                1px solid var(--border);
+
+            border-radius: var(--radius);
+
+            box-shadow: var(--shadow);
+
+            overflow: hidden;
+        }
+
+
+        .distribution-body {
+            padding: 20px 22px;
+        }
+
+
+        .distribution-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, minmax(0, 1fr));
+
+            gap: 12px;
+        }
+
+
+        .subject-stat {
+            padding: 14px;
+
+            background: #fafafa;
+
+            border:
+                1px solid var(--border);
+
+            border-radius: 10px;
+        }
+
+
+        .subject-stat-name {
+            color: #344054;
+
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+
+        .subject-stat-value {
+            margin-top: 7px;
+
+            color: var(--primary);
+
+            font-size: 20px;
+            font-weight: 900;
+        }
+
+
+        .subject-stat-help {
+            margin-top: 3px;
+
+            color: var(--muted);
+
+            font-size: 10px;
+        }
+
+
+        /* =========================================================
+           ACTION PANEL
+        ========================================================= */
+
+        .action-panel {
+            display: flex;
+
+            justify-content: space-between;
+            align-items: center;
+
+            gap: 20px;
+
+            padding: 22px;
+
+            background: white;
+
+            border:
+                1px solid var(--border);
+
+            border-radius: var(--radius);
+
+            box-shadow: var(--shadow);
+        }
+
+
+        .action-info h3 {
+            margin:
+                0 0 5px;
+
+            font-size: 16px;
+        }
+
+
+        .action-info p {
+            max-width: 650px;
+
+            margin: 0;
+
+            color: var(--muted);
+
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+
+        .action-buttons {
+            display: flex;
+
+            align-items: center;
+
+            gap: 9px;
+
+            flex-wrap: wrap;
+        }
+
+
+        .action-buttons form {
+            margin: 0;
+        }
+
+
+        /* =========================================================
+           WARNING
+        ========================================================= */
+
+        .publish-warning {
+            margin-top: 14px;
+
+            padding: 12px 14px;
+
+            background: var(--warning-light);
+
+            border:
+                1px solid #fed7aa;
+
+            border-radius: 9px;
+
+            color: #9a3412;
+
+            font-size: 11px;
+            line-height: 1.6;
+        }
+
+
+        /* =========================================================
+           RESPONSIVE
+        ========================================================= */
+
+        @media (max-width: 1200px) {
+
+            .metrics-grid {
+                grid-template-columns:
+                    repeat(3, minmax(0, 1fr));
+            }
+
+
+            .distribution-grid {
+                grid-template-columns:
+                    repeat(2, minmax(0, 1fr));
+            }
+        }
+
+
+        @media (max-width: 900px) {
+
+            .quality-panel {
+                grid-template-columns: 1fr;
+            }
+
+
+            .score-section {
+                border-right: none;
+
+                border-bottom:
+                    1px solid var(--border);
+            }
+
+
+            .page-header {
+                flex-direction: column;
+            }
+
+
+            .action-panel {
+                align-items: stretch;
+
+                flex-direction: column;
+            }
+        }
+
+
+        @media (max-width: 700px) {
+
+            .draft-page {
+                padding: 17px;
+            }
+
+
+            .header-left {
+                flex-direction: column;
+            }
+
+
+            .page-header h1 {
+                font-size: 25px;
+            }
+
+
+            .header-actions {
+                width: 100%;
+            }
+
+
+            .header-actions .btn {
+                flex: 1;
+            }
+
+
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+
+
+            .check-grid {
+                grid-template-columns: 1fr;
+            }
+
+
+            .distribution-grid {
+                grid-template-columns: 1fr;
+            }
+
+
+            .class-banner {
+                align-items: flex-start;
+
+                flex-direction: column;
+            }
+
+
+            .action-buttons {
+                width: 100%;
+
+                flex-direction: column;
+            }
+
+
+            .action-buttons form,
+            .action-buttons .btn {
+                width: 100%;
+            }
+        }
+
+    </style>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}">
+
+    <!-- EduSphere shared navigation -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edusphere_navigation.css') }}">
+    <!-- EduSphere professional theme -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edusphere_professional_theme.css') }}">
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_theme.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_portals.css') }}">
+</head>
+
+
+<body>
+<div id="nova-topbar"><div class="nova-brand"><span class="nova-mark">✦</span><span>EduSphere AI <span class="nova-tag">School Management</span></span></div><div class="nova-right"><span class="nova-pill">School Portal</span></div></div>
+
+
+
+<div class="draft-page">
+
+
+    <!-- =========================================================
+         PAGE HEADER
+    ========================================================== -->
+
+    <div class="page-header">
+
+
+        <div class="header-left">
+
+
+            <div class="header-icon">
+                AI
+            </div>
+
+
+            <div>
+
+                <p class="page-label">
+                    AI TIMETABLE PREVIEW
+                </p>
+
+
+                <h1>
+                    Review Timetable Draft
+                </h1>
+
+
+                <p class="page-description">
+
+                    Review the timetable generated by the scheduling
+                    engine before publishing it. The live timetable
+                    remains unchanged until you approve this draft.
+
+                </p>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="header-actions">
+
+
+            <a
+                href="{{ url_for(
+                    'timetable_requirements',
+                    class_id=school_class.id
+                ) }}"
+                class="btn btn-secondary"
+            >
+                Configuration
+            </a>
+
+
+            <a
+                href="{{ url_for(
+                    'admin_timetable',
+                    class_id=school_class.id
+                ) }}"
+                class="btn btn-secondary"
+            >
+                Live Timetable
+            </a>
+
+
+            <a
+                href="{{ url_for('admin_dashboard') }}"
+                class="btn btn-secondary"
+            >
+                Dashboard
+            </a>
+
+
+        </div>
+
+
+    </div>
+
+
+
+    <!-- =========================================================
+         FLASH MESSAGES
+    ========================================================== -->
+
+    <div class="flash-area">
+
+
+        {% with messages = get_flashed_messages() %}
+
+
+            {% if messages %}
+
+
+                {% for message in messages %}
+
+
+                    <div class="flash-message">
+                        {{ message }}
+                    </div>
+
+
+                {% endfor %}
+
+
+            {% endif %}
+
+
+        {% endwith %}
+
+
+    </div>
+
+
+
+    <!-- =========================================================
+         CLASS INFORMATION
+    ========================================================== -->
+
+    <div class="class-banner">
+
+
+        <div>
+
+
+            <div class="class-label">
+                Timetable Draft For
+            </div>
+
+
+            <div class="class-name">
+
+                Standard
+                {{ school_class.standard }}
+
+                -
+
+                {{ school_class.division }}
+
+            </div>
+
+
+            <div class="class-year">
+
+                Academic Year:
+                {{ school_class.academic_year }}
+
+            </div>
+
+
+        </div>
+
+
+
+        <div class="draft-badge">
+
+            <span class="draft-dot">
+            </span>
+
+            DRAFT
+
+        </div>
+
+
+    </div>
+
+
+
+    <!-- =========================================================
+         SUMMARY METRICS
+    ========================================================== -->
+
+    <div class="metrics-grid">
+
+
+        <div class="metric-card">
+
+
+            <div class="metric-header">
+
+                <span class="metric-label">
+                    Quality Score
+                </span>
+
+                <div class="metric-icon">
+                    AI
+                </div>
+
+            </div>
+
+
+            <p class="metric-value">
+
+                {{ quality_score|default(0) }}%
+
+            </p>
+
+
+            <div class="metric-help">
+                70% required-period completion + 30% matched preferences.
+                This is a rule-based score, not an ML accuracy measure;
+                hard conflicts are validated separately.
+            </div>
+
+
+        </div>
+
+
+
+        <div class="metric-card">
+
+
+            <div class="metric-header">
+
+                <span class="metric-label">
+                    Generated
+                </span>
+
+                <div class="metric-icon">
+                    G
+                </div>
+
+            </div>
+
+
+            <p class="metric-value">
+
+                {{ generated_periods|default(0) }}
+
+            </p>
+
+
+            <div class="metric-help">
+                Teaching periods generated
+            </div>
+
+
+        </div>
+
+
+
+        <div class="metric-card">
+
+
+            <div class="metric-header">
+
+                <span class="metric-label">
+                    Required
+                </span>
+
+                <div class="metric-icon">
+                    R
+                </div>
+
+            </div>
+
+
+            <p class="metric-value">
+
+                {{ required_periods|default(0) }}
+
+            </p>
+
+
+            <div class="metric-help">
+                Configured weekly periods
+            </div>
+
+
+        </div>
+
+
+
+        <div class="metric-card">
+
+
+            <div class="metric-header">
+
+                <span class="metric-label">
+                    Preference Match
+                </span>
+
+                <div class="metric-icon">
+                    P
+                </div>
+
+            </div>
+
+
+            <p class="metric-value">
+
+                {{ preference_percentage|default(0) }}%
+
+            </p>
+
+
+            <div class="metric-help">
+                Morning / afternoon preference
+            </div>
+
+
+        </div>
+
+
+
+        <div class="metric-card">
+
+
+            <div class="metric-header">
+
+                <span class="metric-label">
+                    Conflicts
+                </span>
+
+                <div class="metric-icon">
+                    C
+                </div>
+
+            </div>
+
+
+            <p
+                class="
+                    metric-value
+
+                    {% if
+                        teacher_conflicts|default(0) == 0
+                        and
+                        class_conflicts|default(0) == 0
+                    %}
+
+                        metric-success
+
+                    {% else %}
+
+                        metric-danger
+
+                    {% endif %}
+                "
+            >
+
+                {{
+                    teacher_conflicts|default(0)
+                    +
+                    class_conflicts|default(0)
+                }}
+
+            </p>
+
+
+            <div class="metric-help">
+                Teacher + class conflicts
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+
+    <!-- =========================================================
+         QUALITY ANALYSIS
+    ========================================================== -->
+
+    <div class="quality-panel">
+
+
+        <div class="score-section">
+
+
+            <div
+                class="score-circle"
+                style="
+                    --score:
+                    {{ quality_score|default(0) }};
+                "
+            >
+
+
+                <div class="score-number">
+
+                    {{ quality_score|default(0) }}%
+
+                </div>
+
+
+                <div class="score-label">
+                    Quality
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+
+
+        <div class="quality-content">
+
+
+            <h2>
+                AI Scheduling Analysis
+            </h2>
+
+
+            <p class="quality-description">
+
+                The timetable has been checked against the
+                configured weekly subject requirements,
+                teacher scheduling constraints and preferred
+                teaching periods.
+
+            </p>
+
+
+
+            <div class="check-grid">
+
+
+                <div class="quality-check">
+
+
+                    <div
+                        class="
+                            check-icon
+
+                            {% if teacher_conflicts|default(0) == 0 %}
+                                check-success
+                            {% else %}
+                                check-danger
+                            {% endif %}
+                        "
+                    >
+
+                        {% if teacher_conflicts|default(0) == 0 %}
+                            ✓
+                        {% else %}
+                            !
+                        {% endif %}
+
+                    </div>
+
+
+                    <div>
+
+                        <div class="check-title">
+                            Teacher Conflicts
+                        </div>
+
+                        <div class="check-value">
+
+                            {% if teacher_conflicts|default(0) == 0 %}
+
+                                No teacher scheduling conflicts found.
+
+                            {% else %}
+
+                                {{ teacher_conflicts }}
+                                teacher conflict(s) detected.
+
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+
+
+                <div class="quality-check">
+
+
+                    <div
+                        class="
+                            check-icon
+
+                            {% if class_conflicts|default(0) == 0 %}
+                                check-success
+                            {% else %}
+                                check-danger
+                            {% endif %}
+                        "
+                    >
+
+                        {% if class_conflicts|default(0) == 0 %}
+                            ✓
+                        {% else %}
+                            !
+                        {% endif %}
+
+                    </div>
+
+
+                    <div>
+
+                        <div class="check-title">
+                            Class Conflicts
+                        </div>
+
+                        <div class="check-value">
+
+                            {% if class_conflicts|default(0) == 0 %}
+
+                                No duplicate class periods found.
+
+                            {% else %}
+
+                                {{ class_conflicts }}
+                                class conflict(s) detected.
+
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+
+
+                <div class="quality-check">
+
+
+                    <div
+                        class="
+                            check-icon
+
+                            {% if missing_periods|default(0) == 0 %}
+                                check-success
+                            {% else %}
+                                check-danger
+                            {% endif %}
+                        "
+                    >
+
+                        {% if missing_periods|default(0) == 0 %}
+                            ✓
+                        {% else %}
+                            !
+                        {% endif %}
+
+                    </div>
+
+
+                    <div>
+
+                        <div class="check-title">
+                            Required Periods
+                        </div>
+
+                        <div class="check-value">
+
+                            {% if missing_periods|default(0) == 0 %}
+
+                                All required periods were generated.
+
+                            {% else %}
+
+                                {{ missing_periods }}
+                                required period(s) are missing.
+
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+
+
+                <div class="quality-check">
+
+
+                    <div class="check-icon check-success">
+                        ✓
+                    </div>
+
+
+                    <div>
+
+                        <div class="check-title">
+                            Preference Match
+                        </div>
+
+                        <div class="check-value">
+
+                            {{ preference_percentage|default(0) }}%
+                            of configured scheduling preferences
+                            were matched.
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+
+    <!-- =========================================================
+         WEEKLY TIMETABLE PREVIEW
+    ========================================================== -->
+
+    <div class="timetable-card">
+
+
+        <div class="card-header">
+
+
+            <div>
+
+                <h2>
+                    Weekly Timetable Preview
+                </h2>
+
+                <p>
+                    Monday to Friday AI-generated schedule.
+                </p>
+
+            </div>
+
+
+            <span class="preview-badge">
+                PREVIEW ONLY
+            </span>
+
+
+        </div>
+
+
+
+        <div class="table-wrapper">
+
+
+            <table class="timetable-grid">
+
+
+                <thead>
+
+
+                    <tr>
+
+                        <th>
+                            Period
+                        </th>
+
+
+                        {% for day in days %}
+
+                            <th>
+                                {{ day }}
+                            </th>
+
+                        {% endfor %}
+
+                    </tr>
+
+
+                </thead>
+
+
+
+                <tbody>
+
+
+                    {% for period in periods %}
+
+
+                        <tr>
+
+
+                            <!-- PERIOD -->
+
+                            <td>
+
+
+                                <div class="period-number">
+
+                                    Period
+                                    {{ period }}
+
+                                </div>
+
+
+                                {% set period_example = namespace(item=None) %}
+
+
+                                {% for day in days %}
+
+                                    {% if
+                                        not period_example.item
+                                        and
+                                        timetable_map.get(
+                                            (day, period)
+                                        )
+                                    %}
+
+                                        {% set period_example.item =
+                                            timetable_map.get(
+                                                (day, period)
+                                            )
+                                        %}
+
+                                    {% endif %}
+
+                                {% endfor %}
+
+
+                                {% if period_example.item %}
+
+                                    <div class="period-time">
+
+                                        {{
+                                            period_example.item.start_time
+                                        }}
+
+                                        -
+
+                                        {{
+                                            period_example.item.end_time
+                                        }}
+
+                                    </div>
+
+                                {% endif %}
+
+
+                            </td>
+
+
+
+                            <!-- DAYS -->
+
+                            {% for day in days %}
+
+
+                                {% set item =
+                                    timetable_map.get(
+                                        (day, period)
+                                    )
+                                %}
+
+
+                                <td>
+
+
+                                    {% if item %}
+
+
+                                        <div class="schedule-slot">
+
+
+                                            <div class="slot-subject">
+
+                                                {% if item.subject %}
+
+                                                    {{ item.subject.name }}
+
+                                                {% else %}
+
+                                                    Subject
+
+                                                {% endif %}
+
+                                            </div>
+
+
+
+                                            <div class="slot-teacher">
+
+                                                {% if item.user %}
+
+                                                    {{ item.user.name }}
+
+                                                {% elif item.teacher %}
+
+                                                    {{ item.teacher.employee_id }}
+
+                                                {% else %}
+
+                                                    Teacher
+
+                                                {% endif %}
+
+                                            </div>
+
+
+
+                                            <div class="slot-time">
+
+                                                {{ item.start_time }}
+
+                                                -
+
+                                                {{ item.end_time }}
+
+                                            </div>
+
+
+
+                                            {% if item.room %}
+
+                                                <span class="slot-room">
+
+                                                    {{ item.room }}
+
+                                                </span>
+
+                                            {% endif %}
+
+
+                                        </div>
+
+
+                                    {% else %}
+
+
+                                        <div class="free-slot">
+                                            Free
+                                        </div>
+
+
+                                    {% endif %}
+
+
+                                </td>
+
+
+                            {% endfor %}
+
+
+                        </tr>
+
+
+                    {% endfor %}
+
+
+                </tbody>
+
+
+            </table>
+
+
+        </div>
+
+
+    </div>
+
+
+
+    <!-- =========================================================
+         SUBJECT DISTRIBUTION
+    ========================================================== -->
+
+    {% if subject_distribution %}
+
+
+        <div class="distribution-card">
+
+
+            <div class="card-header">
+
+
+                <div>
+
+                    <h2>
+                        Subject Distribution
+                    </h2>
+
+                    <p>
+                        Number of generated periods for each subject.
+                    </p>
+
+                </div>
+
+
+            </div>
+
+
+
+            <div class="distribution-body">
+
+
+                <div class="distribution-grid">
+
+
+                    {% for subject_item in subject_distribution %}
+
+
+                        <div class="subject-stat">
+
+
+                            <div class="subject-stat-name">
+
+                                {{ subject_item.name }}
+
+                            </div>
+
+
+                            <div class="subject-stat-value">
+
+                                {{ subject_item.periods }}
+
+                            </div>
+
+
+                            <div class="subject-stat-help">
+                                periods this week
+                            </div>
+
+
+                        </div>
+
+
+                    {% endfor %}
+
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+
+    {% endif %}
+
+
+
+    <!-- =========================================================
+         APPROVAL ACTIONS
+    ========================================================== -->
+
+    <div class="action-panel">
+
+
+        <div class="action-info">
+
+
+            <h3>
+                Review Before Publishing
+            </h3>
+
+
+            <p>
+
+                This timetable is currently a draft.
+                Regenerating creates a new optimized version.
+                Publishing makes this draft the live timetable
+                for the selected class.
+
+            </p>
+
+
+            <div class="publish-warning">
+
+                Publishing replaces the current live timetable
+                for Standard {{ school_class.standard }}
+                - {{ school_class.division }}.
+                Other classes are not replaced.
+
+            </div>
+
+
+        </div>
+
+
+
+        <div class="action-buttons">
+
+
+            <!-- REGENERATE -->
+
+            <form
+                method="POST"
+
+                action="{{ url_for(
+                    'generate_ai_timetable',
+                    class_id=school_class.id
+                ) }}"
+            >
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+
+                <button
+                    type="submit"
+
+                    class="btn btn-primary"
+
+                    onclick="
+                        return confirm(
+                            'Generate a new timetable draft? The current draft will be replaced.'
+                        );
+                    "
+                >
+                    Regenerate
+                </button>
+
+
+            </form>
+
+
+
+            <!-- DISCARD -->
+
+            <form
+                method="POST"
+
+                action="{{ url_for(
+                    'discard_timetable_draft',
+                    draft_id=draft.id
+                ) }}"
+            >
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+
+                <button
+                    type="submit"
+
+                    class="btn btn-danger"
+
+                    onclick="
+                        return confirm(
+                            'Discard this timetable draft?'
+                        );
+                    "
+                >
+                    Discard Draft
+                </button>
+
+
+            </form>
+
+
+
+            <!-- PUBLISH -->
+
+            <form
+                method="POST"
+
+                action="{{ url_for(
+                    'publish_timetable_draft',
+                    draft_id=draft.id
+                ) }}"
+            >
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+
+                <button
+                    type="submit"
+
+                    class="btn btn-success"
+
+                    onclick="
+                        return confirm(
+                            'Publish this timetable? This will replace the current live timetable for this class.'
+                        );
+                    "
+                >
+                    Publish Timetable
+                </button>
+
+
+            </form>
+
+
+        </div>
+
+
+    </div>
+
+
+</div>
+
+
+
+    <!-- EduSphere role navigation -->
+    {% include "components/edu_admin_sidebar.html" %}
+    <script src="{{ url_for('static', filename='js/edusphere_navigation.js') }}"></script>
+</body>
+
+</html>

@@ -1,0 +1,87 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Staff Dashboard</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6fb;
+            margin: 0;
+            padding: 30px;
+        }
+
+        .dashboard {
+            max-width: 900px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,.08);
+        }
+
+        h1 {
+            color: #173b74;
+        }
+
+        .details {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f0f5ff;
+            border-radius: 8px;
+        }
+
+        .details p {
+            margin: 12px 0;
+        }
+    </style>
+
+    <!-- EduSphere shared navigation -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edusphere_navigation.css') }}">
+</head>
+
+<body>
+
+<div class="dashboard">
+
+    <h1>Staff Dashboard</h1>
+
+    <p>Welcome, {{ staff.name }}</p>
+
+    <div class="details">
+        <h2>Employee Information</h2>
+
+        <p>
+            <strong>Employee ID:</strong>
+            {{ staff.employee_id }}
+        </p>
+
+        <p>
+            <strong>Name:</strong>
+            {{ staff.name }}
+        </p>
+
+        <p>
+            <strong>Position:</strong>
+            {{ staff.position }}
+        </p>
+
+        <p>
+            <strong>Phone:</strong>
+            {{ staff.phone or "Not provided" }}
+        </p>
+    </div>
+
+</div>
+
+
+    <!-- EduSphere role navigation -->
+    {% include "components/edu_staff_sidebar.html" %}
+    <script src="{{ url_for('static', filename='js/edusphere_navigation.js') }}"></script>
+</body>
+</html>

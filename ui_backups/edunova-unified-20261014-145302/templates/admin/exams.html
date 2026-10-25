@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Online Exam Management</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+    <style>
+        .page { max-width: 1250px; margin: 0 auto; }
+        .panel { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 22px; margin-top: 20px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: left; vertical-align: top; }
+        .actions { display: flex; flex-wrap: wrap; gap: 8px; }
+        .actions form { margin: 0; }
+        .muted { color: #64748b; }
+    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}">
+
+    <!-- EduSphere shared navigation -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edusphere_navigation.css') }}">
+    <!-- EduSphere professional theme -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edusphere_professional_theme.css') }}">
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_theme.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_portals.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_layout.css') }}">
+</head>
+<body>
+<!-- edunova-layout-shell: shared visual header, no backend changes -->
+<header class="edunova-layout-shell" role="banner"><a class="edunova-layout-brand" href="{{ url_for('admin_dashboard') }}"><span class="edunova-layout-logo">✦</span><span>EduNova <small>AI School</small></span></a><div class="edunova-layout-context"><span class="edunova-layout-role">Administration</span><span class="edunova-layout-dot"></span> School Management</div><a class="edunova-layout-home" href="{{ url_for('admin_dashboard') }}">Dashboard</a></header>
+
+<div id="nova-topbar"><div class="nova-brand"><span class="nova-mark">✦</span><span>EduSphere AI <span class="nova-tag">School Management</span></span></div><div class="nova-right"><span class="nova-pill">School Portal</span></div></div>
+
+<main class="full-page page">
+    <header class="topbar">
+        <div><h1>Online Exams</h1><p>Create exams, manage drafts and published exams, and inspect or grade student results.</p></div>
+        <div class="actions">
+            <a class="primary-link" href="{{ url_for('admin_exam_new') }}">Create exam</a>
+            <a class="primary-link" href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+        </div>
+    </header>
+    {% for message in get_flashed_messages() %}<div class="alert">{{ message }}</div>{% endfor %}
+    <section class="panel">
+        {% if rows %}
+        <div style="overflow-x:auto"><table>
+            <thead><tr><th>Exam</th><th>Class / Subject</th><th>Teacher</th><th>Schedule</th><th>Questions</th><th>Attempts</th><th>Status / Actions</th></tr></thead>
+            <tbody>{% for row in rows %}{% set exam = row.exam %}
+                <tr>
+                    <td><strong>{{ exam.title }}</strong><br><span class="muted">{{ exam.total_marks }} marks · {{ exam.duration_minutes }} min</span></td>
+                    <td>Standard {{ exam.school_class.standard }}{% if exam.school_class.stream %} {{ exam.school_class.stream }}{% endif %} - {{ exam.school_class.division }}<br>{{ exam.subject.name }}</td>
+                    <td>{{ row.teacher_name }}</td>
+                    <td>{{ exam.start_at.strftime('%d %b %Y %H:%M') }}<br>to {{ exam.end_at.strftime('%d %b %Y %H:%M') }}</td>
+                    <td>{{ row.question_count }}</td>
+                    <td>{{ row.submitted_count }} submitted / {{ row.attempt_count }} total</td>
+                    <td>
+                        {{ exam.status }}
+                        <div class="actions">
+                            <a href="{{ url_for('admin_exam_results', exam_id=exam.id) }}">Results</a>
+                            {% if exam.status == 'Draft' %}
+                            <a href="{{ url_for('admin_exam_questions', exam_id=exam.id) }}">Questions</a>
+                            <form method="post" action="{{ url_for('admin_exam_action', exam_id=exam.id, action='publish') }}">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button type="submit">Publish</button></form>
+                            {% elif exam.status == 'Published' %}
+                            <form method="post" action="{{ url_for('admin_exam_action', exam_id=exam.id, action='close') }}" onsubmit="return confirm('Close this exam for students?')">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button type="submit">Close</button></form>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}</tbody>
+        </table></div>
+        {% else %}<p>No online exams have been created yet.</p>{% endif %}
+    </section>
+</main>
+
+    <!-- EduSphere role navigation -->
+    {% include "components/edu_admin_sidebar.html" %}
+    <script src="{{ url_for('static', filename='js/edusphere_navigation.js') }}"></script>
+</body>
+</html>

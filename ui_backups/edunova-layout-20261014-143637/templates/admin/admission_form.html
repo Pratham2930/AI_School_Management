@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>New Student Admission</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/admin.css') }}"
+    >
+
+    <style>
+
+        .stream-section {
+            display: none;
+        }
+
+        .stream-section.show {
+            display: block;
+        }
+
+        .stream-help {
+            display: block;
+            margin-top: 7px;
+            color: #64748b;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .stream-notice {
+            display: none;
+            margin-top: 20px;
+            padding: 16px 18px;
+            border: 1px solid #dbeafe;
+            border-radius: 10px;
+            background: #eff6ff;
+        }
+
+        .stream-notice.show {
+            display: block;
+        }
+
+        .stream-notice strong {
+            display: block;
+            margin-bottom: 5px;
+            color: #1e3a8a;
+        }
+
+        .stream-notice p {
+            margin: 0;
+            color: #475569;
+            line-height: 1.6;
+        }
+
+        select {
+            width: 100%;
+            min-height: 44px;
+            padding: 10px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            background: #ffffff;
+            font: inherit;
+        }
+
+    </style>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}">
+
+    <!-- EduSphere shared navigation -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edusphere_navigation.css') }}">
+    <!-- EduSphere professional theme -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edusphere_professional_theme.css') }}">
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_theme.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_portals.css') }}">
+</head>
+
+
+<body>
+<div id="nova-topbar"><div class="nova-brand"><span class="nova-mark">✦</span><span>EduSphere AI <span class="nova-tag">School Management</span></span></div><div class="nova-right"><span class="nova-pill">School Portal</span></div></div>
+
+
+<div class="form-page">
+
+    <div class="form-container large-form">
+
+
+        <!-- ============================================= -->
+        <!-- PAGE HEADER -->
+        <!-- ============================================= -->
+
+        <div class="page-header">
+
+            <div>
+
+                <h1>
+                    New Student Admission
+                </h1>
+
+                <p class="muted">
+                    Register the student, automatically allocate a division,
+                    and create or link the parent account.
+                </p>
+
+            </div>
+
+
+            <a
+                class="secondary-btn"
+                href="{{ url_for('admin_dashboard') }}"
+            >
+                Dashboard
+            </a>
+
+        </div>
+
+
+        <!-- ============================================= -->
+        <!-- FLASH MESSAGES -->
+        <!-- ============================================= -->
+
+        {% with messages = get_flashed_messages() %}
+
+            {% for message in messages %}
+
+                <div class="alert">
+                    {{ message }}
+                </div>
+
+            {% endfor %}
+
+        {% endwith %}
+
+
+        <form
+            method="POST"
+            id="admissionForm"
+        >
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+
+            <!-- ========================================= -->
+            <!-- STUDENT INFORMATION -->
+            <!-- ========================================= -->
+
+            <h2>
+                Student Information
+            </h2>
+
+
+            <div class="form-grid">
+
+
+                <div>
+
+                    <label>
+                        Student Name
+                    </label>
+
+                    <input
+                        type="text"
+                        name="name"
+                        placeholder="Enter student full name"
+                        required
+                    >
+
+                </div>
+
+
+                <div>
+
+                    <label>
+                        Date of Birth
+                    </label>
+
+                    <input
+                        type="date"
+                        name="date_of_birth"
+                    >
+
+                </div>
+
+
+                <div>
+
+                    <label>
+                        Gender
+                    </label>
+
+                    <select name="gender">
+
+                        <option value="">
+                            Select Gender
+                        </option>
+
+                        <option value="Male">
+                            Male
+                        </option>
+
+                        <option value="Female">
+                            Female
+                        </option>
+
+                        <option value="Other">
+                            Other
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div>
+
+                    <label>
+                        Student Contact Number
+                    </label>
+
+                    <input
+                        type="text"
+                        name="phone"
+                        placeholder="Student contact number"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div>
+
+                <label>
+                    Address
+                </label>
+
+                <textarea
+                    name="address"
+                    rows="3"
+                    placeholder="Enter student address"
+                ></textarea>
+
+            </div>
+
+
+            <!-- ========================================= -->
+            <!-- PREVIOUS ACADEMIC INFORMATION -->
+            <!-- ========================================= -->
+
+            <h2 class="form-section">
+                Previous Academic Information
+            </h2>
+
+
+            <div class="form-grid">
+
+
+                <div>
+
+                    <label>
+                        Previous School
+                    </label>
+
+                    <input
+                        type="text"
+                        name="previous_school"
+                        placeholder="Previous school name"
+                    >
+
+                </div>
+
+
+                <div>
+
+                    <label>
+                        Previous Standard
+                    </label>
+
+                    <input
+                        id="previousStandard"
+                        type="number"
+                        name="previous_standard"
+                        min="1"
+                        max="12"
+                        placeholder="Example: 10"
+                        required
+                    >
+
+                    <small class="muted">
+                        Example: Enter 10 if the student passed Standard 10
+                        and is applying for Standard 11.
+                    </small>
+
+                </div>
+
+
+                <div>
+
+                    <label>
+                        Previous Percentage
+                    </label>
+
+                    <input
+                        type="number"
+                        name="previous_percentage"
+                        min="0"
+                        max="100"
+                        step="0.01"
+                        placeholder="Example: 72"
+                        required
+                    >
+
+                </div>
+
+            </div>
+
+
+            <!-- ========================================= -->
+            <!-- CURRENT ADMISSION -->
+            <!-- ========================================= -->
+
+            <h2 class="form-section">
+                Current Admission
+            </h2>
+
+
+            <div class="form-grid">
+
+
+                <!-- CURRENT STANDARD -->
+
+                <div>
+
+                    <label>
+                        Current Standard
+                    </label>
+
+                    <input
+                        id="currentStandard"
+                        type="number"
+                        name="current_standard"
+                        min="1"
+                        max="12"
+                        placeholder="Example: 11"
+                        required
+                    >
+
+                    <small class="muted">
+                        Automatically suggested from the previous standard.
+                    </small>
+
+                </div>
+
+
+                <!-- ===================================== -->
+                <!-- STREAM -->
+                <!-- Only for Standards 11 and 12 -->
+                <!-- ===================================== -->
+
+                <div
+                    id="streamSection"
+                    class="stream-section"
+                >
+
+                    <label>
+                        Stream
+                    </label>
+
+                    <select
+                        id="stream"
+                        name="stream"
+                    >
+
+                        <option value="">
+                            Select Stream
+                        </option>
+
+                        <option value="Science">
+                            Science
+                        </option>
+
+                        <option value="Commerce">
+                            Commerce
+                        </option>
+
+                        <option value="Arts">
+                            Arts
+                        </option>
+
+                    </select>
+
+                    <small class="stream-help">
+                        Stream selection is required for admission
+                        into Standards 11 and 12.
+                    </small>
+
+                </div>
+
+
+                <!-- ACADEMIC YEAR -->
+
+                <div>
+
+                    <label>
+                        Academic Year
+                    </label>
+
+                    <input
+                        type="text"
+                        name="academic_year"
+                        placeholder="2026-27"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- ADMISSION FEE -->
+
+                <div>
+
+                    <label>
+                        Admission Fee
+                    </label>
+
+                    <input
+                        type="number"
+                        name="admission_fee"
+                        min="0"
+                        step="0.01"
+                        placeholder="Example: 15000"
+                        required
+                    >
+
+                    <small class="muted">
+                        Enter the admission fee that must be paid
+                        before the admission is confirmed.
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <!-- ========================================= -->
+            <!-- STREAM INFORMATION -->
+            <!-- ========================================= -->
+
+            <div
+                id="streamNotice"
+                class="stream-notice"
+            >
+
+                <strong id="streamNoticeTitle">
+                    Senior Secondary Stream Required
+                </strong>
+
+                <p id="streamNoticeText">
+                    Select Science, Commerce or Arts.
+                    Division allocation will happen only inside
+                    the selected stream.
+                </p>
+
+            </div>
+
+
+            <!-- ========================================= -->
+            <!-- AUTOMATIC DIVISION INFORMATION -->
+            <!-- ========================================= -->
+
+            <div class="allocation-box">
+
+                <h3>
+                    Automatic Division Allocation
+                </h3>
+
+                <p>
+                    The system checks the student's previous percentage,
+                    current standard, division rules and available capacity.
+                </p>
+
+                <p>
+                    For Standards 11 and 12, the system also checks the
+                    selected stream before allocating the division.
+                </p>
+
+                <p>
+                    If the ideal division is full, the closest available
+                    division in the same standard and stream will
+                    automatically be selected.
+                </p>
+
+            </div>
+
+
+            <!-- ========================================= -->
+            <!-- PARENT / GUARDIAN INFORMATION -->
+            <!-- ========================================= -->
+
+            <h2 class="form-section">
+                Parent / Guardian Information
+            </h2>
+
+
+            <p class="muted">
+                Enter the parent or guardian information. If the same
+                parent already exists, the system will link this student
+                to the existing parent account.
+            </p>
+
+
+            <div class="form-grid">
+
+
+                <div>
+
+                    <label>
+                        Parent / Guardian Name
+                    </label>
+
+                    <input
+                        type="text"
+                        name="guardian_name"
+                        placeholder="Enter parent full name"
+                        required
+                    >
+
+                </div>
+
+
+                <div>
+
+                    <label>
+                        Relationship
+                    </label>
+
+                    <select
+                        name="guardian_relationship"
+                        required
+                    >
+
+                        <option value="">
+                            Select Relationship
+                        </option>
+
+                        <option value="Father">
+                            Father
+                        </option>
+
+                        <option value="Mother">
+                            Mother
+                        </option>
+
+                        <option value="Guardian">
+                            Guardian
+                        </option>
+
+                        <option value="Other">
+                            Other
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div>
+
+                    <label>
+                        Parent Phone
+                    </label>
+
+                    <input
+                        type="text"
+                        name="guardian_phone"
+                        placeholder="Example: 9876543210"
+                    >
+
+                </div>
+
+
+                <div>
+
+                    <label>
+                        Parent Email
+                    </label>
+
+                    <input
+                        type="email"
+                        name="guardian_email"
+                        placeholder="parent@example.com"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <!-- ========================================= -->
+            <!-- PARENT ACCOUNT INFORMATION -->
+            <!-- ========================================= -->
+
+            <div class="allocation-box">
+
+                <h3>
+                    Parent Account & Login
+                </h3>
+
+                <p>
+                    Parent login credentials are not generated
+                    immediately when this form is submitted.
+                </p>
+
+                <p>
+                    First, the admission will be saved with
+                    Pending Payment status.
+                </p>
+
+                <p>
+                    After the admission fee is received and
+                    confirmed by the administrator, the system
+                    will generate the Student ID and Parent
+                    login credentials.
+                </p>
+
+                <p>
+                    If this parent already has an account,
+                    the new student will automatically be
+                    linked to the existing Parent account.
+                </p>
+
+            </div>
+
+
+            <!-- ========================================= -->
+            <!-- FORM BUTTONS -->
+            <!-- ========================================= -->
+
+            <div class="form-actions">
+
+                <a
+                    class="secondary-btn"
+                    href="{{ url_for('admin_students') }}"
+                >
+                    Cancel
+                </a>
+
+
+                <button
+                    class="primary-btn normal-button"
+                    type="submit"
+                >
+                    Save Admission
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- ============================================= -->
+<!-- ADMISSION JAVASCRIPT -->
+<!-- ============================================= -->
+
+<script>
+
+    // =====================================================
+    // ELEMENT REFERENCES
+    // =====================================================
+
+    const previousStandard =
+        document.getElementById(
+            "previousStandard"
+        );
+
+    const currentStandard =
+        document.getElementById(
+            "currentStandard"
+        );
+
+    const streamSection =
+        document.getElementById(
+            "streamSection"
+        );
+
+    const streamSelect =
+        document.getElementById(
+            "stream"
+        );
+
+    const streamNotice =
+        document.getElementById(
+            "streamNotice"
+        );
+
+    const streamNoticeTitle =
+        document.getElementById(
+            "streamNoticeTitle"
+        );
+
+    const streamNoticeText =
+        document.getElementById(
+            "streamNoticeText"
+        );
+
+    const admissionForm =
+        document.getElementById(
+            "admissionForm"
+        );
+
+
+    // =====================================================
+    // SHOW / HIDE STREAM
+    // =====================================================
+
+    function updateStreamField() {
+
+        const standard =
+            parseInt(
+                currentStandard.value
+            );
+
+        if (
+            standard === 11 ||
+            standard === 12
+        ) {
+
+            streamSection.classList.add(
+                "show"
+            );
+
+            streamNotice.classList.add(
+                "show"
+            );
+
+            streamSelect.required = true;
+
+
+            if (standard === 11) {
+
+                streamNoticeTitle.textContent =
+                    "Select Stream for Standard 11";
+
+                streamNoticeText.textContent =
+                    "The student is entering Standard 11. "
+                    + "Select Science, Commerce or Arts. "
+                    + "The system will allocate a division "
+                    + "only inside the selected stream.";
+
+            }
+
+
+            if (standard === 12) {
+
+                streamNoticeTitle.textContent =
+                    "Select Stream for Standard 12";
+
+                streamNoticeText.textContent =
+                    "The student is entering Standard 12. "
+                    + "Select Science, Commerce or Arts. "
+                    + "The system will allocate a division "
+                    + "only inside the selected stream.";
+
+            }
+
+        } else {
+
+            streamSection.classList.remove(
+                "show"
+            );
+
+            streamNotice.classList.remove(
+                "show"
+            );
+
+            streamSelect.required = false;
+
+            streamSelect.value = "";
+
+        }
+
+    }
+
+
+    // =====================================================
+    // AUTO CURRENT STANDARD
+    // =====================================================
+
+    previousStandard.addEventListener(
+        "input",
+        function () {
+
+            const previous =
+                parseInt(
+                    previousStandard.value
+                );
+
+
+            if (
+                !isNaN(previous) &&
+                previous >= 1 &&
+                previous < 12
+            ) {
+
+                currentStandard.value =
+                    previous + 1;
+
+            }
+
+
+            if (previous === 12) {
+
+                currentStandard.value = "";
+
+            }
+
+
+            updateStreamField();
+
+        }
+    );
+
+
+    // =====================================================
+    // MANUAL CURRENT STANDARD CHANGE
+    // =====================================================
+
+    currentStandard.addEventListener(
+        "input",
+        function () {
+
+            updateStreamField();
+
+        }
+    );
+
+
+    // =====================================================
+    // FINAL FORM VALIDATION
+    // =====================================================
+
+    admissionForm.addEventListener(
+        "submit",
+        function (event) {
+
+            const previous =
+                parseInt(
+                    previousStandard.value
+                );
+
+            const current =
+                parseInt(
+                    currentStandard.value
+                );
+
+
+            // ---------------------------------------------
+            // STANDARD VALIDATION
+            // ---------------------------------------------
+
+            if (
+                isNaN(previous) ||
+                previous < 1 ||
+                previous > 12
+            ) {
+
+                event.preventDefault();
+
+                alert(
+                    "Previous standard must be between 1 and 12."
+                );
+
+                previousStandard.focus();
+
+                return;
+
+            }
+
+
+            if (
+                isNaN(current) ||
+                current < 1 ||
+                current > 12
+            ) {
+
+                event.preventDefault();
+
+                alert(
+                    "Current standard must be between 1 and 12."
+                );
+
+                currentStandard.focus();
+
+                return;
+
+            }
+
+
+            // ---------------------------------------------
+            // STREAM VALIDATION
+            // ---------------------------------------------
+
+            if (
+                current === 11 ||
+                current === 12
+            ) {
+
+                const validStreams = [
+                    "Science",
+                    "Commerce",
+                    "Arts"
+                ];
+
+
+                if (
+                    !validStreams.includes(
+                        streamSelect.value
+                    )
+                ) {
+
+                    event.preventDefault();
+
+                    alert(
+                        "Please select Science, Commerce or Arts."
+                    );
+
+                    streamSelect.focus();
+
+                    return;
+
+                }
+
+            }
+
+        }
+    );
+
+
+    // =====================================================
+    // INITIAL PAGE STATE
+    // =====================================================
+
+    updateStreamField();
+
+</script>
+
+
+
+    <!-- EduSphere role navigation -->
+    {% include "components/edu_admin_sidebar.html" %}
+    <script src="{{ url_for('static', filename='js/edusphere_navigation.js') }}"></script>
+</body>
+
+</html>

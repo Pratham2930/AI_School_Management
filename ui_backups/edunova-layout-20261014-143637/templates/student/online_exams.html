@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        My Online Exams | AI School Management
+    </title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f7fb;
+            color: #172033;
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: #102a56;
+            color: white;
+            padding: 28px 20px;
+        }
+
+        .brand {
+            font-size: 21px;
+            font-weight: 700;
+            margin-bottom: 30px;
+        }
+
+        .nav {
+            display: block;
+            color: white;
+            text-decoration: none;
+            padding: 12px 14px;
+            border-radius: 9px;
+            margin: 6px 0;
+            font-size: 14px;
+        }
+
+        .nav:hover,
+        .nav.active {
+            background: rgba(255, 255, 255, 0.13);
+        }
+
+        .main {
+            flex: 1;
+            padding: 30px;
+        }
+
+        .header {
+            margin-bottom: 24px;
+        }
+
+        .header h1 {
+            margin: 0 0 8px;
+        }
+
+        .header p {
+            margin: 0;
+            color: #667085;
+        }
+
+        .flash {
+            background: #fff4d6;
+            border: 1px solid #f0d17a;
+            padding: 12px 15px;
+            border-radius: 9px;
+            margin-bottom: 18px;
+        }
+
+        .exam-card {
+            background: white;
+            border: 1px solid #e6ebf2;
+            border-radius: 14px;
+            padding: 22px;
+            margin-bottom: 17px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 25px;
+        }
+
+        .exam-card h2 {
+            margin: 0 0 12px;
+            font-size: 20px;
+        }
+
+        .exam-meta {
+            color: #667085;
+            line-height: 1.8;
+            font-size: 14px;
+        }
+
+        .exam-side {
+            min-width: 180px;
+            text-align: right;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 7px 12px;
+            border-radius: 20px;
+            background: #eaf0fb;
+            color: #2457a6;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 13px;
+        }
+
+        .btn {
+            display: inline-block;
+            background: #2457a6;
+            color: white;
+            border: 0;
+            padding: 11px 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .btn:hover {
+            background: #1d4788;
+        }
+
+        .btn.continue {
+            background: #177a4b;
+        }
+
+        .empty {
+            background: white;
+            border: 1px solid #e6ebf2;
+            border-radius: 14px;
+            padding: 40px 20px;
+            text-align: center;
+            color: #667085;
+        }
+
+        form {
+            margin: 0;
+        }
+
+        @media (max-width: 750px) {
+            .layout {
+                display: block;
+            }
+
+            .sidebar {
+                width: 100%;
+            }
+
+            .main {
+                padding: 18px 12px;
+            }
+
+            .exam-card {
+                display: block;
+            }
+
+            .exam-side {
+                min-width: 0;
+                text-align: left;
+                margin-top: 18px;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}">
+
+    <!-- EduSphere shared navigation -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edusphere_navigation.css') }}">
+    <!-- EduSphere professional theme -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edusphere_professional_theme.css') }}">
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_theme.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_portals.css') }}">
+</head>
+
+<body>
+<div id="nova-topbar"><div class="nova-brand"><span class="nova-mark">✦</span><span>EduSphere AI <span class="nova-tag">School Management</span></span></div><div class="nova-right"><span class="nova-pill">School Portal</span></div></div>
+
+
+    <div class="layout">
+
+        <!-- =====================================================
+             SIDEBAR
+        ====================================================== -->
+
+        <aside class="sidebar">
+
+            <div class="brand">
+                AI School Management
+            </div>
+
+            <a
+                class="nav"
+                href="{{ url_for('student_dashboard') }}"
+            >
+                Dashboard
+            </a>
+
+            <a
+                class="nav active"
+                href="{{ url_for('student_online_exams') }}"
+            >
+                Online Exams & Quizzes
+            </a>
+
+            <a
+                class="nav"
+                href="{{ url_for('student_logout') }}"
+            >
+                Logout
+            </a>
+
+        </aside>
+
+
+        <!-- =====================================================
+             MAIN CONTENT
+        ====================================================== -->
+
+        <main class="main">
+
+            <!-- =================================================
+                 PAGE HEADER
+            ================================================== -->
+
+            <div class="header">
+
+                <h1>
+                    Online Exams & Quizzes
+                </h1>
+
+                <p>
+                    Only published online exams for your
+                    assigned class are shown here.
+                </p>
+
+            </div>
+
+
+            <!-- =================================================
+                 FLASH MESSAGES
+            ================================================== -->
+
+            {% with messages = get_flashed_messages() %}
+
+                {% if messages %}
+
+                    {% for message in messages %}
+
+                        <div class="flash">
+                            {{ message }}
+                        </div>
+
+                    {% endfor %}
+
+                {% endif %}
+
+            {% endwith %}
+
+
+            <!-- =================================================
+                 EXAM LIST
+            ================================================== -->
+
+            {% if rows %}
+
+                {% for row in rows %}
+
+                    <div class="exam-card">
+
+                        <!-- EXAM INFORMATION -->
+
+                        <div>
+
+                            <h2>
+                                {{ row.exam.title }}
+                            </h2>
+
+                            <div class="exam-meta">
+
+                                <strong>
+                                    Subject:
+                                </strong>
+
+                                {{ row.exam.subject.name }}
+
+                                <br>
+
+
+                                <strong>
+                                    Start:
+                                </strong>
+
+                                {{
+                                    row.exam.start_at.strftime(
+                                        '%d %b %Y %I:%M %p'
+                                    )
+                                }}
+
+                                <br>
+
+
+                                <strong>
+                                    End:
+                                </strong>
+
+                                {{
+                                    row.exam.end_at.strftime(
+                                        '%d %b %Y %I:%M %p'
+                                    )
+                                }}
+
+                                <br>
+
+
+                                <strong>
+                                    Duration:
+                                </strong>
+
+                                {{ row.exam.duration_minutes }}
+                                minutes
+
+                                <br>
+
+
+                                <strong>
+                                    Total Marks:
+                                </strong>
+
+                                {{ row.exam.total_marks | round(2) }}
+
+                                <br>
+
+
+                                <strong>
+                                    Passing Percentage:
+                                </strong>
+
+                                {{
+                                    row.exam.passing_percentage
+                                    | round(2)
+                                }}%
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- EXAM STATUS / ACTION -->
+
+                        <div class="exam-side">
+
+                            <span class="badge">
+                                {{ row.state }}
+                            </span>
+
+
+                            {% if row.state == 'Available' %}
+
+                                <form
+                                    method="post"
+                                    action="{{ url_for(
+                                        'student_online_exam_start',
+                                        exam_id=row.exam.id
+                                    ) }}"
+                                    onsubmit="return confirm(
+                                        'Start this exam now? Your timer will begin immediately.'
+                                    );"
+                                >
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                                    <button
+                                        class="btn"
+                                        type="submit"
+                                    >
+                                        Start Exam
+                                    </button>
+
+                                </form>
+
+
+                            {% elif row.state == 'Continue' %}
+
+                                <a
+                                    class="btn continue"
+                                    href="{{ url_for(
+                                        'student_online_exam_take',
+                                        exam_id=row.exam.id
+                                    ) }}"
+                                >
+                                    Continue Exam
+                                </a>
+
+
+                            {% elif row.state == 'Completed' %}
+
+                                <a
+                                    class="btn"
+                                    href="{{ url_for(
+                                        'student_online_exam_result',
+                                        exam_id=row.exam.id
+                                    ) }}"
+                                >
+                                    View Result
+                                </a>
+
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+                {% endfor %}
+
+
+            {% else %}
+
+                <div class="empty">
+
+                    <h3>
+                        No Online Exams Available
+                    </h3>
+
+                    <p>
+                        There are currently no published online
+                        exams or quizzes for your class.
+                    </p>
+
+                </div>
+
+            {% endif %}
+
+        </main>
+
+    </div>
+
+
+    <!-- EduSphere role navigation -->
+    {% include "components/edu_student_sidebar.html" %}
+    <script src="{{ url_for('static', filename='js/edusphere_navigation.js') }}"></script>
+</body>
+
+</html>

@@ -1,0 +1,151 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Admin Fee Verification</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/fees.css') }}">
+
+    <!-- EduSphere shared navigation -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edusphere_navigation.css') }}">
+    <!-- EduSphere professional theme -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edusphere_professional_theme.css') }}">
+</head>
+<body>
+
+<main class="wrap">
+
+    <header>
+        <h1>Admin Fee Verification</h1>
+        <a href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+    </header>
+
+    {% for message in get_flashed_messages() %}
+        <p class="notice">{{ message }}</p>
+    {% endfor %}
+
+    <section class="card">
+        <h2>Search Fee Receipt</h2>
+
+        <form method="GET"
+              action="{{ url_for('admin_fee_verify') }}">
+
+            <label for="receipt_number">Fee Receipt Number</label>
+
+            <input type="text"
+                   name="receipt_number"
+                   id="receipt_number"
+                   value="{{ receipt_number }}"
+                   placeholder="FEE-2026-000125"
+                   required>
+
+            <button type="submit">Find Receipt</button>
+
+        </form>
+    </section>
+
+    {% if payment and student %}
+
+    <section class="card">
+        <h2>Student Payment Details</h2>
+
+        <p>
+            <strong>Receipt:</strong>
+            {{ payment.receipt_number }}
+        </p>
+
+        <p>
+            <strong>Student:</strong>
+            {{ student.name }}
+        </p>
+
+        <p>
+            <strong>Admission Number:</strong>
+            {{ student.admission_number }}
+        </p>
+
+        <p>
+            <strong>Class:</strong>
+            {{ student.current_standard }}
+        </p>
+
+        <p>
+            <strong>Amount Paid:</strong>
+            {{ payment.amount }}
+        </p>
+
+        <p>
+            <strong>Required Admission Fee:</strong>
+            {{ student.admission_fee }}
+        </p>
+
+        <p>
+            <strong>Payment Method:</strong>
+            {{ payment.payment_method }}
+        </p>
+
+        <p>
+            <strong>Transaction Reference:</strong>
+            {{ payment.transaction_reference or 'N/A' }}
+        </p>
+
+        <p>
+            <strong>Payment Status:</strong>
+            {{ payment.payment_status }}
+        </p>
+
+        <p>
+            <strong>Admission Status:</strong>
+            {{ student.admission_status }}
+        </p>
+
+        {% if payment.payment_status == 'Recorded'
+              and student.admission_status == 'Pending' %}
+
+        <form method="POST"
+              action="{{ url_for('confirm_admission_payment',
+                                 student_id=student.id) }}">
+
+            <input type="hidden"
+                   name="csrf_token"
+                   value="{{ csrf_token() }}">
+
+            <input type="hidden"
+                   name="receipt_number"
+                   value="{{ payment.receipt_number }}">
+
+            <button type="submit"
+                    onclick="return confirm('Verify this payment and confirm admission?')">
+                Verify & Confirm Admission
+            </button>
+
+        </form>
+
+        {% elif payment.payment_status == 'Verified' %}
+
+        <p class="notice">
+            This fee receipt has already been verified.
+        </p>
+
+        {% endif %}
+
+    </section>
+
+    {% elif receipt_number %}
+
+    <p class="notice">
+        No matching fee receipt was found.
+    </p>
+
+    {% endif %}
+
+</main>
+
+
+    <!-- EduSphere role navigation -->
+    {% include "components/edu_staff_sidebar.html" %}
+    <script src="{{ url_for('static', filename='js/edusphere_navigation.js') }}"></script>
+</body>
+</html>

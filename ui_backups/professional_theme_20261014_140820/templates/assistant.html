@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>AI Assistant | AI School Management</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; padding: 24px; min-height: 100vh; background: #f4f7fb; color: #172033; font-family: Arial, Helvetica, sans-serif; }
+        main { max-width: 900px; min-height: calc(100vh - 48px); margin: 0 auto; display: flex; flex-direction: column; }
+        header, .chat-panel, .setup { background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 20px; margin-bottom: 14px; }
+        header { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+        h1, p { margin-top: 0; }
+        .muted { color: #64748b; line-height: 1.5; }
+        .links { display: flex; gap: 8px; flex-wrap: wrap; }
+        .button, button { border: 0; border-radius: 8px; padding: 10px 14px; background: #2457a6; color: white; text-decoration: none; font-weight: 700; cursor: pointer; }
+        .button.secondary { background: #e8eef8; color: #183b70; }
+        .setup { font-size: 14px; }
+        code { padding: 2px 5px; background: #f1f5f9; border-radius: 4px; }
+        .chat-panel { flex: 1; display: flex; flex-direction: column; min-height: 400px; }
+        #conversation { flex: 1; min-height: 260px; max-height: 60vh; overflow-y: auto; padding: 6px; }
+        .message { max-width: 85%; padding: 12px 14px; margin: 10px 0; border-radius: 12px; white-space: pre-wrap; line-height: 1.5; overflow-wrap: anywhere; }
+        .message.user { margin-left: auto; background: #eaf1ff; }
+        .message.assistant { background: #f1f5f9; }
+        .message.error { background: #fff1f0; color: #912018; }
+        form { display: flex; gap: 10px; padding-top: 12px; border-top: 1px solid #e2e8f0; }
+        textarea { flex: 1; min-height: 48px; max-height: 140px; resize: vertical; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font: inherit; }
+        button:disabled { opacity: .6; cursor: wait; }
+        @media (max-width: 600px) { body { padding: 12px; } main { min-height: calc(100vh - 24px); } form { flex-direction: column; } }
+    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}">
+</head>
+<body>
+<main>
+    <header>
+        <div>
+            <h1>School AI Assistant</h1>
+            <p class="muted">Configured Ollama model: <strong>{{ ollama_model }}</strong></p>
+        </div>
+        <div class="links">
+            {% if current_user.role in ["admin", "super_admin"] %}
+                <a class="button secondary" href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+            {% elif current_user.role == "teacher" %}
+                <a class="button secondary" href="{{ url_for('teacher_dashboard') }}">Dashboard</a>
+            {% elif current_user.role == "student" %}
+                <a class="button secondary" href="{{ url_for('student_dashboard') }}">Dashboard</a>
+            {% else %}
+                <a class="button secondary" href="{{ url_for('parent_dashboard') }}">Dashboard</a>
+            {% endif %}
+            {% if current_user.role in ["teacher", "student"] %}
+                <a class="button secondary" href="{{ url_for('leave_requests') }}">Leave Requests</a>
+            {% elif current_user.role in ["admin", "super_admin"] %}
+                <a class="button secondary" href="{{ url_for('admin_leave_requests') }}">Leave Requests</a>
+            {% endif %}
+        </div>
+    </header>
+
+    <section class="setup">
+        <strong>Local model setup</strong>
+        <div class="muted">
+            Install and start Ollama, then download the configured model with
+            <code>ollama pull {{ ollama_model }}</code>. Set <code>OLLAMA_MODEL</code> to another installed model if needed.
+            The app connects to <code>OLLAMA_BASE_URL</code> (default <code>http://127.0.0.1:11434</code>).
+            Your message and a fresh role-scoped set of relevant school facts are sent to that Ollama server.
+            Students only receive their own academic details; parents only receive details for linked children;
+            teacher context is limited to assigned classes; administrators receive aggregate school facts.
+            Chat history stays in this browser and is not saved by the app. Use a trusted local endpoint.
+            The assistant provides guidance only; use the relevant forms to make official school record changes.
+        </div>
+    </section>
+
+    <section class="chat-panel">
+        <div id="conversation" aria-live="polite">
+            <div class="message assistant">Hello {{ current_user.name }}. I can help with general school, teaching, or learning questions. What would you like help with?</div>
+        </div>
+        <form id="chat-form">
+            <textarea id="message" maxlength="2000" placeholder="Ask the school AI assistant..." required aria-label="Message"></textarea>
+            <button id="send" type="submit">Send</button>
+        </form>
+    </section>
+</main>
+<script>
+    const form = document.getElementById("chat-form");
+    const input = document.getElementById("message");
+    const sendButton = document.getElementById("send");
+    const conversation = document.getElementById("conversation");
+    const chatHistory = [];
+
+    function addMessage(role, text, isError) {
+        const bubble = document.createElement("div");
+        bubble.className = "message " + (isError ? "error" : role);
+        bubble.textContent = text;
+        conversation.appendChild(bubble);
+        conversation.scrollTop = conversation.scrollHeight;
+    }
+
+    form.addEventListener("submit", async function (event) {
+        event.preventDefault();
+        const message = input.value.trim();
+        if (!message || sendButton.disabled) return;
+
+        addMessage("user", message, false);
+        input.value = "";
+        sendButton.disabled = true;
+        sendButton.textContent = "Thinking...";
+
+        try {
+            const response = await fetch("{{ url_for('school_ai_chat') }}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": "{{ csrf_token() }}"
+                },
+                body: JSON.stringify({ message: message, history: chatHistory.slice(-10) })
+            });
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.error || "The AI request failed.");
+            addMessage("assistant", data.reply, false);
+            chatHistory.push(
+                { role: "user", content: message },
+                { role: "assistant", content: data.reply }
+            );
+        } catch (error) {
+            addMessage("assistant", error.message || "Could not contact the AI assistant.", true);
+        } finally {
+            sendButton.disabled = false;
+            sendButton.textContent = "Send";
+            input.focus();
+        }
+    });
+</script>
+</body>
+</html>

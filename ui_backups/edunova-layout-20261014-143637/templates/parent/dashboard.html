@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Parent Dashboard</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/admin.css') }}"
+    >
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}">
+
+    <!-- EduSphere shared navigation -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edusphere_navigation.css') }}">
+    <!-- EduSphere professional theme -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edusphere_professional_theme.css') }}">
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_theme.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edunova_portals.css') }}">
+</head>
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='css/portal_sidebar_cleanup.css') }}">
+<body>
+<div id="nova-topbar"><div class="nova-brand"><span class="nova-mark">✦</span><span>EduSphere AI <span class="nova-tag">School Management</span></span></div><div class="nova-right"><span class="nova-pill">School Portal</span></div></div>
+
+
+<div class="main-content full-page">
+
+
+    <!-- ========================================= -->
+    <!-- HEADER -->
+    <!-- ========================================= -->
+
+    <div class="page-header">
+
+        <div>
+
+            <h1>
+                Parent Dashboard
+            </h1>
+
+            <p class="muted">
+                Welcome, {{ current_user.name }}
+            </p>
+
+        </div>
+
+
+        <a
+            href="{{ url_for('school_ai_assistant') }}"
+            class="secondary-btn"
+        >
+            AI Assistant
+        </a>
+
+        <a
+            href="{{ url_for('parent_logout') }}"
+            class="secondary-btn"
+        >
+            Logout
+        </a>
+
+    </div>
+
+
+    <!-- ========================================= -->
+    <!-- FLASH MESSAGES -->
+    <!-- ========================================= -->
+
+    {% with messages = get_flashed_messages() %}
+
+        {% if messages %}
+
+            {% for message in messages %}
+
+                <div class="alert">
+                    {{ message }}
+                </div>
+
+            {% endfor %}
+
+        {% endif %}
+
+    {% endwith %}
+
+
+    <!-- ========================================= -->
+    <!-- PARENT INFORMATION -->
+    <!-- ========================================= -->
+
+    <div class="panel">
+
+        <h2>
+            Parent Information
+        </h2>
+
+        <div class="admission-status-grid">
+
+
+            <div class="status-card">
+
+                <strong>
+                    Parent Name
+                </strong>
+
+                <p>
+                    {{ current_user.name }}
+                </p>
+
+            </div>
+
+
+            <div class="status-card">
+
+                <strong>
+                    Login ID
+                </strong>
+
+                <p>
+                    {{ current_user.username }}
+                </p>
+
+            </div>
+
+
+            <div class="status-card">
+
+                <strong>
+                    Phone
+                </strong>
+
+                <p>
+                    {{ parent.phone or "Not provided" }}
+                </p>
+
+            </div>
+
+
+            <div class="status-card">
+
+                <strong>
+                    Email
+                </strong>
+
+                <p>
+                    {{ parent.email or "Not provided" }}
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ========================================= -->
+    <!-- MY CHILDREN -->
+    <!-- ========================================= -->
+
+    <div class="page-header">
+
+        <div>
+
+            <h2>
+                My Children
+            </h2>
+
+            <p class="muted">
+                Students connected to your Parent account.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    {% if children %}
+
+
+        {% for item in children %}
+
+            <div class="panel">
+
+
+                <!-- CHILD HEADER -->
+
+                <div class="page-header">
+
+                    <div>
+
+                        <h2>
+                            {{ item.student.name }}
+                        </h2>
+
+                        <p class="muted">
+
+                            Relationship:
+
+                            {{ item.relationship or "Parent" }}
+
+                        </p>
+
+                    </div>
+
+
+                    <div>
+
+                        {% if item.student.active %}
+
+                            <strong>
+                                Active Student
+                            </strong>
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+
+                <!-- ================================= -->
+                <!-- STUDENT DETAILS -->
+                <!-- ================================= -->
+
+                <div class="admission-status-grid">
+
+
+                    <div class="status-card">
+
+                        <strong>
+                            Student ID
+                        </strong>
+
+                        <p>
+                            {{ item.student.student_id or "N/A" }}
+                        </p>
+
+                    </div>
+
+
+                    <div class="status-card">
+
+                        <strong>
+                            Admission Number
+                        </strong>
+
+                        <p>
+                            {{ item.student.admission_number }}
+                        </p>
+
+                    </div>
+
+
+                    <div class="status-card">
+
+                        <strong>
+                            Class
+                        </strong>
+
+                        <p>
+
+                            {% if item.school_class %}
+
+                                {{ item.school_class.standard }}
+
+                            {% else %}
+
+                                N/A
+
+                            {% endif %}
+
+                        </p>
+
+                    </div>
+
+
+                    <div class="status-card">
+
+                        <strong>
+                            Division
+                        </strong>
+
+                        <p>
+
+                            {% if item.school_class %}
+
+                                {{ item.school_class.division }}
+
+                            {% else %}
+
+                                N/A
+
+                            {% endif %}
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ================================= -->
+                <!-- ADMISSION INFORMATION -->
+                <!-- ================================= -->
+
+                <div
+                    class="admission-status-grid"
+                    style="margin-top: 20px;"
+                >
+
+
+                    <div class="status-card">
+
+                        <strong>
+                            Admission Status
+                        </strong>
+
+                        <p>
+                            {{ item.student.admission_status }}
+                        </p>
+
+                    </div>
+
+
+                    <div class="status-card">
+
+                        <strong>
+                            Admission Date
+                        </strong>
+
+                        <p>
+
+                            {% if item.student.admission_date %}
+
+                                {{ item.student.admission_date }}
+
+                            {% else %}
+
+                                N/A
+
+                            {% endif %}
+
+                        </p>
+
+                    </div>
+
+
+                    <div class="status-card">
+
+                        <strong>
+                            Fee Status
+                        </strong>
+
+                        <p>
+                            {{ item.student.fee_status }}
+                        </p>
+
+                    </div>
+
+
+                    <div class="status-card">
+
+                        <strong>
+                            Previous Result
+                        </strong>
+
+                        <p>
+
+                            {% if item.student.previous_percentage is not none %}
+
+                                {{ item.student.previous_percentage }}%
+
+                            {% else %}
+
+                                N/A
+
+                            {% endif %}
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ================================= -->
+                <!-- ACADEMIC MODULES -->
+                <!-- ================================= -->
+
+                <div
+                    class="reason-box"
+                    style="margin-top: 20px;"
+                >
+
+                    <h3>
+                        Academic Information
+                    </h3>
+
+                    <p class="muted">
+                        Attendance, marks, exam results,
+                        performance growth and teacher comments
+                        will appear here as teachers enter data.
+                    </p>
+
+                </div>
+
+
+                <!-- ================================= -->
+                <!-- FUTURE DASHBOARD CARDS -->
+                <!-- ================================= -->
+
+                <div
+                    class="admission-status-grid"
+                    style="margin-top: 20px;"
+                >
+
+
+                    <div class="status-card">
+
+                        <strong>
+                            Attendance
+                        </strong>
+
+                        <h3>
+                            Coming Soon
+                        </h3>
+
+                        <p class="muted">
+                            Daily and overall attendance.
+                        </p>
+
+                    </div>
+
+
+                    <div class="status-card">
+
+                        <strong>
+                            Marks
+                        </strong>
+
+                        <h3>
+                            Coming Soon
+                        </h3>
+
+                        <p class="muted">
+                            Subject-wise marks and exams.
+                        </p>
+
+                    </div>
+
+
+                    <div class="status-card">
+
+                        <strong>
+                            Performance
+                        </strong>
+
+                        <h3>
+                            Coming Soon
+                        </h3>
+
+                        <p class="muted">
+                            Academic growth and trends.
+                        </p>
+
+                    </div>
+
+
+                    <div class="status-card">
+
+                        <strong>
+                            AI Insights
+                        </strong>
+
+                        <h3>
+                            Coming Soon
+                        </h3>
+
+                        <p class="muted">
+                            Performance and attendance insights.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+        {% endfor %}
+
+
+    {% else %}
+
+
+        <!-- ========================================= -->
+        <!-- NO CHILD LINKED -->
+        <!-- ========================================= -->
+
+        <div class="panel">
+
+            <h2>
+                No Child Linked
+            </h2>
+
+            <p class="muted">
+
+                There is currently no confirmed student
+                connected to this Parent account.
+
+            </p>
+
+            <p class="muted">
+
+                Please contact the school administrator
+                if you believe this is incorrect.
+
+            </p>
+
+        </div>
+
+
+    {% endif %}
+
+
+</div>
+
+
+    <!-- EduSphere role navigation -->
+    {% include "components/edu_parent_sidebar.html" %}
+    <script src="{{ url_for('static', filename='js/edusphere_navigation.js') }}"></script>
+</body>
+
+</html>
